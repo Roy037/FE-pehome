@@ -189,7 +189,7 @@ const ViewUpsertJob = (props: any) => {
                     separator=">"
                     items={[
                         {
-                            title: <Link to="/admin/job">Manage Job</Link>,
+                            title: <Link to="/admin/job">Manage Car</Link>,
                         },
                         {
                             title: 'Upsert Job',
@@ -220,21 +220,21 @@ const ViewUpsertJob = (props: any) => {
                         <Row gutter={[20, 20]}>
                             <Col span={24} md={12}>
                                 <ProFormText
-                                    label="Tên Job"
+                                    label="Tên xe"
                                     name="name"
                                     rules={[
                                         { required: true, message: 'Vui lòng không bỏ trống' },
                                     ]}
-                                    placeholder="Nhập tên job"
+                                    placeholder="Nhập tên xe"
                                 />
                             </Col>
                             <Col span={24} md={6}>
                                 <ProFormSelect
                                     name="skills"
-                                    label="Kỹ năng yêu cầu"
+                                    label="Loại xe"
                                     options={skills}
-                                    placeholder="Please select a skill"
-                                    rules={[{ required: true, message: 'Vui lòng chọn kỹ năng!' }]}
+                                    placeholder="Chọn xe"
+                                    rules={[{ required: true, message: 'Vui lòng chọn loại xe!' }]}
                                     allowClear
                                     mode="multiple"
                                     fieldProps={{
@@ -254,7 +254,7 @@ const ViewUpsertJob = (props: any) => {
                             </Col>
                             <Col span={24} md={6}>
                                 <ProFormDigit
-                                    label="Mức lương"
+                                    label="Giá xe"
                                     name="salary"
                                     rules={[{ required: true, message: 'Vui lòng không bỏ trống' }]}
                                     placeholder="Nhập mức lương"
@@ -265,15 +265,15 @@ const ViewUpsertJob = (props: any) => {
                                     }}
                                 />
                             </Col>
-                            <Col span={24} md={6}>
+                            {/* <Col span={24} md={6}>
                                 <ProFormDigit
                                     label="Số lượng"
                                     name="quantity"
                                     rules={[{ required: true, message: 'Vui lòng không bỏ trống' }]}
                                     placeholder="Nhập số lượng"
                                 />
-                            </Col>
-                            <Col span={24} md={6}>
+                            </Col> */}
+                            {/* <Col span={24} md={6}>
                                 <ProFormSelect
                                     name="level"
                                     label="Trình độ"
@@ -287,7 +287,7 @@ const ViewUpsertJob = (props: any) => {
                                     placeholder="Please select a level"
                                     rules={[{ required: true, message: 'Vui lòng chọn level!' }]}
                                 />
-                            </Col>
+                            </Col> */}
 
                             {(dataUpdate?.id || !id) &&
                                 <Col span={24} md={6}>
@@ -359,8 +359,8 @@ const ViewUpsertJob = (props: any) => {
                             <Col span={24}>
                                 <ProForm.Item
                                     name="description"
-                                    label="Miêu tả job"
-                                    rules={[{ required: true, message: 'Vui lòng nhập miêu tả job!' }]}
+                                    label="Miêu tả xe"
+                                    rules={[{ required: true, message: 'Vui lòng nhập miêu tả !' }]}
                                 >
                                     <ReactQuill
                                         theme="snow"

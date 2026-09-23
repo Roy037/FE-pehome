@@ -36,12 +36,12 @@ const Header = (props: any) => {
             icon: <TwitterOutlined />,
         },
         {
-            label: <Link to={'/job'}>Việc Làm IT</Link>,
+            label: <Link to={'/job'}>Top mẫu xe</Link>,
             key: '/job',
             icon: <CodeOutlined />,
         },
         {
-            label: <Link to={'/company'}>Top Công ty IT</Link>,
+            label: <Link to={'/company'}>Top hãng xe lớn</Link>,
             key: '/company',
             icon: <RiseOutlined />,
         }
@@ -98,7 +98,7 @@ const Header = (props: any) => {
                     {!isMobile ?
                         <div style={{ display: "flex", gap: 30 }}>
                             <div className={styles['brand']} >
-                                <FaReact onClick={() => navigate('/')} title='Hỏi Dân IT' />
+                                <FaReact onClick={() => navigate('/')} title='Pe car' />
                             </div>
                             <div className={styles['top-menu']}>
                                 <ConfigProvider
@@ -122,7 +122,7 @@ const Header = (props: any) => {
                                     {isAuthenticated === false ?
                                         <Link to={'/login'}>Đăng Nhập</Link>
                                         :
-                                        <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
+                                        <Dropdown menu={{ items: itemsDropdown }} trigger={['click']} placement="bottomRight" autoAdjustOverflow={false} >
                                             <Space style={{ cursor: "pointer" }}>
                                                 <span>Welcome {user?.name}</span>
                                                 <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>

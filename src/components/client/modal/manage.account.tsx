@@ -204,7 +204,7 @@ const JobByEmail = (props: any) => {
                         <Form.Item
                             label={"Kỹ năng"}
                             name={"skills"}
-                            rules={[{ required: true, message: 'Vui lòng chọn ít nhất 1 skill!' }]}
+                            rules={[{ required: true, message: 'Vui lòng chọn ít nhất 1 mẫu xe' }]}
 
                         >
                             <Select
@@ -214,7 +214,7 @@ const JobByEmail = (props: any) => {
                                 style={{ width: '100%' }}
                                 placeholder={
                                     <>
-                                        <MonitorOutlined /> Tìm theo kỹ năng...
+                                        <MonitorOutlined /> Tìm theo hãng xe...
                                     </>
                                 }
                                 optionLabelProp="label"

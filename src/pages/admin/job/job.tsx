@@ -27,7 +27,7 @@ const JobPage = () => {
         if (id) {
             const res = await callDeleteJob(id);
             if (res && res.data) {
-                message.success('Xóa Job thành công');
+                message.success('Xóa xe thành công');
                 reloadTable();
             } else {
                 notification.error({
@@ -57,7 +57,7 @@ const JobPage = () => {
             hideInSearch: true,
         },
         {
-            title: 'Tên Job',
+            title: 'Tên xe',
             dataIndex: 'name',
             sorter: true,
         },
@@ -68,7 +68,7 @@ const JobPage = () => {
             hideInSearch: true,
         },
         {
-            title: 'Mức lương',
+            title: 'Giá xe',
             dataIndex: 'salary',
             sorter: true,
             render(dom, entity, index, action, schema) {
@@ -76,25 +76,25 @@ const JobPage = () => {
                 return <>{str?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ</>
             },
         },
-        {
-            title: 'Level',
-            dataIndex: 'level',
-            renderFormItem: (item, props, form) => (
-                <ProFormSelect
-                    showSearch
-                    mode="multiple"
-                    allowClear
-                    valueEnum={{
-                        INTERN: 'INTERN',
-                        FRESHER: 'FRESHER',
-                        JUNIOR: 'JUNIOR',
-                        MIDDLE: 'MIDDLE',
-                        SENIOR: 'SENIOR',
-                    }}
-                    placeholder="Chọn level"
-                />
-            ),
-        },
+        // {
+        //     title: 'Level',
+        //     dataIndex: 'level',
+        //     renderFormItem: (item, props, form) => (
+        //         <ProFormSelect
+        //             showSearch
+        //             mode="multiple"
+        //             allowClear
+        //             valueEnum={{
+        //                 INTERN: 'INTERN',
+        //                 FRESHER: 'FRESHER',
+        //                 JUNIOR: 'JUNIOR',
+        //                 MIDDLE: 'MIDDLE',
+        //                 SENIOR: 'SENIOR',
+        //             }}
+        //             placeholder="Chọn level"
+        //         />
+        //     ),
+        // },
         {
             title: 'Trạng thái',
             dataIndex: 'active',
@@ -161,7 +161,7 @@ const JobPage = () => {
                         <Popconfirm
                             placement="leftTop"
                             title={"Xác nhận xóa job"}
-                            description={"Bạn có chắc chắn muốn xóa job này ?"}
+                            description={"Bạn có chắc chắn muốn xóa xe này ?"}
                             onConfirm={() => handleDeleteJob(entity.id)}
                             okText="Xác nhận"
                             cancelText="Hủy"
@@ -234,7 +234,7 @@ const JobPage = () => {
             >
                 <DataTable<IJob>
                     actionRef={tableRef}
-                    headerTitle="Danh sách Jobs"
+                    headerTitle="Danh sách xe"
                     rowKey="id"
                     loading={isFetching}
                     columns={columns}

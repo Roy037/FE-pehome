@@ -281,7 +281,6 @@ interface CardProps {
     onForgot?: () => void;
 }
 
-// Shared by the auth modal and the full-page fallback below.
 export const EmployerCard = ({ mode, onModeChange, onCandidate, onSuccess, onForgot }: CardProps) => (
     <div className={a.card}>
         <aside className={a.visual}>
@@ -304,7 +303,6 @@ export const EmployerCard = ({ mode, onModeChange, onCandidate, onSuccess, onFor
     </div>
 );
 
-// Full-page fallback for direct links. Employers land in the admin area; the same accounts also work in the regular login.
 export const EmployerAuthPage = ({ mode }: { mode: Mode }) => {
     const navigate = useNavigate();
     const { isAuthenticated, user } = useAppSelector(state => state.account);

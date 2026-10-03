@@ -192,7 +192,6 @@ const FollowedCompanies = () => {
     }, []);
 
     if (companies === null) return <div className={styles.modalLoading}>Đang tải công ty đang theo dõi…</div>;
-    // Unfollowing from this list updates the store right away, so filter by it instead of refetching.
     const visible = companies.filter(company => ids.includes(String(company.id)));
     if (visible.length === 0) {
         return (

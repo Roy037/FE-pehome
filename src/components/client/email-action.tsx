@@ -30,8 +30,6 @@ const TEXT: Record<Mode, { title: string; wait: string; done: string; doneText: 
     },
 };
 
-// Landing page of the buttons in our e-mails: /xac-thuc-email?token=... and /huy-nhan-tin?token=...
-// The token is sent by this page (a POST), not by opening the link itself, so mail scanners that pre-fetch links do nothing.
 const EmailAction = ({ mode }: { mode: Mode }) => {
     const dispatch = useAppDispatch();
     const signedIn = useAppSelector(state => state.account.isAuthenticated);
@@ -46,7 +44,6 @@ const EmailAction = ({ mode }: { mode: Mode }) => {
         window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
         if (!token || started.current) return;
         started.current = true;
-        // keep the token out of the address bar, history and Referer headers
         window.history.replaceState(null, '', window.location.pathname);
         (async () => {
             try {

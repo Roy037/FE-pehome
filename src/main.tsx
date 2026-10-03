@@ -1,4 +1,3 @@
-// The store must load before App: slices → api → axios-customize → store is circular.
 import { store } from '@/redux/store';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
@@ -8,10 +7,8 @@ import { ConfigProvider } from 'antd';
 import viVN from 'antd/locale/vi_VN';
 import '@/styles/global.scss';
 
-// Start animations automatically, independent of the retired footer preference.
 document.documentElement.dataset.motion = 'on';
 
-// Orange fills carry dark text: white on this orange fails WCAG contrast.
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
         <Provider store={store}>

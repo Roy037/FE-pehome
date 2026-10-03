@@ -20,7 +20,6 @@
     background: var(--peach);
 }
 
-// ---------- Hero ----------
 .hero {
     --explorer-width: clamp(150px, 15vw, 230px);
     position: relative;
@@ -118,7 +117,6 @@
     animation: twinkle 2.6s ease-in-out 0.9s infinite;
 }
 
-// ---------- Layout ----------
 .layout {
     display: grid;
     grid-template-columns: 272px minmax(0, 1fr);
@@ -126,8 +124,6 @@
     align-items: start;
     padding-top: 40px;
 }
-// The filter card is exactly as tall as the results column (the row height comes from the list, not the card);
-// if its content is longer it scrolls inside the card. Pagination sits in its own row below both.
 .sidebar {
     position: relative;
     grid-column: 1;
@@ -219,7 +215,6 @@
         font-size: 13.5px;
     }
 }
-// ---------- Salary range slider ----------
 .salary {
     display: grid;
     gap: 14px;
@@ -340,7 +335,6 @@
     cursor: pointer;
 }
 
-// ---------- Results ----------
 .results {
     grid-column: 2;
     grid-row: 1;
@@ -406,7 +400,6 @@
     justify-content: flex-end;
     gap: 10px;
     margin-top: 32px;
-    // white square buttons, the current page filled with the brand colour
     :global(.ant-pagination-item),
     :global(.ant-pagination-prev),
     :global(.ant-pagination-next) {

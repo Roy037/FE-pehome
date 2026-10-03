@@ -1,4 +1,3 @@
-// Drop generated files into public/images with these names; until then the fallback is shown.
 const FALLBACK_PHOTO = '/images/career-workspace.webp';
 
 export const ASSETS = {
@@ -15,5 +14,4 @@ export const ASSETS = {
     blob: { src: '/images/decor-blob.webp' },
 };
 
-// Layered CSS backgrounds: the fallback shows through until the new file exists.
 export const bannerBackground = `url(${ASSETS.banner.src}), url(${ASSETS.banner.fallback})`;

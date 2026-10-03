@@ -19,7 +19,6 @@ interface Filters {
     skills?: string[];
 }
 
-// Candidates who chose to be found. Only SUPER_ADMIN and employers of an approved company get data back.
 const TalentPage = () => {
     const [draft, setDraft] = useState<Filters>({});
     const [filters, setFilters] = useState<Filters>({});

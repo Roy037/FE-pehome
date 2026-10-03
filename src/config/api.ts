@@ -60,7 +60,6 @@ export const callFetchOAuthProviders = () => {
     return axios.get<IBackendRes<IOAuthProvider[]>>('/api/v1/auth/oauth/providers');
 };
 
-// Social sign-in is a full-page trip to the provider and back, so this is an address, not an API call.
 export const oauthStartUrl = (provider: string, next: string) =>
     `${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/oauth/${provider.toLowerCase()}/authorize?next=${encodeURIComponent(next)}`;
 
@@ -80,7 +79,6 @@ export const callResendVerification = () => {
     return axios.post<IBackendRes<null>>('/api/v1/auth/resend-verification');
 };
 
-// token travels in the query string: mail apps' one-click button posts to the very same URL
 export const callUnsubscribe = (token: string) => {
     return axios.post<IBackendRes<null>>('/api/v1/subscribers/unsubscribe', null, { params: { token } });
 };
@@ -108,8 +106,6 @@ export const callLogout = () => {
 /**
  * Upload single file
  */
-// CV files are private: streamed by the API after an access check, so they are fetched with the bearer token as a blob.
-// (On failure the axios interceptor returns the error body, which is a JSON blob too.)
 export const callFetchDocument = (endpoint: string) =>
     axios.get<Blob>(endpoint, { responseType: 'blob' }) as unknown as Promise<Blob | undefined>;
 
@@ -160,7 +156,6 @@ export const callFetchMyOrders = () => axios.get<IBackendRes<IOrder[]>>('/api/v1
 export const callCreateOrder = (plan: string, method?: string) =>
     axios.post<IBackendRes<ICreateOrder>>('/api/v1/me/orders', { plan, method });
 export const callFetchPaymentMethods = () => axios.get<IBackendRes<IPaymentMethod[]>>('/api/v1/payments/methods');
-// `query` is the whole query string VNPay (or the fake gateway) put on the return URL, signature included
 export const callVnpayReturn = (query: string) =>
     axios.get<IBackendRes<IPaymentResult>>(`/api/v1/payments/vnpay-return${query}`);
 export const callMomoReturn = (txnRef: string) =>
@@ -327,10 +322,10 @@ export const callCreateResume = (
 
 export interface IStatusChange {
     status: string;
-    interviewAt?: string; // ISO instant, required for INTERVIEW
-    meetingLink?: string; // https://..., required for INTERVIEW
-    decisionNote?: string; // shown to the candidate and put in the e-mail
-    notify?: boolean; // e-mail the candidate (default true)
+    interviewAt?: string;
+    meetingLink?: string;
+    decisionNote?: string;
+    notify?: boolean;
 }
 
 export const callChangeResumeStatus = (id: string | number, change: IStatusChange) => {

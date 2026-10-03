@@ -17,7 +17,6 @@ import HomePage from 'pages/home';
 import styles from 'styles/app.module.scss';
 import { fetchAccount } from './redux/slice/accountSlide';
 import LayoutApp from './components/share/layout.app';
-// Only the landing page ships in the first bundle; every other page loads when it is first visited.
 const LoginPage = lazy(() => import('pages/auth/login'));
 const RegisterPage = lazy(() => import('pages/auth/register'));
 const ForgotPasswordPage = lazy(() => import('pages/auth/forgot-password'));
@@ -62,7 +61,6 @@ const LayoutClient = () => {
 
     return (
         <AuthModalProvider>
-            {/* Upgrade wraps Account: the "Gói của tôi" tab inside the account modal needs the upgrade context */}
             <UpgradeModalProvider>
                 <AccountModalProvider>
                     <div className="layout-app">
@@ -70,7 +68,6 @@ const LayoutClient = () => {
                         <VerifyBanner />
                         <main id="main-content" tabIndex={-1} className={styles['content-app']}>
                             <div key={location.pathname} className="page-in">
-                                {/* inside the layout, so the header and footer stay put while a page chunk loads */}
                                 <Suspense fallback={<Loading />}>
                                     <Outlet />
                                 </Suspense>

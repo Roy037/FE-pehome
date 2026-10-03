@@ -53,7 +53,6 @@
     animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-// ---------- Visual ----------
 .visual {
     position: relative;
     overflow: hidden;
@@ -67,7 +66,6 @@
     object-fit: cover;
     object-position: 50% 25%;
 }
-// landscape group shot: start the crop just right of the left edge so the two middle colleagues fill the panel
 .photoTeam {
     object-position: 54% 20%;
 }
@@ -134,7 +132,6 @@
     }
 }
 
-// ---------- Form ----------
 .formSide {
     display: flex;
     flex-direction: column;
@@ -161,7 +158,6 @@
     font-size: 12.5px;
 }
 
-// Label sits inside the bordered box; errors hang below it so fields never shift.
 .form {
     :global(.ant-form-item) {
         margin-bottom: 18px !important;
@@ -196,7 +192,6 @@
         padding: 0 !important;
         line-height: 1.2;
     }
-    // one line only, so fields side by side keep the same height; drop antd's hidden colon, which still takes ~13px
     :global(.ant-form-item-label > label) {
         display: block;
         overflow: hidden;
@@ -297,7 +292,6 @@
     border-radius: 6px !important;
     font-size: 14px !important;
 }
-// ---------- social sign-in: "Hoặc" + Google / Facebook / LinkedIn ----------
 .social {
     margin-top: 16px;
 }
@@ -409,7 +403,6 @@
     }
 }
 
-// ---------- Employer entrance ----------
 .switchAlt {
     margin-top: 8px;
     color: var(--muted);

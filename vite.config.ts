@@ -24,7 +24,6 @@ export default defineConfig(({ mode }) => {
             port: parseInt(env.PORT),
         },
         build: {
-            // the first-load bundle is dominated by antd core (~1 MB); everything admin-only stays in lazy chunks, so do not force antd into one shared vendor chunk
             chunkSizeWarningLimit: 1200,
             rollupOptions: {
                 output: {

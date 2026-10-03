@@ -64,7 +64,6 @@
     font-variant-numeric: tabular-nums;
 }
 
-// grids: at most 4 stat columns / 2 panel columns, so wide screens never end in one long row or a stray card
 .statGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(max(230px, calc((100% - 3 * 14px) / 4)), 1fr));
@@ -202,7 +201,6 @@
     font-size: 12.5px;
 }
 
-// columns: value on top, bar in the middle, month underneath; the track gives the bar its full height to grow into
 .bars {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -322,7 +320,6 @@
     }
 }
 
-// ---------- Talent directory ----------
 .talentFilters {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));

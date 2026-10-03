@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 interface IProps {
     end: number;
     start?: number;
-    /** seconds; 0 shows the final value at once (reduced motion) */
     duration?: number;
     separator?: string;
     suffix?: string;
@@ -11,7 +10,6 @@ interface IProps {
 
 const group = (value: number, separator: string) => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, separator);
 
-// Counts up to `end` with an ease-out curve. When `end` changes it continues from what is on screen.
 const CountUp = ({ end, start = 0, duration = 1, separator = '', suffix = '' }: IProps) => {
     const [value, setValue] = useState(duration > 0 ? start : end);
     const shown = useRef(value);

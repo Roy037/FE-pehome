@@ -6,7 +6,6 @@ import { useAppSelector } from '@/redux/hooks';
 import { errorText } from './auth';
 import styles from '@/styles/client.module.scss';
 
-// Slim bar under the header while the signed-in user has not confirmed their e-mail yet.
 const VerifyBanner = () => {
     const { isAuthenticated, user } = useAppSelector(state => state.account);
     const [busy, setBusy] = useState(false);

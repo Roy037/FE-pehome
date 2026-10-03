@@ -32,7 +32,6 @@ const AUTH_PATHS: Record<ModalMode, string> = {
     'employer-login': '/nha-tuyen-dung/dang-nhap',
     'employer-register': '/nha-tuyen-dung/dang-ky',
 };
-// The employer forms are only needed once someone opens their modal or page, so they load on demand.
 const EmployerCard = lazy(() => import('./employer-auth').then(module => ({ default: module.EmployerCard })));
 export interface AuthPrefill {
     name?: string;
@@ -214,7 +213,6 @@ const LoginForm = ({ prefill, onSwitch, onSuccess, onEmployer, onForgot }: FormP
     );
 };
 
-// The answer is the same whether or not the address has an account, so this form cannot be used to look people up.
 const ForgotForm = ({ prefill, onSwitch }: FormProps) => {
     const [busy, setBusy] = useState(false);
     const [sentTo, setSentTo] = useState<string | null>(null);
@@ -464,7 +462,6 @@ const safeCallback = (callback: string | null) => {
     }
 };
 
-// Full-page fallback for direct links and protected-route redirects.
 export const AuthPage = ({ mode }: { mode: AuthMode }) => {
     const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
     const location = useLocation();
@@ -495,7 +492,6 @@ export const AuthPage = ({ mode }: { mode: AuthMode }) => {
 const AuthModalContext = createContext<(mode?: ModalMode, prefill?: AuthPrefill) => void>(() => undefined);
 export const useAuthModal = () => useContext(AuthModalContext);
 
-// Plain clicks on a login/register link (candidate or employer) open the modal; modified clicks still open a new tab.
 export const useAuthClick = (mode: ModalMode) => {
     const open = useAuthModal();
     return (event: MouseEvent<HTMLElement>) => {

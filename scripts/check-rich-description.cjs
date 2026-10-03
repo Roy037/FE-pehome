@@ -1,4 +1,3 @@
-// Run with: node scripts/check-rich-description.cjs
 const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');

@@ -109,11 +109,8 @@ export const WORK_MODE_LIST = [
     { label: 'Linh hoạt', value: 'HYBRID' },
 ];
 
-// The slider runs 0 – 100 triệu đ; the top end means "no upper limit".
 export const SALARY_MAX_M = 100;
 
-// A posting is a range [salary, salaryMax]; it matches the slider range when the two overlap (no maximum = open-ended).
-// Postings without a salary are left out unless `withNegotiable`.
 export const salaryRangeFilter = (low: number, high: number, withNegotiable: boolean) => {
     const M = 1_000_000;
     const parts = ['(salary > 0 or salaryMax > 0)'];
@@ -131,7 +128,6 @@ export const RESUME_STATUS: Record<string, { label: string; color: string }> = {
     REJECTED: { label: 'Chưa phù hợp', color: 'red' },
 };
 
-// Mirror of ResumeStateEnum.next() on the server: the steps an employer can take from each status.
 export const RESUME_NEXT: Record<string, string[]> = {
     PENDING: ['REVIEWING', 'SHORTLISTED', 'REJECTED'],
     REVIEWING: ['SHORTLISTED', 'REJECTED'],
@@ -141,10 +137,8 @@ export const RESUME_NEXT: Record<string, string[]> = {
     REJECTED: [],
 };
 
-// The "Shortlist" tab: everyone who has passed the shortlist stage.
 export const SHORTLIST_STATUSES = ['SHORTLISTED', 'INTERVIEW', 'ACCEPTED'];
 
-// A CV is either a PDF stored on our server (a bare file name) or a link to one on these cloud drives (same list as the server).
 const CLOUD_HOSTS = [
     'drive.google.com',
     'docs.google.com',
@@ -173,7 +167,6 @@ export const isCloudLink = (value: string) => {
 export const labelOf = (list: { label: string; value: string }[], value?: string | null) =>
     list.find(item => item.value === value)?.label;
 
-// spring-filter-query-builder does not escape string literals itself.
 export const errorMessage = (message: unknown, fallback = 'Vui lòng thử lại.') =>
     ((Array.isArray(message) ? message[0] : message) as string) || fallback;
 
@@ -188,7 +181,6 @@ const amount = (value: number, compact: boolean) => {
     return unit ? `${MONEY.format(value / unit.div)} ${unit.name} đ` : `${MONEY.format(value)} đ`;
 };
 
-// "20 – 30 triệu đ", "Từ 15 triệu đ", "Tới 40 triệu đ", a single amount, or "Thỏa thuận" (0 and no maximum).
 export const formatSalary = (salary: number, salaryMax?: number | null, compact = false) => {
     const min = salary > 0 ? salary : 0;
     const max = salaryMax && salaryMax > 0 ? salaryMax : 0;
@@ -205,7 +197,6 @@ export const formatSalary = (salary: number, salaryMax?: number | null, compact 
     return `${amount(min, compact)} – ${amount(max, compact)}`;
 };
 
-// A posting is "negotiable" when it carries neither a minimum nor a maximum.
 export const isNegotiable = (salary?: number | null, salaryMax?: number | null) =>
     !(salary && salary > 0) && !(salaryMax && salaryMax > 0);
 
@@ -214,7 +205,6 @@ export const formatDate = (value?: string | Date | null) =>
         ? new Date(value).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
         : null;
 
-// "hôm nay", "3 ngày trước", "2 tuần trước"… for the job's last-activity line.
 export const timeAgo = (value?: string | Date | null) => {
     const time = value ? new Date(value).getTime() : NaN;
     if (Number.isNaN(time)) return null;
@@ -226,13 +216,11 @@ export const timeAgo = (value?: string | Date | null) => {
     return `${Math.floor(days / 365)} năm trước`;
 };
 
-// Jobs a candidate can act on today: switched on, already started and not past the deadline. Same rule as ResumeService.create.
 export const openJobsFilter = () => {
     const now = new Date().toISOString();
     return `active : true and locked : false and (endDate is null or endDate > '${now}') and (startDate is null or startDate <= '${now}')`;
 };
 
-// A company is approved, rejected (not approved + a reason from the admin) or still pending review.
 export const COMPANY_STATUS = {
     APPROVED: { label: 'Đã duyệt', color: 'green' },
     PENDING: { label: 'Chờ duyệt', color: 'gold' },
@@ -327,11 +315,8 @@ export const groupByPermission = (data: any[]): { module: string; permissions: I
     });
 };
 
-// A path on this site, from a query string: anything else (another site, a protocol-relative address) becomes the home page.
 export const OAuthNext = (next: string | null) => (next && /^\/(?!\/)[^\s<>\\]*$/.test(next) ? next : '/');
 
-// What a job post is doing right now. The public pages show only OPEN posts (see openJobsFilter); the employer and admin
-// lists use this so a post that is scheduled, expired, paused or locked is not mislabelled "Đang tuyển".
 export type JobState = 'OPEN' | 'SCHEDULED' | 'EXPIRED' | 'PAUSED' | 'LOCKED';
 export const JOB_STATE: Record<JobState, { label: string; color: string }> = {
     OPEN: { label: 'Đang tuyển', color: 'lime' },

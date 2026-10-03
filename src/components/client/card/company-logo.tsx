@@ -9,7 +9,6 @@ interface IProps {
     className?: string;
 }
 
-// Tries the admin-uploaded logo, then the bundled /logos/<slug>.webp, then falls back to initials.
 export const logoSources = (name?: string, logo?: string) =>
     [
         logo ? `${import.meta.env.VITE_BACKEND_URL}/storage/company/${logo}` : '',

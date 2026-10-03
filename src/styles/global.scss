@@ -44,7 +44,6 @@
     src: url('../assets/fonts/poppins-700-italic.woff2') format('woff2');
 }
 
-// Entrance for above-the-fold content; scroll-driven reveal where supported, plain entrance elsewhere.
 .enter {
     animation: rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
     animation-delay: calc(var(--i, 0) * 90ms);
@@ -66,7 +65,6 @@
     animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-// Branded scrollbar: WebKit/Blink get the gradient thumb, Firefox the standard properties.
 ::-webkit-scrollbar {
     width: 12px;
     height: 12px;
@@ -100,7 +98,6 @@
     }
 }
 
-// The sider carries the divider so it runs the full height (the inline menu's own border stopped after the last item).
 .layout-admin > .ant-layout-sider {
     border-inline-end: 1px solid var(--line);
 }

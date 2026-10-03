@@ -13,11 +13,9 @@ interface Values {
     confirm: string;
 }
 
-// Landing page of the link in the reset e-mail: /reset-password?token=...
 const ResetPassword = () => {
     const navigate = useNavigate();
     const [params] = useSearchParams();
-    // Keep the token in state and take it out of the address bar, so it does not travel in Referer headers or history.
     const [token] = useState(params.get('token') ?? '');
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState('');

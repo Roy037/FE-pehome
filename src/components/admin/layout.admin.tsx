@@ -41,7 +41,6 @@ const LayoutAdmin = () => {
     const location = useLocation();
 
     const [collapsed, setCollapsed] = useState(false);
-    // Under 768px the sider would eat a fifth of the screen, so the menu moves into a drawer opened from the header.
     const narrow = Grid.useBreakpoint().md === false;
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [passwordOpen, setPasswordOpen] = useState(false);
@@ -193,7 +192,6 @@ const LayoutAdmin = () => {
                           },
                       ]
                     : []),
-                // the directory is closed to employers until their company is approved (the API refuses them too)
                 ...((viewTalent || ACL_ENABLE === 'false') && (!company || company.approved)
                     ? [
                           {
@@ -258,14 +256,10 @@ const LayoutAdmin = () => {
         setDrawerOpen(false);
     }, [location]);
 
-    // Ends the session here even when the server call fails (an expired token, the server restarted): the person must
-    // never be stuck signed in.
     const handleLogout = async () => {
         try {
             await callLogout();
-        } catch {
-            // nothing to undo on the server
-        }
+        } catch {}
         dispatch(setLogoutAction({}));
         message.success('Đăng xuất thành công');
         navigate('/');
@@ -282,7 +276,6 @@ const LayoutAdmin = () => {
     //     })
     // }
 
-    // onClick sits on the item itself, so the whole row works (not just the words)
     const itemsDropdown: MenuProps['items'] = [
         { key: 'home', label: <Link to="/">Trang chủ</Link>, icon: <HomeOutlined /> },
         { key: 'avatar', label: 'Ảnh đại diện', icon: <CameraOutlined />, onClick: () => setAvatarOpen(true) },

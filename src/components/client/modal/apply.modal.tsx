@@ -19,7 +19,6 @@ interface IProps {
     isModalOpen: boolean;
     setIsModalOpen: (value: boolean) => void;
     jobDetail: IJob | null;
-    // Called once the candidate has an application on this job (just sent, or found to exist already).
     onApplied?: () => void;
 }
 
@@ -68,7 +67,6 @@ const ApplyModal = ({ isModalOpen, setIsModalOpen, jobDetail, onApplied }: IProp
         }
     }, [isModalOpen, jobDetail?.id]);
 
-    // One application per job: if there is one already, the upload form never appears.
     useEffect(() => {
         if (!isModalOpen || !isAuthenticated || !jobDetail?.id) return;
         let ignore = false;
@@ -78,16 +76,13 @@ const ApplyModal = ({ isModalOpen, setIsModalOpen, jobDetail, onApplied }: IProp
                 if (ignore || !res?.data?.applied) return;
                 setAlreadyApplied(true);
                 onApplied?.();
-            } catch {
-                /* the server re-checks when the application is sent */
-            }
+            } catch {}
         })();
         return () => {
             ignore = true;
         };
     }, [isModalOpen, isAuthenticated, jobDetail?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // A CV kept in the candidate's profile is preselected so applying takes one click.
     useEffect(() => {
         if (!isModalOpen || !isAuthenticated) return;
         let ignore = false;
@@ -98,9 +93,7 @@ const ApplyModal = ({ isModalOpen, setIsModalOpen, jobDetail, onApplied }: IProp
                 setSavedCv({ url: res.data.cvUrl, name: res.data.cvName || res.data.cvUrl });
                 setUseSaved(true);
                 setUrlCV(res.data.cvUrl);
-            } catch {
-                /* no profile CV: the upload box stays */
-            }
+            } catch {}
         })();
         return () => {
             ignore = true;

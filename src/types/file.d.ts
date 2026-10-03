@@ -1,4 +1,3 @@
-// needed so this file is a module and `declare module 'axios'` below augments instead of replaces it
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import axios from 'axios';
 declare module '*.mp4' {
@@ -29,7 +28,6 @@ declare module 'lodash';
 
 // https://github.com/axios/axios/issues/1510#issuecomment-448201698
 declare module 'axios' {
-    // intentionally empty: the response interceptor returns the body, so awaiting a call yields T
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     export interface AxiosResponse<T = any> extends Promise<T> {}
 }

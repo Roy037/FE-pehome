@@ -16,6 +16,7 @@ export default defineConfig([
         rules: {
             'react-hooks/rules-of-hooks': 'error',
             'react-hooks/exhaustive-deps': 'warn',
+            'no-empty': ['error', { allowEmptyCatch: true }],
             '@typescript-eslint/no-explicit-any': 'warn',
             '@typescript-eslint/no-unused-vars': [
                 'warn',
@@ -24,6 +25,5 @@ export default defineConfig([
         },
     },
     { files: ['vite.config.ts'], languageOptions: { globals: globals.node } },
-    // keep last: switches off the style rules Prettier already owns
     prettier,
 ]);

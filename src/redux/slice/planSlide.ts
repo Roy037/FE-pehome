@@ -9,7 +9,6 @@ export const fetchMyPlanCode = createAsyncThunk('plan/fetch', async () => {
     return res.data.plan;
 });
 
-// Only the plan code is kept here (null = free tier): it drives the VIP look of the signed-in user's avatar.
 const planSlide = createSlice({
     name: 'plan',
     initialState: { plan: null as PlanCode | null },

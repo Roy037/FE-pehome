@@ -20,7 +20,6 @@ interface IProps {
 
 const when = (value?: string | null) => (value ? dayjs(value).format('HH:mm DD/MM/YYYY') : '—');
 
-// One application: who applied, the CV, the employer's private score, and the pipeline buttons for the current status.
 const ViewDetailResume = ({ onClose, open, dataInit, setDataInit, reloadTable }: IProps) => {
     const [viewingCv, setViewingCv] = useState(false);
     const [busy, setBusy] = useState(false);

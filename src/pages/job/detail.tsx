@@ -149,7 +149,6 @@ const ClientJobDetailPage = () => {
     const request = useRequest(() => (id && /^\d+$/.test(id) ? callFetchJobById(id) : null), [id]);
     const job = request.data;
 
-    // One application per candidate per job: ask the server so the button can say "Đã ứng tuyển".
     useEffect(() => {
         setApplied(false);
         if (!isAuthenticated || !id || !/^\d+$/.test(id)) return;
@@ -158,9 +157,7 @@ const ClientJobDetailPage = () => {
             try {
                 const res = await callCheckApplied(id);
                 if (!ignore) setApplied(Boolean(res?.data?.applied));
-            } catch {
-                /* the button stays enabled; the server still rejects a duplicate */
-            }
+            } catch {}
         })();
         return () => {
             ignore = true;
@@ -187,7 +184,6 @@ const ClientJobDetailPage = () => {
             }).toString(),
         );
     }, [job?.id]);
-    // Joining on skills can repeat a job once per matching skill.
     const similarJobs = (similar.data?.result ?? [])
         .filter((item, index, list) => list.findIndex(other => other.id === item.id) === index)
         .slice(0, 3);
@@ -229,7 +225,6 @@ const ClientJobDetailPage = () => {
         );
     }
 
-    // Same rule as the server (ResumeService.create): inactive, or the end date has passed.
     const expired = Boolean(job.endDate && dayjs(job.endDate).isBefore(dayjs()));
     const closed = job.active === false || expired;
     const upcoming = Boolean(job.startDate && dayjs(job.startDate).isAfter(dayjs()));

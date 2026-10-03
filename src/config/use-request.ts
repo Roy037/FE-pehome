@@ -9,7 +9,6 @@ interface RequestState<T> {
     notFound: boolean;
 }
 
-// The axios interceptor returns the body, so awaiting a call yields IBackendRes<T> (see types/file.d.ts).
 export const useRequest = <T>(load: () => Promise<AxiosResponse<IBackendRes<T>>> | null, deps: DependencyList) => {
     const [state, setState] = useState<RequestState<T>>({ loading: true, error: false, notFound: false });
     const [attempt, setAttempt] = useState(0);

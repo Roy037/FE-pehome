@@ -108,9 +108,7 @@ export interface IJob {
     company?: { id: string; name: string } & Partial<Omit<ICompany, 'id' | 'name'>>;
     location: string;
     salary: number;
-    // upper end of the range; null/0 when only a minimum (or nothing: "thỏa thuận") was given
     salaryMax?: number | null;
-    // moderation: an admin locked the post (hidden from the public); only the owner and admins still see it
     locked?: boolean;
     lockReason?: string | null;
     quantity: number;
@@ -135,7 +133,6 @@ export interface IResume {
     userId: string;
     url: string;
     status: string;
-    // employer-only (the candidate's own list never carries score / remark)
     coverLetter?: string | null;
     score?: number | null;
     remark?: string | null;
@@ -143,7 +140,6 @@ export interface IResume {
     meetingLink?: string | null;
     decisionNote?: string | null;
     companyName?: string;
-    // set when the applicant holds a plan that highlights them to employers
     applicantPlan?: PlanCode | null;
     user?: { id: string; name: string };
     job?: { id: string; name: string };
@@ -208,7 +204,6 @@ export interface IReview {
     updatedAt: string;
     user: { id: number; name: string };
     company: { id: number; name: string };
-    // the reviewer's profile picture file and whether they hold a premium plan
     userAvatar?: string | null;
     vip?: boolean;
 }

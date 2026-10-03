@@ -2,21 +2,20 @@ import { KeyboardEvent, PointerEvent, useEffect, useRef, useState } from 'react'
 import { SALARY_MAX_M } from '@/config/utils';
 import d from '@/styles/discovery.module.scss';
 
-const TICKS = 50; // one tick per 2 triệu on a 0 – 100 triệu scale
+const TICKS = 50;
 const clamp = (value: number) => Math.min(SALARY_MAX_M, Math.max(0, Math.round(value)));
 
 interface IProps {
-    min: number; // triệu đ, 0 = no lower limit
-    max: number; // triệu đ, SALARY_MAX_M = no upper limit ("100+")
-    withNegotiable: boolean; // also keep postings that do not publish a salary
+    min: number;
+    max: number;
+    withNegotiable: boolean;
     onCommit: (min: number, max: number, withNegotiable: boolean) => void;
 }
 
-// Dual-handle salary slider with tick marks and two number boxes. Works with mouse, touch and keyboard.
 const SalaryRange = ({ min, max, withNegotiable, onCommit }: IProps) => {
     const [lo, setLo] = useState(min);
     const [hi, setHi] = useState(max);
-    const [boxes, setBoxes] = useState<{ lo: string; hi: string } | null>(null); // text being typed, before it is committed
+    const [boxes, setBoxes] = useState<{ lo: string; hi: string } | null>(null);
     const track = useRef<HTMLDivElement>(null);
     const dragging = useRef<'lo' | 'hi' | null>(null);
 
@@ -46,7 +45,6 @@ const SalaryRange = ({ min, max, withNegotiable, onCommit }: IProps) => {
         dragging.current = null;
         onCommit(lo, hi, withNegotiable);
     };
-    // pressing the bare track moves whichever handle is closer
     const jump = (event: PointerEvent<HTMLDivElement>) => {
         const value = valueAt(event.clientX);
         if (Math.abs(value - lo) <= Math.abs(value - hi)) {

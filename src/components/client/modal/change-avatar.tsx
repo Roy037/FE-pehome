@@ -7,7 +7,6 @@ import { fetchAccount } from '@/redux/slice/accountSlide';
 import { avatarUrl } from '../avatar';
 import { errorText } from '../auth';
 
-// For accounts with no candidate profile page (employers, admins): change or remove the profile picture.
 const ChangeAvatarModal = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
     const dispatch = useAppDispatch();
     const user = useAppSelector(state => state.account.user);

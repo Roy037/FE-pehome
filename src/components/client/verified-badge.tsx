@@ -1,7 +1,6 @@
 import { BsShieldFillCheck } from 'react-icons/bs';
 import d from '@/styles/detail.module.scss';
 
-// Companies are only public once an admin has approved them, so `approved` doubles as "verified".
 const VerifiedBadge = ({ approved }: { approved?: boolean }) =>
     approved ? (
         <span

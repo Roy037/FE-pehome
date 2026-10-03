@@ -6,9 +6,7 @@ import s from '@/styles/cv-viewer.module.scss';
 
 interface IProps {
     open: boolean;
-    // API path that streams the CV after an access check, e.g. /api/v1/resumes/12/document or /api/v1/me/profile/cv.
     endpoint?: string | null;
-    // Stored file name: decides PDF vs. other formats and labels the download.
     file?: string | null;
     name?: string | null;
     onClose: () => void;
@@ -16,12 +14,10 @@ interface IProps {
 
 type ViewState = { status: 'loading' } | { status: 'ready' | 'unsupported'; url: string } | { status: 'error' };
 
-// CVs are not public files. The document is fetched with the bearer token, kept as a blob and shown in the
-// browser's own PDF viewer; Word files can't be previewed, so they get a download button instead.
 const CvViewerModal = ({ open, endpoint, file, name, onClose }: IProps) => {
     const [state, setState] = useState<ViewState>({ status: 'loading' });
     const [attempt, setAttempt] = useState(0);
-    const label = name?.replace(/^\d+-/, '') || file?.replace(/^\d+-/, '') || 'CV'; // stored names carry a timestamp prefix
+    const label = name?.replace(/^\d+-/, '') || file?.replace(/^\d+-/, '') || 'CV';
 
     useEffect(() => {
         if (!open || !endpoint) return;
@@ -31,7 +27,6 @@ const CvViewerModal = ({ open, endpoint, file, name, onClose }: IProps) => {
         (async () => {
             try {
                 const data = await callFetchDocument(endpoint);
-                // On failure the axios interceptor hands back the error body, which is a JSON blob.
                 if (!(data instanceof Blob) || data.type.includes('json')) throw new Error();
                 const isPdf = data.type === 'application/pdf' || /\.pdf$/i.test(file ?? '');
                 objectUrl = URL.createObjectURL(isPdf ? new Blob([data], { type: 'application/pdf' }) : data);

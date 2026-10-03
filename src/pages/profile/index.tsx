@@ -228,7 +228,7 @@ const ProfilePage = () => {
                 <Skeleton active paragraph={{ rows: 8 }} />
             </div>
         );
-    if (isEmployer) return <Navigate to="/admin" replace />; // the candidate profile is not an employer feature
+    if (isEmployer) return <Navigate to="/admin" replace />;
     if (!isAuthenticated) {
         return (
             <div className={`${ui.container} ${p.page}`}>

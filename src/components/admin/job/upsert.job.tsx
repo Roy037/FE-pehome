@@ -205,7 +205,6 @@ const ViewUpsertJob = () => {
                 workMode: values.workMode ?? null,
                 description: value,
                 startDate: dayjs(values.startDate, 'DD/MM/YYYY').toDate(),
-                // the deadline day itself still counts: the posting closes at the end of that day, not at its start
                 endDate: dayjs(values.endDate, 'DD/MM/YYYY').endOf('day').toDate(),
                 active: values.active,
             };

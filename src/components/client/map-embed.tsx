@@ -1,6 +1,5 @@
 import d from '@/styles/detail.module.scss';
 
-// Same allow-list as Company.mapEmbedUrl on the server; anything else is never rendered as an iframe.
 const GOOGLE_EMBED = /^https:\/\/(www\.google\.com\/maps\/embed(\/v1\/\w+)?\?|maps\.google\.com\/maps\?)[^\s"'<>]+$/;
 
 export const isMapEmbedUrl = (url?: string): url is string =>

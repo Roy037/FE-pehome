@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 
-// Fall back to the OS preference when the page has no explicit motion override.
 export const systemReducesMotion = () =>
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

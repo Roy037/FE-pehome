@@ -186,7 +186,6 @@ const faqs = [
     },
 ];
 
-// Sample copy: replace with real feedback (and real roles) before publishing. zoom/focus crop each photo onto the face.
 const testimonials = [
     {
         tag: 'Dễ sử dụng & hiệu quả',
@@ -346,7 +345,6 @@ const HomePage = () => {
         return () => observer.disconnect();
     }, []);
 
-    // ponytail: category counts come from the newest 100 active jobs; add a per-skill count API if listings outgrow that.
     const jobs = useRequest(
         () =>
             callFetchJob(
@@ -378,7 +376,6 @@ const HomePage = () => {
     const highestCeilings = useRequest(() => fetchHeroJobs('salaryMax'), []);
     const highestFloors = useRequest(() => fetchHeroJobs('salary'), []);
 
-    // Query both salary columns so a high-paying "Từ ..." listing with no maximum is still eligible.
     const heroJobs = useMemo(() => {
         const candidates = [...(highestCeilings.data?.result ?? []), ...(highestFloors.data?.result ?? [])];
         return [...new Map(candidates.map(job => [job.id, job])).values()]
@@ -422,7 +419,6 @@ const HomePage = () => {
 
     return (
         <>
-            {/* Hero */}
             <section ref={heroRef} className={s.hero} aria-labelledby="hero-title">
                 <SparkleField containerRef={heroRef} />
                 <Sparkle className={s.sparkleHero1} emit />
@@ -525,7 +521,6 @@ const HomePage = () => {
                 <Marquee items={companyList.map(company => company.name ?? '')} variant={s.bandFront} />
             </div>
 
-            {/* Employer logos */}
             {companyList.length > 0 && (
                 <section className={s.logoStrip} aria-labelledby="logos-title">
                     <p id="logos-title">
@@ -554,14 +549,12 @@ const HomePage = () => {
                 </section>
             )}
 
-            {/* Categories */}
             <section className={`${ui.container} ${s.section}`} aria-labelledby="category-title">
                 <div className={`${ui.sectionHead} reveal`}>
                     <span className={ui.eyebrow}>Danh mục</span>
                     <h2 id="category-title">Khám phá việc làm theo danh mục</h2>
                     <p>Chọn kỹ năng bạn thế mạnh để xem những vị trí phù hợp nhất.</p>
                 </div>
-                {/* Wait for counts too: re-sorting a snapped track makes the browser jump to another page. */}
                 {skills.loading || jobs.loading ? (
                     <div className={s.skeletonRow} aria-busy="true" aria-label="Đang tải danh mục" />
                 ) : skills.error ? (
@@ -604,7 +597,6 @@ const HomePage = () => {
                 ))}
             </div>
 
-            {/* Featured jobs */}
             <section className={`${ui.container} ${s.section}`} aria-labelledby="featured-title">
                 <div className={`${ui.sectionHead} reveal`}>
                     <span className={ui.eyebrow}>Việc làm mới</span>
@@ -646,7 +638,6 @@ const HomePage = () => {
                 </div>
             </section>
 
-            {/* Metrics */}
             <section ref={metricsRef} className={s.metrics} aria-labelledby="metrics-title">
                 <Sparkle className={s.metricsSparkleA} />
                 <Sparkle className={s.metricsSparkleB} />
@@ -676,7 +667,6 @@ const HomePage = () => {
                 </dl>
             </section>
 
-            {/* Features */}
             <section className={`${ui.container} ${s.section}`} aria-labelledby="features-title">
                 <div className={`${s.featuresHead} reveal`}>
                     <div>
@@ -785,7 +775,6 @@ const HomePage = () => {
                 </div>
             </section>
 
-            {/* Path to success */}
             <section className={`${ui.container} ${s.section}`} aria-labelledby="path-title">
                 <div className={`${ui.sectionHead} reveal`}>
                     <span className={ui.eyebrow}>Quy trình</span>
@@ -856,7 +845,6 @@ const HomePage = () => {
                 </div>
             </section>
 
-            {/* Testimonials */}
             <section
                 ref={testimonialsRef}
                 className={`${s.testimonials} ${testimonialsIn ? s.testimonialsIn : ''}`}
@@ -904,7 +892,6 @@ const HomePage = () => {
                 />
             </section>
 
-            {/* Career guide */}
             <section className={s.guide} id="career-guide" aria-labelledby="guide-title">
                 <div className={ui.container}>
                     <div className={`${ui.sectionHead} reveal`}>
@@ -971,7 +958,6 @@ const HomePage = () => {
                 </div>
             </section>
 
-            {/* FAQ */}
             <section className={`${ui.container} ${s.section} ${s.faq}`} id="faq" aria-labelledby="faq-title">
                 <div className={`${s.faqIntro} reveal`}>
                     <span className={ui.eyebrow}>Hỏi đáp</span>
@@ -1022,7 +1008,6 @@ const HomePage = () => {
                 </div>
             </section>
 
-            {/* Featured articles */}
             <section
                 className={`${ui.container} ${s.section} ${s.articles}`}
                 id="featured-articles"
@@ -1079,7 +1064,6 @@ const HomePage = () => {
                 </Carousel>
             </section>
 
-            {/* Newsletter */}
             <section className={s.newsletterWrap} id="newsletter" aria-labelledby="newsletter-title">
                 <AssetImage asset={ASSETS.newsletterLeft} className={s.newsIllustrationLeft} loading="lazy" />
                 <AssetImage asset={ASSETS.newsletterRight} className={s.newsIllustrationRight} loading="lazy" />

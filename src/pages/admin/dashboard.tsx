@@ -58,7 +58,6 @@ const compactVnd = (value: number) =>
     value >= 1e6 ? `${+(value / 1e6).toFixed(1)}tr` : value >= 1e3 ? `${Math.round(value / 1e3)}k` : String(value);
 const monthLabel = (month: string) => `T${Number(month.slice(5))}`;
 
-// plain CSS columns: six numbers do not need a chart library
 const Bars = ({
     months,
     values,

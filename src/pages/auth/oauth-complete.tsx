@@ -7,8 +7,6 @@ import { setUserLoginInfo } from '@/redux/slice/accountSlide';
 import Loading from '@/components/share/loading';
 import { OAuthNext } from '@/config/utils';
 
-// Where the server sends the browser after a successful Google / Facebook / LinkedIn sign-in. It already set the
-// refresh-token cookie; exchanging that for an access token is the same call a page reload makes.
 const OAuthCompletePage = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();

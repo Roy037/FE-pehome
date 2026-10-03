@@ -61,7 +61,6 @@ const ClientJobPage = () => {
         mode: onlyKnown(listParam(params, 'mode'), WORK_MODE_LIST),
         company: onlyKnown(listParam(params, 'company'), COMPANY_TYPE_LIST),
     };
-    // ?salary=10-50 means 10 – 50 triệu; 100 as the upper end means "no limit"; &deal=1 keeps negotiable postings
     const salaryParam = /^(\d{1,3})-(\d{1,3})$/.exec(params.get('salary') ?? '');
     const salaryLo = salaryParam ? Math.min(+salaryParam[1], SALARY_MAX_M) : 0;
     const salaryHi = salaryParam ? Math.min(Math.max(+salaryParam[2], salaryLo), SALARY_MAX_M) : SALARY_MAX_M;

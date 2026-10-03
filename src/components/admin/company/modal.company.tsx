@@ -31,14 +31,12 @@ interface IProps {
 
 type ICompanyForm = Omit<ICompany, 'id' | 'logo'>;
 
-// Mirrors the server-side validation on Company so mistakes show up before the request.
 const WEBSITE_RULE = { pattern: /^(https?:\/\/\S+)?$/, message: 'Website phải bắt đầu bằng http:// hoặc https://' };
 const MAP_RULE = {
     pattern:
         /^(https:\/\/www\.google\.com\/maps\/embed(\/v1\/\w+)?\?[^\s"'<>]+|https:\/\/maps\.google\.com\/maps\?[^\s"'<>]*output=embed[^\s"'<>]*)?$/,
     message: 'Hãy dán URL nhúng của Google Maps (Chia sẻ > Nhúng bản đồ)',
 };
-// Google's "Embed a map" gives an <iframe> snippet; keep only its src.
 const extractMapSrc = (value?: string) => (value?.match(/<iframe[^>]*\ssrc="([^"]+)"/i)?.[1] ?? value ?? '').trim();
 
 const SOCIAL_FIELDS = [
@@ -75,7 +73,6 @@ const ModalCompany = (props: IProps) => {
     const [form] = Form.useForm();
 
     useEffect(() => {
-        // a company without a description (e.g. a fresh employer) must still load its name, address and logo
         if (dataInit?.id) {
             setValue(dataInit.description ?? '');
             form.setFieldsValue({
@@ -95,12 +92,10 @@ const ModalCompany = (props: IProps) => {
         }
     }, [dataInit]);
 
-    // The modal stays mounted between companies, so follow dataInit instead of reading it once.
     useEffect(() => setBanner(dataInit?.banner ?? ''), [dataInit]);
 
     const submitCompany = async (valuesForm: ICompanyForm) => {
         const { name, address, ...profile } = valuesForm;
-        // The server stores blank links as null; trim here so a stray space is not rejected as an invalid URL.
         const trimmed = Object.fromEntries(
             Object.entries(profile).map(([key, val]) => [key, typeof val === 'string' ? val.trim() : val]),
         );
@@ -123,7 +118,7 @@ const ModalCompany = (props: IProps) => {
             });
             if (res.data) {
                 message.success('Cập nhật company thành công');
-                dispatch(fetchAccount()); // a rejected company goes back to review when its employer saves
+                dispatch(fetchAccount());
                 handleReset();
                 reloadTable();
             } else {

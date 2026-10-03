@@ -64,7 +64,6 @@ const options: HTMLReactParserOptions = {
                   }
                 : {};
         const tag = ['h1', 'h2'].includes(node.name) ? 'h3' : node.name;
-        // Rebuild only known elements; discard all untrusted styling and event attributes.
         return createElement(
             tag,
             attributes,

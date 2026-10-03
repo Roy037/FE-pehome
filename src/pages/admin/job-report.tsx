@@ -10,7 +10,6 @@ import { ALL_PERMISSIONS } from '@/config/permissions';
 import { JOB_REPORT_REASONS, errorMessage, escapeFilter, labelOf } from '@/config/utils';
 import { IJobReport } from '@/types/backend';
 
-// Moderation queue: reports from candidates, with lock / unlock for the post and dismiss for the report.
 const JobReportPage = () => {
     const tableRef = useRef<ActionType>();
     const [meta, setMeta] = useState({ page: 1, pageSize: 10, total: 0 });

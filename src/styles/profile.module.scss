@@ -80,7 +80,6 @@
     gap: 8px;
 }
 
-// ---------- Header card ----------
 .hero {
     display: flex;
     align-items: flex-start;
@@ -93,7 +92,6 @@
     gap: 6px;
     width: 80px;
 }
-// flex: the Upload wrapper's inline line box would otherwise spill below the frame and swallow clicks meant for the button under it
 .avatarFrame {
     position: relative;
     display: flex;
@@ -129,7 +127,6 @@
     height: 100%;
     object-fit: cover;
 }
-// lower-left, so it never covers the VIP plane badge that sits on the lower-right
 .avatarEdit {
     position: absolute;
     left: -2px;
@@ -232,7 +229,6 @@
     border-top: 0;
 }
 
-// ---------- Sections ----------
 .goals {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -364,7 +360,6 @@
     }
 }
 
-// ---------- CV ----------
 .cvFile {
     display: flex;
     flex-wrap: wrap;
@@ -418,7 +413,6 @@
     font-size: 32px;
 }
 
-// ---------- Sidebar ----------
 .percent {
     display: grid;
     place-items: center;
@@ -478,7 +472,6 @@
     }
 }
 
-// ---------- Modals ----------
 .formRow {
     display: grid;
     grid-template-columns: 1fr 1fr;

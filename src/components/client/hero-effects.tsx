@@ -13,7 +13,6 @@ export const burstSparkles = (element: Element, count = 10) => {
     );
 };
 
-// Eases --mx/--my (-1..1, for 3D depth) and --gx/--gy (px, for the grid spotlight) toward the cursor.
 export const usePointerDepth = (ref: RefObject<HTMLElement>) => {
     const reduced = useReducedMotion();
     useEffect(() => {
@@ -109,7 +108,6 @@ interface Particle {
 const COLORS = ['#E3763C', '#FFD76A', '#FFB870', '#FFFFFF'];
 const MAX_PARTICLES = 40;
 
-// Subtle ambient sparkles from [data-sparkle] elements and bounded interaction bursts.
 export const SparkleField = ({ containerRef }: { containerRef: RefObject<HTMLElement> }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const reduced = useReducedMotion();

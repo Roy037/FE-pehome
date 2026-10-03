@@ -9,7 +9,6 @@ interface IProps {
     open: boolean;
     resume: IResume | null;
     onClose: () => void;
-    // receives the updated application
     onDone: (resume: IResume) => void;
 }
 
@@ -22,7 +21,6 @@ const submitChange = async (id: string, change: Parameters<typeof callChangeResu
     return res.data;
 };
 
-// "Mời phỏng vấn" (also used to reschedule): date + time, https meeting link, optional note, optional e-mail.
 export const InterviewModal = ({ open, resume, onClose, onDone }: IProps) => {
     const [form] = Form.useForm();
     const [busy, setBusy] = useState(false);
@@ -128,7 +126,6 @@ export const InterviewModal = ({ open, resume, onClose, onDone }: IProps) => {
     );
 };
 
-// "Nhận ứng viên" / "Từ chối": optional message for the candidate, optional e-mail.
 export const DecisionModal = ({
     open,
     resume,

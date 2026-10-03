@@ -25,14 +25,12 @@ const ResumePage = () => {
 
     const [dataInit, setDataInit] = useState<IResume | null>(null);
     const [openViewDetail, setOpenViewDetail] = useState<boolean>(false);
-    // "Tất cả hồ sơ" (everyone who applied) and "Shortlist" (shortlisted, interviewing, accepted)
     const [tab, setTab] = useState<'all' | 'shortlist'>('all');
 
     const reloadTable = () => {
         tableRef?.current?.reload();
     };
 
-    // One click from the list: SHORTLISTED (the candidate is e-mailed)
     const shortlist = async (id: string | undefined) => {
         if (!id) return;
         const res = await callChangeResumeStatus(id, { status: 'SHORTLISTED' });
@@ -44,7 +42,6 @@ const ResumePage = () => {
         }
     };
 
-    // Only roles holding the DELETE permission see the button (SUPER_ADMIN); an employer cannot erase applications.
     const remove = async (id: string | undefined) => {
         if (!id) return;
         const res = await callDeleteResume(id);

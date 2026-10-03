@@ -5,7 +5,6 @@ import d from '@/styles/detail.module.scss';
 const COLORS = ['#E3763C', '#F5C242', '#1D1712', '#F6C79E', '#2B8A3E', '#D94F4F'];
 const PIECES = 36;
 
-// A short burst of paper pieces from the parent's anchor point (CSS only, no library). Skipped when motion is reduced.
 const Confetti = () => {
     const reduced = useReducedMotion();
     const pieces = useMemo(

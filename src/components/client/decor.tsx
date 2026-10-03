@@ -8,7 +8,6 @@ interface AssetProps extends ImgHTMLAttributes<HTMLImageElement> {
     asset: { src: string; fallback?: string };
 }
 
-// Shows the generated asset when present, else its fallback; decorative assets without one just disappear.
 export const AssetImage = ({ asset, alt = '', ...rest }: AssetProps) => {
     const [state, setState] = useState<'primary' | 'fallback' | 'hidden'>('primary');
     const [loaded, setLoaded] = useState(false);
@@ -44,7 +43,6 @@ interface BadgeProps {
     onClick?: (event: MouseEvent<HTMLElement>) => void;
 }
 
-// Without `to` the badge is purely decorative. `glass` renders the liquid-glass variant that emits sparkles.
 export const RotatingBadge = ({ text, to, label, className, glass, onClick }: BadgeProps) => {
     const id = useId().replace(/:/g, '');
     const pathId = `badge-${id}`;

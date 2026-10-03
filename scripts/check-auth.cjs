@@ -1,4 +1,3 @@
-// Run: node scripts/check-auth.cjs (no server or credentials required).
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');

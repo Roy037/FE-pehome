@@ -63,7 +63,6 @@ const Header = () => {
         }
     };
 
-    // Profile, applications, saved jobs and followed companies are candidate features; an employer account (tied to a company) does not get them.
     const isEmployer = Boolean(user.company);
     const canManage = Boolean(user.role?.permissions?.length);
     const planName = plan ? plan[0] + plan.slice(1).toLowerCase() : null;
@@ -74,7 +73,6 @@ const Header = () => {
           : 'Ứng viên';
     const closeAccount = () => setAccountOpen(false);
 
-    // LinkedIn-style head of the account menu: who is signed in, then the main action(s).
     const accountCard = (
         <div className={styles.accountCard}>
             <div className={styles.accountWho}>
@@ -120,7 +118,6 @@ const Header = () => {
         </div>
     );
 
-    // Section headings carry the icons (like TopCV); the links under them are plain text.
     const groupTitle = (icon: ReactNode, text: string) => (
         <span className={styles.accountGroup}>
             {icon}
@@ -142,7 +139,6 @@ const Header = () => {
                       type: 'group' as const,
                       label: groupTitle(<UserOutlined />, 'Tài khoản'),
                       children: [
-                          // an employer has no candidate profile page, so the picture is changed here
                           {
                               key: 'avatar',
                               label: 'Ảnh đại diện',
@@ -218,7 +214,6 @@ const Header = () => {
         },
     ];
 
-    // Employer entry: guests get a menu (post a job / sign in), an employer with a company gets a direct "post a job" button.
     const employerItems = [
         {
             key: 'post',
@@ -301,7 +296,6 @@ const Header = () => {
                                     open={accountOpen}
                                     onOpenChange={setAccountOpen}
                                     overlayClassName={styles.accountMenu}
-                                    // nudge right and drop it just below the header line
                                     align={{ offset: [14, 22] }}
                                     dropdownRender={menu => (
                                         <div className={styles.accountPanel}>

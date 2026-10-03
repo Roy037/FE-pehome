@@ -34,7 +34,6 @@ const DataTable = <T extends Record<string, any>, U extends ParamsType = ParamsT
                 // sticky={sticky}
                 loading={loading}
                 rowKey={rowKey}
-                // x: true lets columns squeeze until every cell wraps; a minimum width keeps rows readable and scrolls on small screens.
                 scroll={scroll?.x === true ? { ...scroll, x: 960 } : scroll}
                 params={params}
                 request={request}

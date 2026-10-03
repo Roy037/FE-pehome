@@ -62,9 +62,7 @@ instance.interceptors.response.use(
             let access_token: string | null = null;
             try {
                 access_token = await handleRefreshToken();
-            } catch {
-                // Return the original request error if the refresh service is unavailable.
-            }
+            } catch {}
             if (access_token) {
                 error.config.headers['Authorization'] = `Bearer ${access_token}`;
                 localStorage.setItem('access_token', access_token);
@@ -85,7 +83,6 @@ instance.interceptors.response.use(
             store.dispatch(setRefreshTokenAction({ status: true, message }));
         }
 
-        // the login form shows its own message for a 403 (e.g. a locked account)
         if (
             error.response?.status === 403 &&
             !(error.response.data instanceof Blob) &&

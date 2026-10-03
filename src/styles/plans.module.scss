@@ -1,5 +1,4 @@
 @use 'keyframes' as *;
-// Premium plans: plan picker, payment step, my-plan tab, result and fake-gateway pages.
 
 .plansModal {
     :global(.ant-modal-content) {
@@ -20,7 +19,6 @@
         font-size: 14px;
     }
 }
-// three equal cards; the middle one is lifted a little instead of being taller
 .planGrid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -96,7 +94,6 @@
         gap: 8px;
         align-items: start;
     }
-    // filled orange dot with a white tick
     svg {
         box-sizing: content-box;
         width: 9px;
@@ -144,7 +141,6 @@
         background: #cb622b;
     }
 }
-// free-tier note on the left, "Bỏ qua" on the right
 .planFoot {
     display: flex;
     align-items: center;
@@ -207,7 +203,6 @@
     gap: 10px;
     margin-top: 28px;
 }
-// logo | name | radio: one row per method
 .payMethod {
     display: grid;
     grid-template-columns: 72px minmax(0, 1fr) 16px;

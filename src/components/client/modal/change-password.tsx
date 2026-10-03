@@ -12,7 +12,6 @@ interface Values {
     confirm: string;
 }
 
-// Small modal for the signed-in user. Every session ends when the password changes, so afterwards we sign out here too.
 const ChangePasswordModal = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
     const [form] = Form.useForm<Values>();
     const dispatch = useAppDispatch();

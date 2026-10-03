@@ -16,7 +16,6 @@ interface IProps {
 
 const month = (value?: string) => (value ? value.split('-').reverse().join('/') : '');
 
-// Everything the candidate chose to share. References and phone numbers are never part of this view.
 const ViewTalent = ({ id, onClose }: IProps) => {
     const [detail, setDetail] = useState<ITalentDetail | null>(null);
     const [failed, setFailed] = useState(false);

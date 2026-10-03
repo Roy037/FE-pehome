@@ -4,7 +4,6 @@ import s from '@/styles/client.module.scss';
 import { useIsVip } from '@/redux/hooks';
 import { useUpgradeModal } from './modal/upgrade.modal';
 
-// itjobs paper plane (same shape as public/favicon.svg) in gold.
 const PlaneMark = ({ className }: { className?: string }) => (
     <svg viewBox="0 0 64 64" className={className} aria-hidden="true">
         <path d="M7 49 36 4 49 59 28 44Z" fill="#e2a21f" />
@@ -14,7 +13,6 @@ const PlaneMark = ({ className }: { className?: string }) => (
     </svg>
 );
 
-// Gold plane next to a name. With `promo` it is a button: hovering explains the badge, clicking opens the plans.
 export const VipBadge = ({ promo }: { promo?: boolean }) => {
     const isVip = useIsVip();
     const openUpgrade = useUpgradeModal();
@@ -51,7 +49,6 @@ export const VipBadge = ({ promo }: { promo?: boolean }) => {
     );
 };
 
-// Wraps an avatar: thin gold gradient ring around it and the gold plane on its lower-right corner when `vip` is true.
 export const VipFrame = ({ vip, children, className }: { vip?: boolean; children: ReactNode; className?: string }) =>
     vip ? (
         <span className={`${s.vipFrame} ${className ?? ''}`}>

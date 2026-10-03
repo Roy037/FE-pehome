@@ -25,7 +25,6 @@ const followedCompanySlide = createSlice({
             .addCase(fetchFollowedCompanies.fulfilled, (state, action) => {
                 state.ids = action.payload;
             })
-            // Optimistic like savedJob: flip immediately, undo if the request fails.
             .addCase(toggleFollowedCompany.pending, (state, action) => {
                 const { id, followed } = action.meta.arg;
                 state.ids = followed ? state.ids.filter(item => item !== id) : [id, ...state.ids];

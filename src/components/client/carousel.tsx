@@ -11,10 +11,8 @@ interface IProps {
     children: ReactNode;
 }
 
-// More pages than this and the dots would overflow a phone screen, so a "3 / 35" counter replaces them.
 const MAX_DOTS = 8;
 
-// Native scroll-snap track; buttons, dots and autoplay just scroll it by one viewport.
 const Carousel = ({ label, className, autoPlay, intro, children }: IProps) => {
     const track = useRef<HTMLDivElement>(null);
     const [page, setPage] = useState(0);

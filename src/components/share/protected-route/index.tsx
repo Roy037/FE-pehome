@@ -7,7 +7,6 @@ const RoleBaseRoute = (props: any) => {
     const user = useAppSelector(state => state.account.user);
     const userRole = user.role?.name;
 
-    // a user without any role is treated like a candidate, not a crash
     if (userRole && userRole !== 'NORMAL_USER') {
         return <>{props.children}</>;
     } else {

@@ -12,7 +12,6 @@ interface IProps<T> {
     className?: string;
 }
 
-// One focused card in the middle; neighbours recede (smaller, blurred) and are inert until selected.
 const Coverflow = <T,>({ items, label, itemLabel, render, autoPlay = 5000, className }: IProps<T>) => {
     const [active, setActive] = useState(0);
     const [paused, setPaused] = useState(false);
@@ -62,7 +61,6 @@ const Coverflow = <T,>({ items, label, itemLabel, render, autoPlay = 5000, class
             </button>
             <div className={styles.coverflowStage}>
                 {items.map((item, index) => {
-                    // Shortest signed distance around the loop, so the stack wraps smoothly.
                     let offset = index - active;
                     if (offset > count / 2) offset -= count;
                     if (offset < -count / 2) offset += count;

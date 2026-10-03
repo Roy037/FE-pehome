@@ -22,7 +22,6 @@ const ERRORS: Record<string, string> = {
     failed: 'Không thể đăng nhập lúc này. Vui lòng thử lại.',
 };
 
-// The server sends a failed social sign-in back to /login?oauth_error=<code>: say why once, and clean the address.
 export const useOAuthError = () => {
     const { search, pathname } = useLocation();
     const navigate = useNavigate();
@@ -34,7 +33,6 @@ export const useOAuthError = () => {
     }, [search, pathname, navigate]);
 };
 
-// "Or" + Google / Facebook / LinkedIn. A provider with no keys on the server is shown but cannot be pressed.
 const SocialLogin = () => {
     const { pathname, search } = useLocation();
     const [enabled, setEnabled] = useState<Record<string, boolean>>({});
@@ -44,13 +42,10 @@ const SocialLogin = () => {
             try {
                 const res = await callFetchOAuthProviders();
                 setEnabled(Object.fromEntries((res.data ?? []).map(p => [p.code, p.enabled])));
-            } catch {
-                // no answer from the server: the buttons simply stay off
-            }
+            } catch {}
         })();
     }, []);
 
-    // back to the page the person was on (the auth pages themselves lead home)
     const next = ['/login', '/register'].includes(pathname) ? '/' : pathname + search;
 
     return (

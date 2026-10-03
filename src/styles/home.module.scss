@@ -26,8 +26,6 @@
     animation: shimmer 1.4s linear infinite;
 }
 
-// ---------- Hero ----------
-// Faint grid everywhere, plus a brighter grid spotlight that follows the cursor (--gx/--gy/--glow from JS).
 .hero::before,
 .hero::after {
     content: '';
@@ -187,7 +185,6 @@
         margin-left: 0;
     }
 }
-// Depth: the stage tilts with the cursor and each layer sits at its own Z, so near layers travel further.
 .heroVisual {
     position: relative;
     justify-self: center;
@@ -204,7 +201,6 @@
     animation: breathe 9s ease-in-out infinite;
     translate: calc(var(--mx, 0) * -16px) calc(var(--my, 0) * -12px) -60px;
 }
-// The transparent cut-out stands in front of the circle, its head rising above it; the waist fades out instead of a hard crop.
 .heroPerson {
     position: absolute;
     right: 0;
@@ -364,7 +360,6 @@
     animation: twinkle 2.6s ease-in-out 0.8s infinite;
 }
 
-// ---------- Bands ----------
 .bands {
     position: relative;
     z-index: 2;
@@ -420,7 +415,6 @@
     color: var(--ink);
 }
 
-// ---------- Logo strip ----------
 .logoStrip {
     padding-block: 30px 6px;
     text-align: center;
@@ -474,7 +468,6 @@
     }
 }
 
-// ---------- Categories ----------
 .categoryCarousel {
     --per-view: 4;
 }
@@ -538,7 +531,6 @@
         transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-// ---------- Word marquee ----------
 .wordMarquee {
     display: grid;
     gap: 4px;
@@ -576,12 +568,10 @@
     -webkit-text-stroke: 1.4px #bdb1a6;
 }
 
-// ---------- Featured jobs ----------
 .jobCarousel {
     --per-view: 4;
 }
 
-// ---------- Metrics ----------
 .metrics {
     position: relative;
     overflow: hidden;
@@ -644,7 +634,6 @@
     animation: twinkle 2.4s ease-in-out 0.7s infinite;
 }
 
-// ---------- Features (bento) ----------
 .featuresHead {
     display: flex;
     align-items: flex-end;
@@ -930,7 +919,6 @@
     }
 }
 
-// ---------- Path ----------
 .path {
     position: relative;
     max-width: 1080px;
@@ -1075,7 +1063,6 @@
     transition: background 0.2s;
 }
 
-// ---------- Testimonials ----------
 .testimonials {
     --tm-pad: 96px;
     --tm-art-h: clamp(120px, calc((100vw - 1200px) / 2.4), 260px);
@@ -1109,8 +1096,6 @@
 .testimonials + .guide {
     margin-top: 0;
 }
-// Candidate (bottom-left corner) and employer (bottom-right corner) stand on the orange section below.
-// Height follows the free space beside the cards; under 1500px there is none, so extra bottom padding keeps them clear of the cards.
 .testimonials > .testimonialArt {
     position: absolute;
     bottom: -1px;
@@ -1119,13 +1104,10 @@
     height: var(--tm-art-h);
     pointer-events: none;
 }
-// Centred in the empty gutter beside the cards (gutter = (section - container) / 2, so its middle is a quarter of the difference in from the edge).
-// `translate` (not `transform`) so the fade-up animation below cannot fight the centring.
 .testimonialArtLeft {
     left: calc((100% - min(1160px, 100% - 48px)) / 4);
     translate: -50% 0;
 }
-// The chair legs end 3.96% above the bottom of the artwork (his shoes reach lower), so drop the art by that much: the legs stand on the orange line and the shoes step over it.
 .testimonials > .testimonialArtRight {
     right: calc((100% - min(1160px, 100% - 48px)) / 4);
     translate: 50% 0;
@@ -1199,7 +1181,6 @@
         var(--shadow-sm);
 }
 
-// Scroll-in: cards fade up once, staggered left to right. Nothing moves after that.
 @keyframes testimonialIn {
     from {
         opacity: 0;
@@ -1257,7 +1238,6 @@
     }
 }
 
-// ---------- Career guide ----------
 .guide {
     margin-top: 88px;
     padding-block: 84px;
@@ -1372,7 +1352,6 @@
     font-size: 76px;
 }
 
-// ---------- FAQ ----------
 .faq {
     display: grid;
     grid-template-columns: 0.8fr 1.2fr;
@@ -1495,7 +1474,6 @@
         color 0.25s;
 }
 
-// ---------- Featured articles ----------
 .articles {
     padding-bottom: 96px;
 }
@@ -1621,7 +1599,6 @@
     font-weight: 600;
 }
 
-// ---------- Newsletter ----------
 .newsletterWrap {
     --yellow-start: 58%;
     --mascot-height: clamp(100px, calc((100vw - 860px) / 2), 300px);
@@ -1710,7 +1687,6 @@
     height: var(--mascot-height);
     pointer-events: none;
 }
-// Align the opaque artwork with the yellow boundary, including the faint PNG fringe.
 .newsIllustrationLeft {
     left: 0;
     transform: translateY(calc(2.647% + 1px));
@@ -1724,7 +1700,6 @@
     z-index: 2;
 }
 
-// ---------- Responsive ----------
 @media (max-width: 1080px) {
     .heroGrid {
         gap: 32px;
@@ -1883,7 +1858,6 @@
         flex: 1 1 100%;
         border-top: 1px solid var(--line);
     }
-    // Phones: the portrait fills the width, so the upper card would cover her face; keep one compact card clear of the edge.
     .floatCard {
         width: 248px;
         max-width: calc(100% - 12px);
@@ -1960,8 +1934,6 @@
     }
 }
 
-// ---------- Scroll-driven scenes ----------
-// Elements under an overflow:hidden ancestor use a named timeline from a section that scrolls with the page.
 @keyframes heroExit {
     to {
         opacity: 0.15;
@@ -2018,7 +1990,6 @@
         animation-timeline: view();
     }
 }
-// Scroll-driven animations ignore duration, so the global reduced-motion rule can't stop them.
 .heroGrid,
 .wordRow,
 .metrics,

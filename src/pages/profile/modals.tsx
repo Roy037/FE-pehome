@@ -22,7 +22,6 @@ const modalProps = {
     centered: true,
 } as const;
 
-// ---------- Basic info ----------
 interface BasicValues {
     name?: string;
     age?: number | null;
@@ -153,7 +152,6 @@ export const BasicModal = ({
     );
 };
 
-// ---------- Career goals ----------
 const GoalList = ({ name, title, hint }: { name: 'shortGoals' | 'longGoals'; title: string; hint: string }) => (
     <div className={p.goalGroup}>
         <strong>{title}</strong>
@@ -231,7 +229,6 @@ export const GoalsModal = ({
     );
 };
 
-// ---------- Work experience ----------
 interface ExperienceValues {
     company: string;
     title: string;
@@ -380,7 +377,6 @@ export const ExperienceModal = ({
     );
 };
 
-// ---------- Skills: type + Enter to add, tap a suggestion, × to remove ----------
 const LEVEL_TIPS = ['Cơ bản', 'Khá', 'Tốt', 'Rất tốt', 'Chuyên gia'];
 
 export const SkillsModal = ({
@@ -495,7 +491,6 @@ export const SkillsModal = ({
     );
 };
 
-// ---------- References ----------
 export const ReferenceModal = ({
     open,
     onClose,

@@ -109,7 +109,6 @@ const JobPage = () => {
             width: 170,
             render(dom, entity) {
                 const state = jobState(entity);
-                // say why a post is not on the public pages (they show only OPEN ones)
                 const hint =
                     state === 'SCHEDULED'
                         ? `Hiện công khai từ ${dayjs(entity.startDate).format('DD/MM/YYYY')}`

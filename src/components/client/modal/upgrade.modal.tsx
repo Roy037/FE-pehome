@@ -29,7 +29,6 @@ const PLAN_TEXT: Record<PlanCode, { icon: ReactNode; intro: string }> = {
     PREMIUM: { icon: <BsStarFill />, intro: 'Cho ứng viên muốn nổi bật.' },
 };
 
-// short lines: the plan cards are narrow, long sentences wrap to three lines and make the popup tall
 export const planBenefits = (plan: IPlan) => [
     plan.alertSkills >= 100
         ? 'Nhận việc qua email, không giới hạn kỹ năng'
@@ -38,10 +37,8 @@ export const planBenefits = (plan: IPlan) => [
     ...(plan.highlight ? ['Hồ sơ ứng tuyển có nhãn Premium'] : []),
 ];
 
-// where the user was when they left for the gateway, so the answer lands back on that page
 const RETURN_PATH = 'payment-return-path';
 
-// Above the account modal, which can open the plans from its "Gói của tôi" tab.
 const UPGRADE_Z = 1010;
 
 const UpgradeContext = createContext<() => void>(() => undefined);
@@ -113,7 +110,6 @@ export const UpgradeModalProvider = ({ children }: { children: ReactNode }) => {
         })();
     }, [open]);
 
-    // Asks the server to settle a gateway answer (query string with the signature) and shows the outcome in a modal.
     const settle = useCallback(
         async (query: string) => {
             try {
@@ -144,14 +140,11 @@ export const UpgradeModalProvider = ({ children }: { children: ReactNode }) => {
         [dispatch],
     );
 
-    // Coming back from a payment gateway: the browser lands on a page with the answer in its address. Show the result over the page
-    // the user left from, and clean the address.
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const provider = params.get('payment');
         if ((provider === 'zalopay' || provider === 'momo') && params.has('txnRef')) {
             if (accountLoading || handledReturn.current === location.search) return;
-            // Keep the return URL while signing in so the same order can still be verified afterwards.
             if (!isAuthenticated) {
                 openAuth('login');
                 return;
@@ -173,7 +166,6 @@ export const UpgradeModalProvider = ({ children }: { children: ReactNode }) => {
         settle(location.search);
     }, [accountLoading, isAuthenticated, location.search, navigate, openAuth, settle, settleWallet]);
 
-    // "Gia hạn ngay" in the renewal e-mail links to /?goi=1: open the plans (or sign-in) once the session is known.
     useEffect(() => {
         if (accountLoading || !new URLSearchParams(location.search).has('goi')) return;
         navigate(location.pathname, { replace: true });
@@ -202,7 +194,6 @@ export const UpgradeModalProvider = ({ children }: { children: ReactNode }) => {
         try {
             const res = await callCreateOrder(selected.code, method);
             if (res.data?.mock) {
-                // dev fake gateway: another modal instead of leaving the page
                 setMockOrder(res.data);
                 setStep('mock');
                 setPaying(false);
@@ -210,7 +201,7 @@ export const UpgradeModalProvider = ({ children }: { children: ReactNode }) => {
             }
             if (res.data?.paymentUrl) {
                 sessionStorage.setItem(RETURN_PATH, location.pathname + location.search);
-                window.location.assign(res.data.paymentUrl); // leave for the gateway; the spinner stays until the page unloads
+                window.location.assign(res.data.paymentUrl);
                 return;
             }
             message.error(errorText(res, 'Chưa thể tạo đơn thanh toán. Vui lòng thử lại.'));

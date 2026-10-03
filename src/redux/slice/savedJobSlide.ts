@@ -25,7 +25,6 @@ const savedJobSlide = createSlice({
             .addCase(fetchSavedJobs.fulfilled, (state, action) => {
                 state.ids = action.payload;
             })
-            // Optimistic: flip immediately, undo if the request fails.
             .addCase(toggleSavedJob.pending, (state, action) => {
                 const { id, saved } = action.meta.arg;
                 state.ids = saved ? state.ids.filter(item => item !== id) : [id, ...state.ids];

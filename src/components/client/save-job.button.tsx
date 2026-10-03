@@ -33,7 +33,7 @@ const SaveJobButton = ({ jobId, jobName, className, withLabel }: IProps) => {
         } catch (error) {
             const reason = (error as { message?: string })?.message ?? '';
             if (reason.startsWith('Gói ')) {
-                openUpgrade(); // the 403 interceptor already showed the server's explanation
+                openUpgrade();
             } else {
                 message.error('Chưa thể cập nhật việc làm đã lưu. Vui lòng thử lại.');
             }

@@ -14,7 +14,6 @@ import { IAdminOrder } from '@/types/backend';
 const PLAN_NAME: Record<string, string> = { BASIC: 'Basic', STANDARD: 'Standard', PREMIUM: 'Premium' };
 const day = (value?: string | null) => (value ? dayjs(value).format('DD-MM-YYYY') : '—');
 
-// Read-only ledger of Premium purchases: payments are never edited or deleted from here.
 const OrderPage = () => {
     const tableRef = useRef<ActionType>();
     const [meta, setMeta] = useState({ page: 1, pageSize: 10, total: 0 });

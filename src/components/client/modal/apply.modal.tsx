@@ -1,332 +1,462 @@
-// import { useAppSelector } from "@/redux/hooks";
-// import { IJob } from "@/types/backend";
-// import { ProForm, ProFormText } from "@ant-design/pro-components";
-// import { Button, Col, ConfigProvider, Divider, Modal, Row, Upload, message, notification } from "antd";
-// import { useNavigate } from "react-router-dom";
-// import enUS from 'antd/lib/locale/en_US';
-// import { UploadOutlined } from '@ant-design/icons';
-// import type { UploadProps } from 'antd';
-// import { callCreateResume, callUploadSingleFile } from "@/config/api";
-// import { useState } from 'react';
-
-// interface IProps {
-//     isModalOpen: boolean;
-//     setIsModalOpen: (v: boolean) => void;
-//     jobDetail: IJob | null;
-// }
-
-// const ApplyModal = (props: IProps) => {
-//     const { isModalOpen, setIsModalOpen, jobDetail } = props;
-//     const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
-//     const user = useAppSelector(state => state.account.user);
-//     const [urlCV, setUrlCV] = useState<string>("");
-
-//     const navigate = useNavigate();
-
-//     const handleOkButton = async () => {
-//         if (!urlCV && isAuthenticated) {
-//             message.error("Vui lòng upload CV!");
-//             return;
-//         }
-
-//         if (!isAuthenticated) {
-//             setIsModalOpen(false);
-//             navigate(`/login?callback=${window.location.href}`)
-//         }
-//         else {
-//             //todo
-//             if (jobDetail) {
-//                 const res = await callCreateResume(urlCV, jobDetail?.id, user.email, user.id);
-//                 if (res.data) {
-//                     message.success("Rải CV thành công!");
-//                     setIsModalOpen(false);
-//                 } else {
-//                     notification.error({
-//                         message: 'Có lỗi xảy ra',
-//                         description: res.message
-//                     });
-//                 }
-//             }
-//         }
-//     }
-
-//     const propsUpload: UploadProps = {
-//         maxCount: 1,
-//         multiple: false,
-//         accept: "application/pdf,application/msword, .doc, .docx, .pdf",
-//         async customRequest({ file, onSuccess, onError }: any) {
-//             const res = await callUploadSingleFile(file, "resume");
-//             if (res && res.data) {
-//                 setUrlCV(res.data.fileName);
-//                 if (onSuccess) onSuccess('ok')
-//             } else {
-//                 if (onError) {
-//                     setUrlCV("");
-//                     const error = new Error(res.message);
-//                     onError({ event: error });
-//                 }
-//             }
-//         },
-//         onChange(info) {
-//             if (info.file.status !== 'uploading') {
-//                 // console.log(info.file, info.fileList);
-//             }
-//             if (info.file.status === 'done') {
-//                 message.success(`${info.file.name} file uploaded successfully`);
-//             } else if (info.file.status === 'error') {
-//                 message.error(info?.file?.error?.event?.message ?? "Đã có lỗi xảy ra khi upload file.")
-//             }
-//         },
-//     };
-
-
-//     return (
-//         <>
-//             <Modal title="Ứng Tuyển Job"
-//                 open={isModalOpen}
-//                 onOk={() => handleOkButton()}
-//                 onCancel={() => setIsModalOpen(false)}
-//                 maskClosable={false}
-//                 okText={isAuthenticated ? "Rải CV Nào " : "Đăng Nhập Nhanh"}
-//                 cancelButtonProps={
-//                     { style: { display: "none" } }
-//                 }
-//                 destroyOnClose={true}
-//             >
-//                 <Divider />
-//                 {isAuthenticated ?
-//                     <div>
-//                         <ConfigProvider locale={enUS}>
-//                             <ProForm
-//                                 submitter={{
-//                                     render: () => <></>
-//                                 }}
-//                             >
-//                                 <Row gutter={[10, 10]}>
-//                                     <Col span={24}>
-//                                         <div>
-//                                             Bạn đang ứng tuyển công việc <b>{jobDetail?.name} </b>tại  <b>{jobDetail?.company?.name}</b>
-//                                         </div>
-//                                     </Col>
-//                                     <Col span={24}>
-//                                         <ProFormText
-//                                             fieldProps={{
-//                                                 type: "email"
-//                                             }}
-//                                             label="Email"
-//                                             name={"email"}
-//                                             labelAlign="right"
-//                                             disabled
-//                                             initialValue={user?.email}
-//                                         />
-//                                     </Col>
-//                                     <Col span={24}>
-//                                         <ProForm.Item
-//                                             label={"Upload file CV"}
-//                                             rules={[{ required: true, message: 'Vui lòng upload file!' }]}
-//                                         >
-
-//                                             <Upload {...propsUpload}>
-//                                                 <Button icon={<UploadOutlined />}>Tải lên CV của bạn ( Hỗ trợ *.doc, *.docx, *.pdf, and &lt; 5MB )</Button>
-//                                             </Upload>
-//                                         </ProForm.Item>
-//                                     </Col>
-//                                 </Row>
-
-//                             </ProForm>
-//                         </ConfigProvider>
-//                     </div>
-//                     :
-//                     <div>
-//                         Bạn chưa đăng nhập hệ thống. Vui lòng đăng nhập để có thể "Rải CV" bạn nhé -.-
-//                     </div>
-//                 }
-//                 <Divider />
-//             </Modal>
-//         </>
-//     )
-// }
-// export default ApplyModal;
-import { useState } from 'react';
-import { UploadOutlined } from '@ant-design/icons';
-import { ProForm, ProFormText } from "@ant-design/pro-components";
-import { Button, Col, ConfigProvider, Divider, Modal, Row, Upload, message, notification } from "antd";
-import { useNavigate } from "react-router-dom";
-import enUS from 'antd/lib/locale/en_US';
+import { useEffect, useState } from 'react';
+import { CloudUploadOutlined, DeleteOutlined, FileTextOutlined, LinkOutlined } from '@ant-design/icons';
+import { Alert, Input, Modal, Progress, Segmented, Upload } from 'antd';
 import type { UploadProps } from 'antd';
-import { callCreateResume, callUploadSingleFile } from "@/config/api";
-import { useAppSelector } from "@/redux/hooks";
-import { IJob } from "@/types/backend";
+import { Link } from 'react-router-dom';
+import { callCheckApplied, callCreateResume, callFetchMyProfile, callUploadSingleFile } from '@/config/api';
+import { useAppSelector } from '@/redux/hooks';
+import { isCloudLink } from '@/config/utils';
+import { IJob } from '@/types/backend';
+import { useAccountModal } from './manage.account';
+import { errorText, useAuthModal } from '../auth';
+import CompanyLogo from '../card/company-logo';
+import CvViewerModal from '../cv-viewer';
+import Confetti from '../confetti';
+import ui from '@/styles/client.module.scss';
+import d from '@/styles/detail.module.scss';
 
 interface IProps {
     isModalOpen: boolean;
-    setIsModalOpen: (v: boolean) => void;
+    setIsModalOpen: (value: boolean) => void;
     jobDetail: IJob | null;
+    // Called once the candidate has an application on this job (just sent, or found to exist already).
+    onApplied?: () => void;
 }
 
-const ApplyModal = (props: IProps) => {
-    const { isModalOpen, setIsModalOpen, jobDetail } = props;
+interface PickedFile {
+    name: string;
+    size: number;
+    percent: number;
+    status: 'uploading' | 'done' | 'error';
+}
+
+const formatSize = (bytes: number) =>
+    bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
+
+const ApplyModal = ({ isModalOpen, setIsModalOpen, jobDetail, onApplied }: IProps) => {
     const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
     const user = useAppSelector(state => state.account.user);
+    const openAccount = useAccountModal();
+    const openAuth = useAuthModal();
+    const [urlCV, setUrlCV] = useState('');
+    const [savedCv, setSavedCv] = useState<{ url: string; name: string } | null>(null);
+    const [useSaved, setUseSaved] = useState(false);
+    const [viewing, setViewing] = useState(false);
+    const [file, setFile] = useState<PickedFile | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [done, setDone] = useState(false);
+    const [alreadyApplied, setAlreadyApplied] = useState(false);
+    const [mode, setMode] = useState<'file' | 'link'>('file');
+    const [link, setLink] = useState('');
+    const [coverLetter, setCoverLetter] = useState('');
+    const [error, setError] = useState('');
+    const uploading = file?.status === 'uploading';
+    const busy = uploading || isSubmitting;
 
-    const [urlCV, setUrlCV] = useState<string>("");
-    const [fullName, setFullName] = useState<string>("");
-    const [phone, setPhone] = useState<string>("");
-
-    const navigate = useNavigate();
-
-    const handleOkButton = async () => {
-        if (!fullName || !phone) {
-            message.error("Vui lòng nhập đầy đủ Tên và Số điện thoại nhận hàng!");
-            return;
+    useEffect(() => {
+        if (isModalOpen) {
+            setUrlCV('');
+            setFile(null);
+            setError('');
+            setDone(false);
+            setAlreadyApplied(false);
+            setSavedCv(null);
+            setUseSaved(false);
+            setMode('file');
+            setLink('');
+            setCoverLetter('');
         }
+    }, [isModalOpen, jobDetail?.id]);
 
-        if (!urlCV && isAuthenticated) {
-            message.error("Vui lòng tải lên chứng từ / hóa đơn thanh toán!");
-            return;
-        }
+    // One application per job: if there is one already, the upload form never appears.
+    useEffect(() => {
+        if (!isModalOpen || !isAuthenticated || !jobDetail?.id) return;
+        let ignore = false;
+        (async () => {
+            try {
+                const res = await callCheckApplied(jobDetail.id!);
+                if (ignore || !res?.data?.applied) return;
+                setAlreadyApplied(true);
+                onApplied?.();
+            } catch {
+                /* the server re-checks when the application is sent */
+            }
+        })();
+        return () => {
+            ignore = true;
+        };
+    }, [isModalOpen, isAuthenticated, jobDetail?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    // A CV kept in the candidate's profile is preselected so applying takes one click.
+    useEffect(() => {
+        if (!isModalOpen || !isAuthenticated) return;
+        let ignore = false;
+        (async () => {
+            try {
+                const res = await callFetchMyProfile();
+                if (ignore || !res.data?.cvUrl) return;
+                setSavedCv({ url: res.data.cvUrl, name: res.data.cvName || res.data.cvUrl });
+                setUseSaved(true);
+                setUrlCV(res.data.cvUrl);
+            } catch {
+                /* no profile CV: the upload box stays */
+            }
+        })();
+        return () => {
+            ignore = true;
+        };
+    }, [isModalOpen, isAuthenticated, jobDetail?.id]);
+
+    const close = () => {
+        if (!busy) setIsModalOpen(false);
+    };
+
+    const submit = async () => {
         if (!isAuthenticated) {
             setIsModalOpen(false);
-            navigate(`/login?callback=${window.location.href}`);
+            openAuth('login');
+            return;
         }
-        else {
-            if (jobDetail) {
-                // Tùy chọn: Nếu BE có hỗ trợ truyền fullName, phone thì truyền vào
-                // Hiện tại giữ nguyên API cũ để không gãy hệ thống
-                const res = await callCreateResume(urlCV, jobDetail?.id, user.email, user.id);
-                if (res.data) {
-                    message.success("Đặt hàng & Gửi thông tin thanh toán thành công!");
-                    setIsModalOpen(false);
-                } else {
-                    notification.error({
-                        message: 'Có lỗi xảy ra',
-                        description: res.message
-                    });
-                }
-            }
+        if (busy || !jobDetail?.id) return;
+        if (!urlCV) {
+            setError(
+                mode === 'link'
+                    ? 'Vui lòng dán liên kết CV hợp lệ (Google Drive, Dropbox hoặc OneDrive).'
+                    : 'Vui lòng tải CV lên trước khi gửi hồ sơ.',
+            );
+            return;
         }
-    }
+        setError('');
+        setIsSubmitting(true);
+        try {
+            const res = await callCreateResume(urlCV, jobDetail.id, user.email, user.id, coverLetter);
+            if (res.data) {
+                setDone(true);
+                onApplied?.();
+            } else if (+res.statusCode === 409) {
+                setAlreadyApplied(true);
+                onApplied?.();
+            } else setError(errorText(res, 'Chưa thể gửi hồ sơ. Vui lòng thử lại.'));
+        } catch {
+            setError('Không thể kết nối. CV đã tải lên vẫn được giữ, bạn có thể gửi lại.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
-    const propsUpload: UploadProps = {
-        maxCount: 1,
+    const uploadProps: UploadProps = {
+        accept: '.pdf,application/pdf',
         multiple: false,
-        accept: "application/pdf,application/msword, .doc, .docx, .pdf, .png, .jpg",
-        async customRequest({ file, onSuccess, onError }: any) {
-            const res = await callUploadSingleFile(file, "resume");
-            if (res && res.data) {
-                setUrlCV(res.data.fileName);
-                if (onSuccess) onSuccess('ok');
-            } else {
-                if (onError) {
-                    setUrlCV("");
-                    const error = new Error(res.message);
-                    onError({ event: error });
-                }
+        showUploadList: false,
+        disabled: busy,
+        beforeUpload(picked) {
+            if (!/\.pdf$/i.test(picked.name) || (picked.type && picked.type !== 'application/pdf')) {
+                setError('Chỉ hỗ trợ CV định dạng PDF.');
+                return Upload.LIST_IGNORE;
             }
+            if (picked.size > 5 * 1024 * 1024) {
+                setError('CV cần có dung lượng tối đa 5 MB.');
+                return Upload.LIST_IGNORE;
+            }
+            setError('');
+            setUrlCV('');
+            setFile({ name: picked.name, size: picked.size, percent: 0, status: 'uploading' });
+            return true;
         },
-        onChange(info) {
-            if (info.file.status === 'done') {
-                message.success(`${info.file.name} đã được tải lên thành công`);
-            } else if (info.file.status === 'error') {
-                message.error(info?.file?.error?.event?.message ?? "Đã có lỗi xảy ra khi upload file.");
+        async customRequest({ file: picked, onSuccess, onError }) {
+            try {
+                const res = await callUploadSingleFile(picked, 'resume', percent =>
+                    setFile(current => current && { ...current, percent }),
+                );
+                if (!res.data?.fileName) throw new Error(res.message || 'Không thể tải CV lên. Vui lòng thử lại.');
+                setUrlCV(res.data.fileName);
+                setFile(current => current && { ...current, percent: 100, status: 'done' });
+                onSuccess?.(res.data);
+            } catch (uploadError) {
+                const text =
+                    uploadError instanceof Error ? uploadError.message : 'Không thể tải CV lên. Vui lòng thử lại.';
+                setFile(current => current && { ...current, status: 'error' });
+                setError(text);
+                onError?.(new Error(text));
             }
         },
     };
 
     return (
         <>
-            <Modal title="Xác Nhận Đặt Hàng & Thanh Toán"
+            <Modal
                 open={isModalOpen}
-                onOk={() => handleOkButton()}
-                onCancel={() => setIsModalOpen(false)}
-                maskClosable={false}
-                okText={isAuthenticated ? "Xác Nhận Đặt Hàng" : "Đăng Nhập Để Mua Hàng"}
-                cancelButtonProps={
-                    { style: { display: "none" } }
-                }
-                destroyOnClose={true}
+                onCancel={close}
+                closable={!busy}
+                maskClosable={!busy}
+                keyboard={!busy}
+                footer={null}
+                destroyOnClose
+                centered
+                width={500}
+                className={d.applyModal}
+                title={done || alreadyApplied ? null : 'Tải CV của bạn lên'}
             >
-                <Divider />
-                {isAuthenticated ?
-                    <div>
-                        <ConfigProvider locale={enUS}>
-                            <ProForm
-                                submitter={{
-                                    render: () => <></>
+                {alreadyApplied && !done ? (
+                    <div className={d.applyDone} role="status">
+                        <span className={d.applyDoneIcon}>
+                            <svg viewBox="0 0 52 52" aria-hidden="true">
+                                <path d="M15 27l8 8 15-17" />
+                            </svg>
+                        </span>
+                        <h2>Bạn đã ứng tuyển vị trí này</h2>
+                        <p>
+                            Hồ sơ của bạn cho vị trí <strong>{jobDetail?.name}</strong> tại{' '}
+                            <strong>{jobDetail?.company?.name || 'nhà tuyển dụng'}</strong> đã được gửi. Mỗi tin tuyển
+                            dụng chỉ nhận một hồ sơ từ mỗi ứng viên; bạn có thể theo dõi trạng thái bất cứ lúc nào.
+                        </p>
+                        <div className={d.applyDoneActions}>
+                            <button
+                                type="button"
+                                className={ui.btnOutline}
+                                onClick={() => {
+                                    setIsModalOpen(false);
+                                    openAccount('user-resume');
                                 }}
                             >
-                                <Row gutter={[10, 10]}>
-                                    <Col span={24}>
+                                Theo dõi hồ sơ
+                            </button>
+                            <button type="button" className={ui.btnPrimary} onClick={() => setIsModalOpen(false)}>
+                                Đóng
+                            </button>
+                        </div>
+                    </div>
+                ) : done ? (
+                    <div className={d.applyDone} role="status">
+                        <Confetti />
+                        <span className={d.applyDoneIcon}>
+                            <svg viewBox="0 0 52 52" aria-hidden="true">
+                                <path d="M15 27l8 8 15-17" />
+                            </svg>
+                        </span>
+                        <h2>Nộp hồ sơ thành công!</h2>
+                        <p>
+                            CV của bạn đã được gửi tới <strong>{jobDetail?.company?.name || 'nhà tuyển dụng'}</strong>{' '}
+                            cho vị trí <strong>{jobDetail?.name}</strong>. Bạn có thể theo dõi trạng thái hồ sơ bất cứ
+                            lúc nào.
+                        </p>
+                        <div className={d.applyDoneActions}>
+                            <button
+                                type="button"
+                                className={ui.btnOutline}
+                                onClick={() => {
+                                    setIsModalOpen(false);
+                                    openAccount('user-resume');
+                                }}
+                            >
+                                Theo dõi hồ sơ
+                            </button>
+                            <button type="button" className={ui.btnPrimary} onClick={() => setIsModalOpen(false)}>
+                                Xong
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <>
+                        <div className={d.applyJob}>
+                            <CompanyLogo name={jobDetail?.company?.name} logo={jobDetail?.company?.logo} size={44} />
+                            <div>
+                                <strong>{jobDetail?.name}</strong>
+                                <span>{jobDetail?.company?.name}</span>
+                            </div>
+                        </div>
+                        {isAuthenticated ? (
+                            <>
+                                {savedCv && useSaved && (
+                                    <div className={d.savedCv}>
+                                        <FileTextOutlined className={d.fileIcon} aria-hidden="true" />
                                         <div>
-                                            Bạn đang tiến hành đặt mua xe <b>{jobDetail?.name}</b> thuộc đại lý <b>{jobDetail?.company?.name}</b>
+                                            <strong>CV trong hồ sơ của bạn</strong>
+                                            <span>{savedCv.name}</span>
                                         </div>
-                                    </Col>
-
-                                    {/* Thêm Họ tên người nhận */}
-                                    <Col span={12}>
-                                        <ProFormText
-                                            label="Họ và tên người nhận"
-                                            name={"fullName"}
-                                            placeholder="Nhập họ tên"
-                                            initialValue={user?.name}
-                                            fieldProps={{
-                                                onChange: (e) => setFullName(e.target.value)
+                                        <button type="button" className={d.linkButton} onClick={() => setViewing(true)}>
+                                            Xem
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={d.linkButton}
+                                            disabled={isSubmitting}
+                                            onClick={() => {
+                                                setUseSaved(false);
+                                                setUrlCV('');
+                                                setError('');
                                             }}
-                                            rules={[{ required: true, message: 'Vui lòng không bỏ trống!' }]}
-                                        />
-                                    </Col>
-
-                                    {/* Thêm Số điện thoại */}
-                                    <Col span={12}>
-                                        <ProFormText
-                                            label="Số điện thoại"
-                                            name={"phone"}
-                                            placeholder="Nhập số điện thoại"
-                                            fieldProps={{
-                                                onChange: (e) => setPhone(e.target.value)
-                                            }}
-                                            rules={[{ required: true, message: 'Vui lòng không bỏ trống!' }]}
-                                        />
-                                    </Col>
-
-                                    <Col span={24}>
-                                        <ProFormText
-                                            fieldProps={{
-                                                type: "email"
-                                            }}
-                                            label="Email người mua"
-                                            name={"email"}
-                                            labelAlign="right"
-                                            disabled
-                                            initialValue={user?.email}
-                                        />
-                                    </Col>
-                                    <Col span={24}>
-                                        <ProForm.Item
-                                            label={"Chứng từ / Hóa đơn thanh toán (Ủy nhiệm chi)"}
-                                            rules={[{ required: true, message: 'Vui lòng upload chứng từ thanh toán!' }]}
                                         >
-                                            <Upload {...propsUpload}>
-                                                <Button icon={<UploadOutlined />}>
-                                                    Tải lên ảnh/file hóa đơn cọc (Hỗ trợ *.pdf, *.png, *.doc &lt; 5MB)
-                                                </Button>
-                                            </Upload>
-                                        </ProForm.Item>
-                                    </Col>
-                                </Row>
-                            </ProForm>
-                        </ConfigProvider>
-                    </div>
-                    :
-                    <div>
-                        Bạn chưa đăng nhập hệ thống. Vui lòng đăng nhập để tiến hành đặt hàng bạn nhé!
-                    </div>
-                }
-                <Divider />
+                                            Dùng CV khác
+                                        </button>
+                                    </div>
+                                )}
+                                {savedCv && !useSaved && !busy && (
+                                    <button
+                                        type="button"
+                                        className={d.linkButton}
+                                        onClick={() => {
+                                            setUseSaved(true);
+                                            setUrlCV(savedCv.url);
+                                            setFile(null);
+                                            setError('');
+                                        }}
+                                    >
+                                        Dùng CV trong hồ sơ ({savedCv.name})
+                                    </button>
+                                )}
+                                {!(savedCv && useSaved) && !busy && (
+                                    <Segmented
+                                        block
+                                        className={d.cvMode}
+                                        value={mode}
+                                        options={[
+                                            { label: 'Tải tệp PDF', value: 'file' },
+                                            { label: 'Dán liên kết', value: 'link' },
+                                        ]}
+                                        onChange={value => {
+                                            setMode(value as 'file' | 'link');
+                                            setUrlCV(value === 'link' && isCloudLink(link) ? link.trim() : '');
+                                            setFile(null);
+                                            setError('');
+                                        }}
+                                    />
+                                )}
+                                {!(savedCv && useSaved) && mode === 'file' && (
+                                    <Upload.Dragger {...uploadProps} className={d.dropzone}>
+                                        <span className={d.dropIcon}>
+                                            <CloudUploadOutlined />
+                                        </span>
+                                        <p className={d.dropTitle}>Kéo thả hoặc chọn tệp để tải lên</p>
+                                        <p className={d.dropHint}>Chỉ nhận PDF · Tối đa 5 MB</p>
+                                    </Upload.Dragger>
+                                )}
+                                {!(savedCv && useSaved) && mode === 'link' && (
+                                    <div className={d.linkField}>
+                                        <Input
+                                            prefix={<LinkOutlined />}
+                                            value={link}
+                                            disabled={isSubmitting}
+                                            placeholder="https://drive.google.com/file/d/…"
+                                            maxLength={255}
+                                            status={link && !isCloudLink(link) ? 'error' : undefined}
+                                            aria-label="Liên kết CV"
+                                            onChange={event => {
+                                                setLink(event.target.value);
+                                                setUrlCV(
+                                                    isCloudLink(event.target.value) ? event.target.value.trim() : '',
+                                                );
+                                                setError('');
+                                            }}
+                                        />
+                                        <small className={link && !isCloudLink(link) ? d.linkError : undefined}>
+                                            {link && !isCloudLink(link)
+                                                ? 'Chỉ hỗ trợ liên kết https của Google Drive, Dropbox hoặc OneDrive.'
+                                                : 'Hỗ trợ Google Drive, Dropbox, OneDrive. Đặt quyền “Bất kỳ ai có liên kết đều xem được” để nhà tuyển dụng mở được.'}
+                                        </small>
+                                    </div>
+                                )}
+                                {file && (
+                                    <div className={d.fileRow}>
+                                        <FileTextOutlined className={d.fileIcon} aria-hidden="true" />
+                                        <div className={d.fileInfo}>
+                                            <div>
+                                                <strong>{file.name}</strong>
+                                                {!busy && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setFile(null);
+                                                            setUrlCV('');
+                                                            setError('');
+                                                        }}
+                                                        aria-label={`Bỏ tệp ${file.name}`}
+                                                    >
+                                                        <DeleteOutlined />
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <span>
+                                                {formatSize(file.size)} ·{' '}
+                                                {file.status === 'uploading'
+                                                    ? `Đang tải lên ${file.percent}%`
+                                                    : file.status === 'done'
+                                                      ? 'Tải lên hoàn tất'
+                                                      : 'Tải lên thất bại'}
+                                            </span>
+                                            <Progress
+                                                percent={file.percent}
+                                                showInfo={false}
+                                                size="small"
+                                                status={
+                                                    file.status === 'error'
+                                                        ? 'exception'
+                                                        : file.status === 'done'
+                                                          ? 'success'
+                                                          : 'active'
+                                                }
+                                                strokeColor="#E3763C"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                                <div className={d.coverLetter}>
+                                    <label htmlFor="cover-letter">
+                                        Thư xin việc <small>(không bắt buộc)</small>
+                                    </label>
+                                    <Input.TextArea
+                                        id="cover-letter"
+                                        rows={3}
+                                        maxLength={3000}
+                                        showCount
+                                        value={coverLetter}
+                                        disabled={isSubmitting}
+                                        onChange={event => setCoverLetter(event.target.value)}
+                                        placeholder="Giới thiệu ngắn về bạn và lý do bạn phù hợp với vị trí này…"
+                                    />
+                                </div>
+                                <p className={d.applyNote}>
+                                    CV và email <strong>{user.email}</strong> sẽ được gửi tới nhà tuyển dụng khi bạn
+                                    chọn gửi hồ sơ.
+                                </p>
+                            </>
+                        ) : (
+                            <div className={d.applyGuest}>
+                                <h3>Đăng nhập để ứng tuyển</h3>
+                                <p>Bạn sẽ quay lại trang việc làm này ngay sau khi đăng nhập.</p>
+                            </div>
+                        )}
+                        {error && <Alert type="error" showIcon message={error} className={d.applyError} />}
+                        <div className={d.applyFooter}>
+                            <Link to="/#faq" onClick={() => setIsModalOpen(false)}>
+                                Cần hỗ trợ?
+                            </Link>
+                            <div>
+                                <button type="button" className={ui.btnOutline} onClick={close} disabled={busy}>
+                                    Hủy
+                                </button>
+                                <button
+                                    type="button"
+                                    className={ui.btnPrimary}
+                                    onClick={submit}
+                                    disabled={uploading || (isAuthenticated && !urlCV) || isSubmitting}
+                                >
+                                    {isSubmitting ? 'Đang gửi…' : isAuthenticated ? 'Gửi hồ sơ' : 'Đăng nhập'}
+                                </button>
+                            </div>
+                        </div>
+                    </>
+                )}
             </Modal>
+            <CvViewerModal
+                open={viewing}
+                endpoint="/api/v1/me/profile/cv"
+                file={savedCv?.url}
+                name={savedCv?.name}
+                onClose={() => setViewing(false)}
+            />
         </>
     );
-}
+};
 
 export default ApplyModal;

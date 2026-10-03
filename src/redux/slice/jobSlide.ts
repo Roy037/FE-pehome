@@ -9,18 +9,14 @@ interface IState {
         pageSize: number;
         pages: number;
         total: number;
-    },
-    result: IJob[]
+    };
+    result: IJob[];
 }
 // First, create the thunk
-export const fetchJob = createAsyncThunk(
-    'job/fetchJob',
-    async ({ query }: { query: string }) => {
-        const response = await callFetchJob(query);
-        return response;
-    }
-)
-
+export const fetchJob = createAsyncThunk('job/fetchJob', async ({ query }: { query: string }) => {
+    const response = await callFetchJob(query);
+    return response;
+});
 
 const initialState: IState = {
     isFetching: true,
@@ -28,11 +24,10 @@ const initialState: IState = {
         page: 1,
         pageSize: 10,
         pages: 0,
-        total: 0
+        total: 0,
     },
-    result: []
+    result: [],
 };
-
 
 export const jobSlide = createSlice({
     name: 'job',
@@ -40,25 +35,23 @@ export const jobSlide = createSlice({
     // The `reducers` field lets us define reducers and generate associated actions
     reducers: {
         // Use the PayloadAction type to declare the contents of `action.payload`
-        setActiveMenu: (state, action) => {
+        setActiveMenu: () => {
             // state.activeMenu = action.payload;
         },
-
-
     },
-    extraReducers: (builder) => {
+    extraReducers: builder => {
         // Add reducers for additional action types here, and handle loading state as needed
-        builder.addCase(fetchJob.pending, (state, action) => {
+        builder.addCase(fetchJob.pending, state => {
             state.isFetching = true;
             // Add user to the state array
             // state.courseOrder = action.payload;
-        })
+        });
 
-        builder.addCase(fetchJob.rejected, (state, action) => {
+        builder.addCase(fetchJob.rejected, state => {
             state.isFetching = false;
             // Add user to the state array
             // state.courseOrder = action.payload;
-        })
+        });
 
         builder.addCase(fetchJob.fulfilled, (state, action) => {
             if (action.payload && action.payload.data) {
@@ -69,13 +62,10 @@ export const jobSlide = createSlice({
             // Add user to the state array
 
             // state.courseOrder = action.payload;
-        })
+        });
     },
-
 });
 
-export const {
-    setActiveMenu,
-} = jobSlide.actions;
+export const { setActiveMenu } = jobSlide.actions;
 
 export default jobSlide.reducer;

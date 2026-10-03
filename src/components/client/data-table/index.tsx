@@ -1,17 +1,8 @@
-import {
-    ParamsType,
-    ProTable,
-    ProTableProps,
-} from '@ant-design/pro-components';
+import { ParamsType, ProTable, ProTableProps } from '@ant-design/pro-components';
 import vi_VN from 'antd/locale/vi_VN';
-import enUS from 'antd/lib/locale/en_US';
 import { ConfigProvider } from 'antd';
 
-const DataTable = <
-    T extends Record<string, any>,
-    U extends ParamsType = ParamsType,
-    ValueType = 'text',
->({
+const DataTable = <T extends Record<string, any>, U extends ParamsType = ParamsType, ValueType = 'text'>({
     columns,
     defaultData = [],
     dataSource,
@@ -19,7 +10,7 @@ const DataTable = <
     pagination,
     // sticky = { offsetHeader: 50 },
     loading,
-    rowKey = (record) => record.id,
+    rowKey = record => record.id,
     scroll,
     params,
     request,
@@ -43,7 +34,8 @@ const DataTable = <
                 // sticky={sticky}
                 loading={loading}
                 rowKey={rowKey}
-                scroll={scroll}
+                // x: true lets columns squeeze until every cell wraps; a minimum width keeps rows readable and scrolls on small screens.
+                scroll={scroll?.x === true ? { ...scroll, x: 960 } : scroll}
                 params={params}
                 request={request}
                 search={search}

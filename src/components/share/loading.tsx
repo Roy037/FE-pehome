@@ -1,14 +1,6 @@
-import HashLoader from "react-spinners/HashLoader";
+import styles from '@/styles/app.module.scss';
 
-const Loading = () => {
-
-    const style: React.CSSProperties = { position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
-
-    return (
-        <div style={style}>
-            <HashLoader color="#36d7b7" />
-        </div>
-    )
-}
+// Full-page spinner: Suspense fallback and auth checks.
+const Loading = () => <div className={styles.loading} role="status" aria-label="Đang tải" />;
 
 export default Loading;

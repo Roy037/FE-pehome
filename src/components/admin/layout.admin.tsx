@@ -8,18 +8,32 @@ import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
     AliwangwangOutlined,
-    BugOutlined,
     ScheduleOutlined,
+    StarOutlined,
+    FlagOutlined,
+    HeartOutlined,
+    MailOutlined,
+    ContactsOutlined,
+    WalletOutlined,
+    HomeOutlined,
+    CameraOutlined,
+    LockOutlined,
+    LogoutOutlined,
 } from '@ant-design/icons';
-import { Layout, Menu, Dropdown, Space, message, Avatar, Button } from 'antd';
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Layout, Menu, Dropdown, Space, message, Avatar, Button, Alert, Tag, Drawer, Grid } from 'antd';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { callLogout } from 'config/api';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { isMobile } from 'react-device-detect';
 import type { MenuProps } from 'antd';
 import { setLogoutAction } from '@/redux/slice/accountSlide';
 import { ALL_PERMISSIONS } from '@/config/permissions';
+import { COMPANY_STATUS, companyStatus } from '@/config/utils';
+import ProLocale from './pro-locale';
+import VerifyBanner from '@/components/client/verify-banner';
+import ChangePasswordModal from '@/components/client/modal/change-password';
+import ChangeAvatarModal from '@/components/client/modal/change-avatar';
+import { avatarUrl } from '@/components/client/avatar';
 
 const { Content, Sider } = Layout;
 
@@ -27,8 +41,14 @@ const LayoutAdmin = () => {
     const location = useLocation();
 
     const [collapsed, setCollapsed] = useState(false);
+    // Under 768px the sider would eat a fifth of the screen, so the menu moves into a drawer opened from the header.
+    const narrow = Grid.useBreakpoint().md === false;
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [passwordOpen, setPasswordOpen] = useState(false);
+    const [avatarOpen, setAvatarOpen] = useState(false);
     const [activeMenu, setActiveMenu] = useState('');
     const user = useAppSelector(state => state.account.user);
+    const company = user.company;
 
     const permissions = useAppSelector(state => state.account.user.role.permissions);
     const [menuItems, setMenuItems] = useState<MenuProps['items']>([]);
@@ -39,95 +59,217 @@ const LayoutAdmin = () => {
     useEffect(() => {
         const ACL_ENABLE = import.meta.env.VITE_ACL_ENABLE;
         if (permissions?.length || ACL_ENABLE === 'false') {
+            const viewCompany = permissions?.find(
+                item =>
+                    item.apiPath === ALL_PERMISSIONS.COMPANIES.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.COMPANIES.GET_PAGINATE.method,
+            );
 
-            const viewCompany = permissions?.find(item =>
-                item.apiPath === ALL_PERMISSIONS.COMPANIES.GET_PAGINATE.apiPath
-                && item.method === ALL_PERMISSIONS.COMPANIES.GET_PAGINATE.method
-            )
+            const viewUser = permissions?.find(
+                item =>
+                    item.apiPath === ALL_PERMISSIONS.USERS.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.USERS.GET_PAGINATE.method,
+            );
 
-            const viewUser = permissions?.find(item =>
-                item.apiPath === ALL_PERMISSIONS.USERS.GET_PAGINATE.apiPath
-                && item.method === ALL_PERMISSIONS.USERS.GET_PAGINATE.method
-            )
+            const viewJob = permissions?.find(
+                item =>
+                    item.apiPath === ALL_PERMISSIONS.JOBS.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.JOBS.GET_PAGINATE.method,
+            );
 
-            const viewJob = permissions?.find(item =>
-                item.apiPath === ALL_PERMISSIONS.JOBS.GET_PAGINATE.apiPath
-                && item.method === ALL_PERMISSIONS.JOBS.GET_PAGINATE.method
-            )
+            const viewResume = permissions?.find(
+                item =>
+                    item.apiPath === ALL_PERMISSIONS.RESUMES.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.RESUMES.GET_PAGINATE.method,
+            );
 
-            const viewResume = permissions?.find(item =>
-                item.apiPath === ALL_PERMISSIONS.RESUMES.GET_PAGINATE.apiPath
-                && item.method === ALL_PERMISSIONS.RESUMES.GET_PAGINATE.method
-            )
+            const viewRole = permissions?.find(
+                item =>
+                    item.apiPath === ALL_PERMISSIONS.ROLES.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.ROLES.GET_PAGINATE.method,
+            );
 
-            const viewRole = permissions?.find(item =>
-                item.apiPath === ALL_PERMISSIONS.ROLES.GET_PAGINATE.apiPath
-                && item.method === ALL_PERMISSIONS.ROLES.GET_PAGINATE.method
-            )
+            const viewReview = permissions?.find(
+                item =>
+                    item.apiPath === ALL_PERMISSIONS.REVIEWS.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.REVIEWS.GET_PAGINATE.method,
+            );
 
-            const viewPermission = permissions?.find(item =>
-                item.apiPath === ALL_PERMISSIONS.PERMISSIONS.GET_PAGINATE.apiPath
-                && item.method === ALL_PERMISSIONS.USERS.GET_PAGINATE.method
-            )
+            const viewJobReport = permissions?.find(
+                item =>
+                    item.apiPath === ALL_PERMISSIONS.JOB_REPORTS.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.JOB_REPORTS.GET_PAGINATE.method,
+            );
+
+            const viewTalent = permissions?.find(
+                item =>
+                    item.apiPath === ALL_PERMISSIONS.TALENTS.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.TALENTS.GET_PAGINATE.method,
+            );
+
+            const viewSavedJob = permissions?.find(
+                item =>
+                    item.apiPath === ALL_PERMISSIONS.SAVED_JOBS.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.SAVED_JOBS.GET_PAGINATE.method,
+            );
+
+            const viewSubscriber = permissions?.find(
+                item =>
+                    item.apiPath === ALL_PERMISSIONS.SUBSCRIBERS.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.SUBSCRIBERS.GET_PAGINATE.method,
+            );
+
+            const viewOrder = permissions?.find(
+                item =>
+                    item.apiPath === ALL_PERMISSIONS.ORDERS.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.ORDERS.GET_PAGINATE.method,
+            );
+
+            const viewPermission = permissions?.find(
+                item =>
+                    item.apiPath === ALL_PERMISSIONS.PERMISSIONS.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.USERS.GET_PAGINATE.method,
+            );
 
             const full = [
                 {
-                    label: <Link to='/admin'>Dashboard</Link>,
+                    label: <Link to="/admin">Tổng quan</Link>,
                     key: '/admin',
-                    icon: <AppstoreOutlined />
+                    icon: <AppstoreOutlined />,
                 },
-                ...(viewCompany || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/company'>Company</Link>,
-                    key: '/admin/company',
-                    icon: <BankOutlined />,
-                }] : []),
+                ...(viewCompany || ACL_ENABLE === 'false'
+                    ? [
+                          {
+                              label: <Link to="/admin/company">Công ty</Link>,
+                              key: '/admin/company',
+                              icon: <BankOutlined />,
+                          },
+                      ]
+                    : []),
 
-                ...(viewUser || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/user'>User</Link>,
-                    key: '/admin/user',
-                    icon: <UserOutlined />
-                }] : []),
-                ...(viewJob || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/job'>Job</Link>,
-                    key: '/admin/job',
-                    icon: <ScheduleOutlined />
-                }] : []),
+                ...(viewUser || ACL_ENABLE === 'false'
+                    ? [
+                          {
+                              label: <Link to="/admin/user">Người dùng</Link>,
+                              key: '/admin/user',
+                              icon: <UserOutlined />,
+                          },
+                      ]
+                    : []),
+                ...(viewJob || ACL_ENABLE === 'false'
+                    ? [
+                          {
+                              label: <Link to="/admin/job">Việc làm</Link>,
+                              key: '/admin/job',
+                              icon: <ScheduleOutlined />,
+                          },
+                      ]
+                    : []),
 
-                ...(viewResume || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/resume'>Resume</Link>,
-                    key: '/admin/resume',
-                    icon: <AliwangwangOutlined />
-                }] : []),
-                ...(viewPermission || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/permission'>Permission</Link>,
-                    key: '/admin/permission',
-                    icon: <ApiOutlined />
-                }] : []),
-                ...(viewRole || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/role'>Role</Link>,
-                    key: '/admin/role',
-                    icon: <ExceptionOutlined />
-                }] : []),
-
-
-
+                ...(viewResume || ACL_ENABLE === 'false'
+                    ? [
+                          {
+                              label: <Link to="/admin/resume">Hồ sơ ứng tuyển</Link>,
+                              key: '/admin/resume',
+                              icon: <AliwangwangOutlined />,
+                          },
+                      ]
+                    : []),
+                ...(viewReview || ACL_ENABLE === 'false'
+                    ? [
+                          {
+                              label: <Link to="/admin/review">Đánh giá</Link>,
+                              key: '/admin/review',
+                              icon: <StarOutlined />,
+                          },
+                      ]
+                    : []),
+                ...(viewJobReport || ACL_ENABLE === 'false'
+                    ? [
+                          {
+                              label: <Link to="/admin/job-report">Báo cáo tin</Link>,
+                              key: '/admin/job-report',
+                              icon: <FlagOutlined />,
+                          },
+                      ]
+                    : []),
+                // the directory is closed to employers until their company is approved (the API refuses them too)
+                ...((viewTalent || ACL_ENABLE === 'false') && (!company || company.approved)
+                    ? [
+                          {
+                              label: <Link to="/admin/talent">Kho ứng viên</Link>,
+                              key: '/admin/talent',
+                              icon: <ContactsOutlined />,
+                          },
+                      ]
+                    : []),
+                ...(viewOrder || ACL_ENABLE === 'false'
+                    ? [
+                          {
+                              label: <Link to="/admin/order">Giao dịch</Link>,
+                              key: '/admin/order',
+                              icon: <WalletOutlined />,
+                          },
+                      ]
+                    : []),
+                ...(viewSavedJob || ACL_ENABLE === 'false'
+                    ? [
+                          {
+                              label: <Link to="/admin/saved-job">Việc đã lưu</Link>,
+                              key: '/admin/saved-job',
+                              icon: <HeartOutlined />,
+                          },
+                      ]
+                    : []),
+                ...(viewSubscriber || ACL_ENABLE === 'false'
+                    ? [
+                          {
+                              label: <Link to="/admin/subscriber">Đăng ký nhận tin</Link>,
+                              key: '/admin/subscriber',
+                              icon: <MailOutlined />,
+                          },
+                      ]
+                    : []),
+                ...(viewPermission || ACL_ENABLE === 'false'
+                    ? [
+                          {
+                              label: <Link to="/admin/permission">Quyền hạn</Link>,
+                              key: '/admin/permission',
+                              icon: <ApiOutlined />,
+                          },
+                      ]
+                    : []),
+                ...(viewRole || ACL_ENABLE === 'false'
+                    ? [
+                          {
+                              label: <Link to="/admin/role">Vai trò</Link>,
+                              key: '/admin/role',
+                              icon: <ExceptionOutlined />,
+                          },
+                      ]
+                    : []),
             ];
 
             setMenuItems(full);
         }
-    }, [permissions])
+    }, [permissions]);
     useEffect(() => {
-        setActiveMenu(location.pathname)
-    }, [location])
+        setActiveMenu(location.pathname);
+        setDrawerOpen(false);
+    }, [location]);
 
+    // Ends the session here even when the server call fails (an expired token, the server restarted): the person must
+    // never be stuck signed in.
     const handleLogout = async () => {
-        const res = await callLogout();
-        if (res && +res.statusCode === 200) {
-            dispatch(setLogoutAction({}));
-            message.success('Đăng xuất thành công');
-            navigate('/')
+        try {
+            await callLogout();
+        } catch {
+            // nothing to undo on the server
         }
-    }
+        dispatch(setLogoutAction({}));
+        message.success('Đăng xuất thành công');
+        navigate('/');
+    };
 
     // if (isMobile) {
     //     items.push({
@@ -140,75 +282,154 @@ const LayoutAdmin = () => {
     //     })
     // }
 
-    const itemsDropdown = [
-        {
-            label: <Link to={'/'}>Trang chủ</Link>,
-            key: 'home',
-        },
-        {
-            label: <label
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleLogout()}
-            >Đăng xuất</label>,
-            key: 'logout',
-        },
+    // onClick sits on the item itself, so the whole row works (not just the words)
+    const itemsDropdown: MenuProps['items'] = [
+        { key: 'home', label: <Link to="/">Trang chủ</Link>, icon: <HomeOutlined /> },
+        { key: 'avatar', label: 'Ảnh đại diện', icon: <CameraOutlined />, onClick: () => setAvatarOpen(true) },
+        { key: 'password', label: 'Đổi mật khẩu', icon: <LockOutlined />, onClick: () => setPasswordOpen(true) },
+        { type: 'divider' },
+        { key: 'logout', label: 'Đăng xuất', icon: <LogoutOutlined />, danger: true, onClick: handleLogout },
     ];
 
     return (
-        <>
-            <Layout
-                style={{ minHeight: '100vh' }}
-                className="layout-admin"
-            >
-                {!isMobile ?
+        <ProLocale>
+            <Layout style={{ minHeight: '100dvh' }} className="layout-admin">
+                {!narrow && (
                     <Sider
-                        theme='light'
+                        theme="light"
                         collapsible
+                        breakpoint="lg"
                         collapsed={collapsed}
-                        onCollapse={(value) => setCollapsed(value)}>
+                        onCollapse={value => setCollapsed(value)}
+                    >
                         <div style={{ height: 32, margin: 16, textAlign: 'center' }}>
-                            <BugOutlined />  ADMIN
+                            <Link to="/" aria-label="itjobs — Trang chủ">
+                                <img
+                                    src={collapsed ? '/favicon.svg' : '/logos/itjobs.svg'}
+                                    alt="itjobs"
+                                    width={collapsed ? 28 : 116}
+                                    height={38}
+                                />
+                            </Link>
                         </div>
                         <Menu
                             selectedKeys={[activeMenu]}
                             mode="inline"
                             items={menuItems}
-                            onClick={(e) => setActiveMenu(e.key)}
+                            onClick={e => setActiveMenu(e.key)}
                         />
                     </Sider>
-                    :
-                    <Menu
-                        selectedKeys={[activeMenu]}
-                        items={menuItems}
-                        onClick={(e) => setActiveMenu(e.key)}
-                        mode="horizontal"
-                    />
-                }
+                )}
+                {narrow && (
+                    <Drawer
+                        placement="left"
+                        width={264}
+                        open={drawerOpen}
+                        onClose={() => setDrawerOpen(false)}
+                        title={
+                            <Link to="/" aria-label="itjobs — Trang chủ">
+                                <img src="/logos/itjobs.svg" alt="itjobs" width={104} height={34} />
+                            </Link>
+                        }
+                        styles={{ body: { padding: 8 } }}
+                    >
+                        <Menu
+                            selectedKeys={[activeMenu]}
+                            mode="inline"
+                            items={menuItems}
+                            onClick={e => setActiveMenu(e.key)}
+                            style={{ borderInlineEnd: 0 }}
+                        />
+                    </Drawer>
+                )}
 
                 <Layout>
-                    {!isMobile &&
-                        <div className='admin-header' style={{ display: "flex", justifyContent: "space-between", marginRight: 20 }}>
-                            <Button
-                                type="text"
-                                icon={collapsed ? React.createElement(MenuUnfoldOutlined) : React.createElement(MenuFoldOutlined)}
-                                onClick={() => setCollapsed(!collapsed)}
-                                style={{
-                                    fontSize: '16px',
-                                    width: 64,
-                                    height: 64,
-                                }}
+                    <div
+                        className="admin-header"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: 8,
+                            marginRight: narrow ? 12 : 20,
+                        }}
+                    >
+                        <Button
+                            type="text"
+                            aria-label={narrow ? 'Mở menu quản trị' : collapsed ? 'Mở rộng menu' : 'Thu gọn menu'}
+                            icon={
+                                narrow ? (
+                                    <MenuUnfoldOutlined />
+                                ) : collapsed ? (
+                                    React.createElement(MenuUnfoldOutlined)
+                                ) : (
+                                    React.createElement(MenuFoldOutlined)
+                                )
+                            }
+                            onClick={() => (narrow ? setDrawerOpen(true) : setCollapsed(!collapsed))}
+                            style={{
+                                fontSize: '16px',
+                                width: 64,
+                                height: 64,
+                            }}
+                        />
+
+                        <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
+                            <Space style={{ minWidth: 0, cursor: 'pointer' }}>
+                                {company && (
+                                    <Tag
+                                        color={COMPANY_STATUS[companyStatus(company)].color}
+                                        style={{
+                                            maxWidth: narrow ? 150 : undefined,
+                                            margin: 0,
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                        }}
+                                    >
+                                        {company.name}
+                                        {company.approved ? '' : ` · ${COMPANY_STATUS[companyStatus(company)].label}`}
+                                    </Tag>
+                                )}
+                                {!narrow && <>Xin chào, {user?.name}</>}
+                                <Avatar
+                                    src={user?.avatar ? avatarUrl(user.avatar) : undefined}
+                                    style={{
+                                        background: 'var(--brand-soft)',
+                                        color: 'var(--brand-text)',
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    {user?.name?.charAt(0)?.toUpperCase()}
+                                </Avatar>
+                            </Space>
+                        </Dropdown>
+                    </div>
+                    <VerifyBanner />
+                    <Content style={{ minWidth: 0, padding: narrow ? '12px' : '15px' }}>
+                        {company && companyStatus(company) === 'PENDING' && (
+                            <Alert
+                                type="warning"
+                                showIcon
+                                style={{ marginBottom: 16 }}
+                                message="Công ty của bạn đang chờ quản trị viên duyệt"
+                                description="Bạn có thể cập nhật thông tin công ty ngay bây giờ. Chức năng đăng tin sẽ mở sau khi công ty được duyệt."
                             />
-
-                            <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
-                                <Space style={{ cursor: "pointer" }}>
-                                    Welcome {user?.name}
-                                    <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
-
-                                </Space>
-                            </Dropdown>
-                        </div>
-                    }
-                    <Content style={{ padding: '15px' }}>
+                        )}
+                        {company && companyStatus(company) === 'REJECTED' && (
+                            <Alert
+                                type="error"
+                                showIcon
+                                style={{ marginBottom: 16 }}
+                                message="Công ty của bạn chưa được duyệt"
+                                description={
+                                    <>
+                                        Lý do: {company.rejectionReason}
+                                        <br />
+                                        Hãy cập nhật thông tin công ty rồi lưu lại để gửi duyệt lần nữa.
+                                    </>
+                                }
+                            />
+                        )}
                         <Outlet />
                     </Content>
                     {/* <Footer style={{ padding: 10, textAlign: 'center' }}>
@@ -216,8 +437,9 @@ const LayoutAdmin = () => {
                     </Footer> */}
                 </Layout>
             </Layout>
-
-        </>
+            <ChangePasswordModal open={passwordOpen} onClose={() => setPasswordOpen(false)} />
+            <ChangeAvatarModal open={avatarOpen} onClose={() => setAvatarOpen(false)} />
+        </ProLocale>
     );
 };
 

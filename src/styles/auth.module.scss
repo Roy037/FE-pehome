@@ -1,184 +1,493 @@
-$color-white: #ffffff;
-$color-light: #f1f5f9;
-$color-black: #121212;
-$color-night: #001632;
+@use 'keyframes' as *;
 
-$color-red: #f44336;
-$color-blue: #1a73e8;
-$color-gray: #80868b;
-$color-grayish: #dadce0;
+.page {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 100dvh;
+    padding: 72px 24px 48px;
+    background: radial-gradient(80% 60% at 12% 0%, #fff0dc, transparent 60%), var(--cream);
+}
+.back {
+    position: absolute;
+    top: 24px;
+    left: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    font-weight: 500;
+    text-decoration: none;
+    &:hover {
+        color: var(--brand-text);
+    }
+}
 
-$shadow-normal: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-$shadow-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-$shadow-large: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+.modal {
+    :global(.ant-modal-content) {
+        padding: 0;
+        overflow: hidden;
+        border-radius: 8px;
+        background: transparent;
+        box-shadow: none;
+    }
+    :global(.ant-modal-close) {
+        top: 12px;
+        inset-inline-end: 12px;
+    }
+}
 
-.login-page,
-.register-page {
-    color: $color-black;
-    background: $color-light;
+.card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: min(760px, 100%);
+    min-height: 480px;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 24px 64px rgba(31, 26, 22, 0.16);
+}
+.page .card {
+    animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
 
+// ---------- Visual ----------
+.visual {
+    position: relative;
+    overflow: hidden;
+    background: #e9dccd;
+}
+.photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 25%;
+}
+// landscape group shot: start the crop just right of the left edge so the two middle colleagues fill the panel
+.photoTeam {
+    object-position: 54% 20%;
+}
+.highlights {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    padding: 26px 0 22px 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.6);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.5));
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+.slideTrack {
+    display: flex;
+    gap: 12px;
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.slide {
+    display: grid;
+    flex: 0 0 64%;
+    justify-items: center;
+    align-content: start;
+    gap: 6px;
+    padding: 16px 16px 14px;
+    border-radius: 6px;
+    background: #fff;
+    text-align: center;
+    box-shadow: 0 8px 22px rgba(31, 26, 22, 0.1);
+    strong {
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.35;
+    }
+    > span:last-child {
+        color: var(--muted);
+        font-size: 11.5px;
+        line-height: 1.5;
+    }
+}
+.slideIcon {
+    color: var(--brand);
+    font-size: 15px;
+    line-height: 1;
+}
+.progress {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+    button {
+        width: 40px;
+        height: 3px;
+        padding: 0;
+        border: 0;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.8);
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    button[aria-current='true'] {
+        background: var(--brand);
+    }
+}
 
-    // Components
-    .container {
-        display: flex;
-        justify-content: center;
+// ---------- Form ----------
+.formSide {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 32px 40px 28px;
+}
+.brand {
+    align-self: flex-start;
+    margin-bottom: 24px;
+    img {
+        width: 140px;
+        height: auto;
+    }
+}
+.title {
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.4px;
+    line-height: 1.2;
+}
+.subtitle {
+    margin: 4px 0 18px;
+    color: var(--muted);
+    font-size: 12.5px;
+}
+
+// Label sits inside the bordered box; errors hang below it so fields never shift.
+.form {
+    :global(.ant-form-item) {
+        margin-bottom: 18px !important;
+    }
+    :global(.ant-form-item-row) {
+        position: relative;
+        padding: 7px 12px 6px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #fff;
+        transition:
+            border-color 0.2s,
+            box-shadow 0.2s;
+    }
+    :global(.ant-form-item-row:hover) {
+        border-color: #d9c6b2;
+    }
+    :global(.ant-form-item-row:focus-within) {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 3px rgba(227, 118, 60, 0.14);
+    }
+    :global(.ant-form-item-has-error .ant-form-item-row) {
+        border-color: #e5484d;
+    }
+    :global(.ant-form-item-control) {
+        position: static !important;
+    }
+    :global(.ant-form-item-margin-offset) {
+        display: none;
+    }
+    :global(.ant-form-item-label) {
+        padding: 0 !important;
+        line-height: 1.2;
+    }
+    // one line only, so fields side by side keep the same height; drop antd's hidden colon, which still takes ~13px
+    :global(.ant-form-item-label > label) {
+        display: block;
+        overflow: hidden;
+        height: auto !important;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 500;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        &::after {
+            display: none;
+        }
+    }
+    :global(.ant-form-item-control-input) {
+        min-height: 0;
+    }
+    :global(.ant-form-item-control) > div:not(:global(.ant-form-item-control-input)) {
+        height: 0;
+    }
+    :global(.ant-input),
+    :global(.ant-input-affix-wrapper) {
+        padding: 2px 0 0 !important;
+        border: 0 !important;
+        border-radius: 0;
+        background: transparent !important;
+        box-shadow: none !important;
+        color: var(--ink);
+        font-size: 13.5px;
+    }
+    :global(.ant-input-affix-wrapper .ant-input) {
+        padding: 0 !important;
+    }
+    :global(.ant-input-number),
+    :global(.ant-select) {
+        width: 100%;
+        height: auto !important;
+    }
+    :global(.ant-input-number) {
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        font-size: 13.5px;
+    }
+    :global(.ant-input-number-input) {
+        height: 23px !important;
+        padding: 2px 0 0 !important;
+        color: var(--ink);
+    }
+    :global(.ant-select .ant-select-selector) {
         align-items: center;
-        max-width: 80rem;
-        min-height: 100vh;
-        // width: 100%;
-        padding: 0 2rem;
-        margin: 0 auto;
+        height: 23px !important;
+        padding: 2px 0 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        font-size: 13.5px;
     }
-
-
-    .text {
-        font-family: inherit;
-        line-height: inherit;
-        text-transform: unset;
-        text-rendering: optimizeLegibility;
-
-        &-large {
-            font-size: 2rem;
-            font-weight: 600;
-            color: $color-black;
-        }
-
-        &-normal {
-            font-size: 1rem;
-            font-weight: 400;
-            color: $color-black;
-        }
-
-        &-links {
-            font-size: 1rem;
-            font-weight: 400;
-            color: $color-blue;
-
-            &:hover {
-                text-decoration: underline;
-            }
-        }
+    :global(.ant-select .ant-select-selection-item),
+    :global(.ant-select .ant-select-selection-placeholder) {
+        line-height: 21px !important;
     }
-
-    // Main
-    .main {
-        .wrapper {
-            max-width: 28rem;
-            width: 100%;
-            margin: 2rem auto;
-            padding: 2rem 2.5rem;
-            border: none;
-            outline: none;
-            border-radius: 0.5rem;
-            color: $color-black;
-            background: $color-white;
-            box-shadow: $shadow-large;
-
-            .form {
-                width: 100%;
-                height: auto;
-                margin-top: 2rem;
-
-                .input-control {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    margin-bottom: 1.25rem;
-                }
-
-                .input-field {
-                    font-family: inherit;
-                    font-size: 1rem;
-                    font-weight: 400;
-                    line-height: inherit;
-                    width: 100%;
-                    height: auto;
-                    padding: 0.75rem 1.25rem;
-                    border: none;
-                    outline: none;
-                    border-radius: 2rem;
-                    color: $color-black;
-                    background: $color-light;
-                    text-transform: unset;
-                    text-rendering: optimizeLegibility;
-                }
-
-                .input-submit {
-                    font-family: inherit;
-                    font-size: 1rem;
-                    font-weight: 500;
-                    line-height: inherit;
-                    cursor: pointer;
-                    min-width: 40%;
-                    height: auto;
-                    padding: 0.65rem 1.25rem;
-                    border: none;
-                    outline: none;
-                    border-radius: 2rem;
-                    color: $color-white;
-                    background: $color-blue;
-                    box-shadow: $shadow-medium;
-                    text-transform: capitalize;
-                    text-rendering: optimizeLegibility;
-                }
-            }
-
-            .striped {
-                display: flex;
-                flex-direction: row;
-                justify-content: center;
-                align-items: center;
-                margin: 1rem 0;
-
-                &-line {
-                    flex: auto;
-                    flex-basis: auto;
-                    border: none;
-                    outline: none;
-                    height: 2px;
-                    background: $color-grayish;
-                }
-
-                &-text {
-                    font-family: inherit;
-                    font-size: 1rem;
-                    font-weight: 500;
-                    line-height: inherit;
-                    color: $color-black;
-                    margin: 0 1rem;
-                }
-            }
-
-            .method {
-                &-control {
-                    margin-bottom: 1rem;
-                }
-
-                &-action {
-                    font-family: inherit;
-                    font-size: 0.95rem;
-                    font-weight: 500;
-                    line-height: inherit;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    width: 100%;
-                    height: auto;
-                    padding: 0.35rem 1.25rem;
-                    outline: none;
-                    border: 2px solid $color-grayish;
-                    border-radius: 2rem;
-                    color: $color-black;
-                    background: $color-white;
-                    text-transform: capitalize;
-                    text-rendering: optimizeLegibility;
-                    transition: all 0.35s ease;
-
-                    &:hover {
-                        background: $color-light;
-                    }
-                }
-            }
+    :global(.ant-select .ant-select-arrow) {
+        inset-inline-end: 0;
+    }
+    :global(.ant-form-item-explain) {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        font-size: 11.5px;
+        line-height: 1.3;
+    }
+}
+.forgotRow {
+    margin: -10px 0 14px;
+    text-align: right;
+    button {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--brand-text);
+        font: inherit;
+        font-size: 12.5px;
+        font-weight: 600;
+        cursor: pointer;
+        &:hover {
+            text-decoration: underline;
         }
     }
+}
+.fieldRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.submit {
+    height: 42px !important;
+    margin-top: 2px;
+    border-radius: 6px !important;
+    font-size: 14px !important;
+}
+// ---------- social sign-in: "Hoặc" + Google / Facebook / LinkedIn ----------
+.social {
+    margin-top: 16px;
+}
+.socialOr {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 12px;
+    &::before,
+    &::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--line);
+    }
+}
+.socialRow {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 12px;
+}
+.socialBtn {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 40px;
+    border: 1px solid #e3ddd8;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+    &:hover:not(:disabled) {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 3px var(--brand-soft);
+    }
+    &:focus-visible {
+        outline: 2px solid var(--brand);
+        outline-offset: 2px;
+    }
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.4;
+        filter: grayscale(1);
+    }
+}
+.switch {
+    margin-top: 18px;
+    color: var(--muted);
+    font-size: 12.5px;
+    text-align: center;
+    a {
+        color: var(--brand-text);
+        font-weight: 600;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+    button {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--brand-text);
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+@media (max-width: 800px) {
+    .modal {
+        max-width: min(440px, calc(100vw - 32px)) !important;
+    }
+    .card {
+        grid-template-columns: 1fr;
+        min-height: 0;
+        max-width: 440px;
+    }
+    .visual {
+        display: none;
+    }
+    .formSide {
+        padding: 36px 28px 28px;
+    }
+    .brand {
+        margin-bottom: 28px;
+    }
+}
+@media (max-width: 480px) {
+    .page {
+        padding: 64px 14px 32px;
+    }
+    .back {
+        left: 16px;
+    }
+    .formSide {
+        padding: 32px 20px 24px;
+    }
+    .fieldRow {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+
+// ---------- Employer entrance ----------
+.switchAlt {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 12.5px;
+    text-align: center;
+    a {
+        color: var(--brand-text);
+        font-weight: 600;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+    button {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--brand-text);
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+.modalLoading {
+    min-height: 420px;
+    padding: 36px;
+    border-radius: 8px;
+    background: #fff;
+}
+.badge {
+    align-self: flex-start;
+    margin-bottom: 10px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: var(--brand-soft);
+    color: var(--brand-text);
+    font-size: 11.5px;
+    font-weight: 600;
+}
+.groupTitle {
+    margin: 2px 0 10px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+.done {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    padding: 24px 0 8px;
+    text-align: center;
+    h2 {
+        font-size: 22px;
+        font-weight: 500;
+        letter-spacing: -0.3px;
+    }
+    p {
+        max-width: 330px;
+        color: var(--muted);
+        font-size: 13.5px;
+        line-height: 1.65;
+    }
+    .submit {
+        max-width: 260px;
+        margin-top: 10px;
+    }
+}
+.doneIcon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--brand-soft);
+    color: var(--brand-text);
+    font-size: 26px;
 }

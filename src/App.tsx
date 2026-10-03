@@ -1,166 +1,304 @@
-import { useEffect, useRef, useState } from 'react';
-import {
-  createBrowserRouter,
-  Outlet,
-  RouterProvider,
-  useLocation,
-} from "react-router-dom";
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import NotFound from 'components/share/not.found';
+import { lazy, Suspense, useEffect } from 'react';
 import Loading from 'components/share/loading';
-import LoginPage from 'pages/auth/login';
-import RegisterPage from 'pages/auth/register';
-import LayoutAdmin from 'components/admin/layout.admin';
-import ProtectedRoute from 'components/share/protected-route.ts';
+import { createBrowserRouter, Outlet, RouterProvider, useLocation } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { fetchSavedJobs } from '@/redux/slice/savedJobSlide';
+import { fetchFollowedCompanies } from '@/redux/slice/followedCompanySlide';
+import { fetchMyPlanCode } from '@/redux/slice/planSlide';
+import { AccountModalProvider } from 'components/client/modal/manage.account';
+import { AuthModalProvider } from 'components/client/auth';
+import VerifyBanner from 'components/client/verify-banner';
+import { UpgradeModalProvider } from 'components/client/modal/upgrade.modal';
+import NotFound from 'components/share/not.found';
+import ProtectedRoute from 'components/share/protected-route';
 import Header from 'components/client/header.client';
 import Footer from 'components/client/footer.client';
 import HomePage from 'pages/home';
 import styles from 'styles/app.module.scss';
-import DashboardPage from './pages/admin/dashboard';
-import CompanyPage from './pages/admin/company';
-import PermissionPage from './pages/admin/permission';
-import ResumePage from './pages/admin/resume';
-import RolePage from './pages/admin/role';
-import UserPage from './pages/admin/user';
 import { fetchAccount } from './redux/slice/accountSlide';
 import LayoutApp from './components/share/layout.app';
-import ViewUpsertJob from './components/admin/job/upsert.job';
-import ClientJobPage from './pages/job';
-import ClientJobDetailPage from './pages/job/detail';
-import ClientCompanyPage from './pages/company';
-import ClientCompanyDetailPage from './pages/company/detail';
-import JobTabs from './pages/admin/job/job.tabs';
+// Only the landing page ships in the first bundle; every other page loads when it is first visited.
+const LoginPage = lazy(() => import('pages/auth/login'));
+const RegisterPage = lazy(() => import('pages/auth/register'));
+const ForgotPasswordPage = lazy(() => import('pages/auth/forgot-password'));
+const ResetPasswordPage = lazy(() => import('pages/auth/reset-password'));
+const OAuthCompletePage = lazy(() => import('pages/auth/oauth-complete'));
+const OrderPage = lazy(() => import('pages/admin/order'));
+const VerifyEmailPage = lazy(() => import('pages/auth/email-action').then(m => ({ default: m.VerifyEmailPage })));
+const UnsubscribePage = lazy(() => import('pages/auth/email-action').then(m => ({ default: m.UnsubscribePage })));
+const ClientJobPage = lazy(() => import('./pages/job'));
+const ClientJobDetailPage = lazy(() => import('./pages/job/detail'));
+const ClientCompanyPage = lazy(() => import('./pages/company'));
+const ClientCompanyDetailPage = lazy(() => import('./pages/company/detail'));
+const ProfilePage = lazy(() => import('./pages/profile'));
+const EmployerAuthPage = lazy(() =>
+    import('components/client/employer-auth').then(module => ({ default: module.EmployerAuthPage })),
+);
+const LayoutAdmin = lazy(() => import('./components/admin/layout.admin'));
+const DashboardPage = lazy(() => import('./pages/admin/dashboard'));
+const CompanyPage = lazy(() => import('./pages/admin/company'));
+const PermissionPage = lazy(() => import('./pages/admin/permission'));
+const ResumePage = lazy(() => import('./pages/admin/resume'));
+const RolePage = lazy(() => import('./pages/admin/role'));
+const UserPage = lazy(() => import('./pages/admin/user'));
+const ReviewPage = lazy(() => import('./pages/admin/review'));
+const SavedJobPage = lazy(() => import('./pages/admin/saved-job'));
+const JobReportPage = lazy(() => import('./pages/admin/job-report'));
+const TalentPage = lazy(() => import('./pages/admin/talent'));
+const SubscriberPage = lazy(() => import('./pages/admin/subscriber'));
+const ViewUpsertJob = lazy(() => import('./components/admin/job/upsert.job'));
+const JobTabs = lazy(() => import('./pages/admin/job/job.tabs'));
 
 const LayoutClient = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const location = useLocation();
-  const rootRef = useRef<HTMLDivElement>(null);
+    const location = useLocation();
 
-  useEffect(() => {
-    if (rootRef && rootRef.current) {
-      rootRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
+    useEffect(() => {
+        if (location.hash) {
+            document.getElementById(location.hash.slice(1))?.scrollIntoView();
+        } else {
+            window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+        }
+    }, [location.pathname, location.hash]);
 
-  }, [location]);
+    return (
+        <AuthModalProvider>
+            {/* Upgrade wraps Account: the "Gói của tôi" tab inside the account modal needs the upgrade context */}
+            <UpgradeModalProvider>
+                <AccountModalProvider>
+                    <div className="layout-app">
+                        <Header />
+                        <VerifyBanner />
+                        <main id="main-content" tabIndex={-1} className={styles['content-app']}>
+                            <div key={location.pathname} className="page-in">
+                                {/* inside the layout, so the header and footer stay put while a page chunk loads */}
+                                <Suspense fallback={<Loading />}>
+                                    <Outlet />
+                                </Suspense>
+                            </div>
+                        </main>
+                        <Footer />
+                    </div>
+                </AccountModalProvider>
+            </UpgradeModalProvider>
+        </AuthModalProvider>
+    );
+};
 
-  return (
-    <div className='layout-app' ref={rootRef}>
-      <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-      <div className={styles['content-app']}>
-        <Outlet context={[searchTerm, setSearchTerm]} />
-      </div>
-      <Footer />
-    </div>
-  )
-}
-
-export default function App() {
-  const dispatch = useAppDispatch();
-  const isLoading = useAppSelector(state => state.account.isLoading);
-
-
-  useEffect(() => {
-    if (
-      window.location.pathname === '/login'
-      || window.location.pathname === '/register'
-    )
-      return;
-    dispatch(fetchAccount())
-  }, [])
-
-  const router = createBrowserRouter([
+const router = createBrowserRouter([
     {
-      path: "/",
-      element: (<LayoutApp><LayoutClient /></LayoutApp>),
-      errorElement: <NotFound />,
-      children: [
-        { index: true, element: <HomePage /> },
-        { path: "job", element: <ClientJobPage /> },
-        { path: "job/:id", element: <ClientJobDetailPage /> },
-        { path: "company", element: <ClientCompanyPage /> },
-        { path: "company/:id", element: <ClientCompanyDetailPage /> }
-      ],
+        path: '/',
+        element: (
+            <LayoutApp>
+                <LayoutClient />
+            </LayoutApp>
+        ),
+        errorElement: <NotFound />,
+        children: [
+            { index: true, element: <HomePage /> },
+            { path: 'job', element: <ClientJobPage /> },
+            { path: 'job/:id', element: <ClientJobDetailPage /> },
+            { path: 'company', element: <ClientCompanyPage /> },
+            { path: 'company/:id', element: <ClientCompanyDetailPage /> },
+            { path: 'ho-so', element: <ProfilePage /> },
+        ],
     },
 
     {
-      path: "/admin",
-      element: (<LayoutApp><LayoutAdmin /> </LayoutApp>),
-      errorElement: <NotFound />,
-      children: [
-        {
-          index: true, element:
-            <ProtectedRoute>
-              <DashboardPage />
-            </ProtectedRoute>
-        },
-        {
-          path: "company",
-          element:
-            <ProtectedRoute>
-              <CompanyPage />
-            </ProtectedRoute>
-        },
-        {
-          path: "user",
-          element:
-            <ProtectedRoute>
-              <UserPage />
-            </ProtectedRoute>
-        },
-
-        {
-          path: "job",
-          children: [
+        path: '/admin',
+        element: (
+            <LayoutApp>
+                <LayoutAdmin />{' '}
+            </LayoutApp>
+        ),
+        errorElement: <NotFound />,
+        children: [
             {
-              index: true,
-              element: <ProtectedRoute><JobTabs /></ProtectedRoute>
+                index: true,
+                element: (
+                    <ProtectedRoute>
+                        <DashboardPage />
+                    </ProtectedRoute>
+                ),
             },
             {
-              path: "upsert", element:
-                <ProtectedRoute><ViewUpsertJob /></ProtectedRoute>
-            }
-          ]
-        },
+                path: 'company',
+                element: (
+                    <ProtectedRoute>
+                        <CompanyPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: 'user',
+                element: (
+                    <ProtectedRoute>
+                        <UserPage />
+                    </ProtectedRoute>
+                ),
+            },
 
-        {
-          path: "resume",
-          element:
-            <ProtectedRoute>
-              <ResumePage />
-            </ProtectedRoute>
-        },
-        {
-          path: "permission",
-          element:
-            <ProtectedRoute>
-              <PermissionPage />
-            </ProtectedRoute>
-        },
-        {
-          path: "role",
-          element:
-            <ProtectedRoute>
-              <RolePage />
-            </ProtectedRoute>
+            {
+                path: 'job',
+                children: [
+                    {
+                        index: true,
+                        element: (
+                            <ProtectedRoute>
+                                <JobTabs />
+                            </ProtectedRoute>
+                        ),
+                    },
+                    {
+                        path: 'upsert',
+                        element: (
+                            <ProtectedRoute>
+                                <ViewUpsertJob />
+                            </ProtectedRoute>
+                        ),
+                    },
+                ],
+            },
+
+            {
+                path: 'resume',
+                element: (
+                    <ProtectedRoute>
+                        <ResumePage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: 'review',
+                element: (
+                    <ProtectedRoute>
+                        <ReviewPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: 'job-report',
+                element: (
+                    <ProtectedRoute>
+                        <JobReportPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: 'talent',
+                element: (
+                    <ProtectedRoute>
+                        <TalentPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: 'saved-job',
+                element: (
+                    <ProtectedRoute>
+                        <SavedJobPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: 'subscriber',
+                element: (
+                    <ProtectedRoute>
+                        <SubscriberPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: 'order',
+                element: (
+                    <ProtectedRoute>
+                        <OrderPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: 'permission',
+                element: (
+                    <ProtectedRoute>
+                        <PermissionPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: 'role',
+                element: (
+                    <ProtectedRoute>
+                        <RolePage />
+                    </ProtectedRoute>
+                ),
+            },
+        ],
+    },
+
+    {
+        path: '/login',
+        element: <LoginPage />,
+    },
+
+    {
+        path: '/register',
+        element: <RegisterPage />,
+    },
+
+    {
+        path: '/forgot-password',
+        element: <ForgotPasswordPage />,
+    },
+
+    {
+        path: '/reset-password',
+        element: <ResetPasswordPage />,
+    },
+
+    {
+        path: '/dang-nhap-xong',
+        element: <OAuthCompletePage />,
+    },
+
+    {
+        path: '/xac-thuc-email',
+        element: <VerifyEmailPage />,
+    },
+
+    {
+        path: '/huy-nhan-tin',
+        element: <UnsubscribePage />,
+    },
+
+    {
+        path: '/nha-tuyen-dung/dang-nhap',
+        element: <EmployerAuthPage mode="login" />,
+    },
+
+    {
+        path: '/nha-tuyen-dung/dang-ky',
+        element: <EmployerAuthPage mode="register" />,
+    },
+]);
+
+export default function App() {
+    const dispatch = useAppDispatch();
+    const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
+
+    useEffect(() => {
+        if (localStorage.getItem('access_token')) dispatch(fetchAccount());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            dispatch(fetchSavedJobs());
+            dispatch(fetchFollowedCompanies());
+            dispatch(fetchMyPlanCode());
         }
-      ],
-    },
+    }, [dispatch, isAuthenticated]);
 
-
-    {
-      path: "/login",
-      element: <LoginPage />,
-    },
-
-    {
-      path: "/register",
-      element: <RegisterPage />,
-    },
-  ]);
-
-  return (
-    <>
-      <RouterProvider router={router} />
-    </>
-  )
+    return (
+        <Suspense fallback={<Loading />}>
+            <RouterProvider router={router} />
+        </Suspense>
+    );
 }

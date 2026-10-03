@@ -1,0 +1,109 @@
+@use 'keyframes' as *;
+
+// Poppins Việt hóa (FontZin/Vntype, SIL OFL 1.1 — license kept in each file's metadata).
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../assets/fonts/poppins-400.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Poppins';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../assets/fonts/poppins-400-italic.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('../assets/fonts/poppins-500.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('../assets/fonts/poppins-600.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('../assets/fonts/poppins-700.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Poppins';
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url('../assets/fonts/poppins-700-italic.woff2') format('woff2');
+}
+
+// Entrance for above-the-fold content; scroll-driven reveal where supported, plain entrance elsewhere.
+.enter {
+    animation: rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation-delay: calc(var(--i, 0) * 90ms);
+}
+.reveal {
+    animation: rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation-delay: calc(var(--i, 0) * 70ms);
+}
+@supports (animation-timeline: view()) {
+    .reveal {
+        animation-delay: 0s;
+        animation-duration: auto;
+        animation-timing-function: linear;
+        animation-timeline: view();
+        animation-range: entry 0% entry calc(60% + var(--i, 0) * 8%);
+    }
+}
+.page-in {
+    animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+// Branded scrollbar: WebKit/Blink get the gradient thumb, Firefox the standard properties.
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+::-webkit-scrollbar-track {
+    background: #fff3e6;
+}
+::-webkit-scrollbar-thumb {
+    border: 3px solid #fff3e6;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #ffb870, #e3763c);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #e8791f;
+}
+::-webkit-scrollbar-corner {
+    background: #fff3e6;
+}
+@supports not selector(::-webkit-scrollbar) {
+    html {
+        scrollbar-color: #f2a462 #fff3e6;
+        scrollbar-width: thin;
+    }
+}
+
+.enter,
+.reveal,
+.page-in {
+    @include reduced-motion {
+        animation: none !important;
+    }
+}
+
+// The sider carries the divider so it runs the full height (the inline menu's own border stopped after the last item).
+.layout-admin > .ant-layout-sider {
+    border-inline-end: 1px solid var(--line);
+}
+.layout-admin .ant-layout-sider .ant-menu {
+    border-inline-end: 0;
+}

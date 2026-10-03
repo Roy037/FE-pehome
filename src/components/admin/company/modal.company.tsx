@@ -1,15 +1,25 @@
-import { CheckSquareOutlined, LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { FooterToolbar, ModalForm, ProCard, ProFormText, ProFormTextArea } from "@ant-design/pro-components";
-import { Col, ConfigProvider, Form, Modal, Row, Upload, message, notification } from "antd";
+import { CheckSquareOutlined, LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+    FooterToolbar,
+    ModalForm,
+    ProCard,
+    ProFormSelect,
+    ProFormText,
+    ProFormTextArea,
+} from '@ant-design/pro-components';
+import { Col, ConfigProvider, Form, Modal, Row, Upload, message, notification } from 'antd';
 import 'styles/reset.scss';
-import { isMobile } from 'react-device-detect';
+import { useIsMobile } from '@/config/use-mobile';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { useEffect, useState } from "react";
-import { callCreateCompany, callUpdateCompany, callUploadSingleFile } from "@/config/api";
-import { ICompany } from "@/types/backend";
+import { useEffect, useState } from 'react';
+import { callCreateCompany, callUpdateCompany, callUploadSingleFile } from '@/config/api';
+import { useAppDispatch } from '@/redux/hooks';
+import { fetchAccount } from '@/redux/slice/accountSlide';
+import { ICompany } from '@/types/backend';
+import { COMPANY_TYPE_LIST } from '@/config/utils';
 import { v4 as uuidv4 } from 'uuid';
-import enUS from 'antd/lib/locale/en_US';
+import viVN from 'antd/lib/locale/vi_VN';
 
 interface IProps {
     openModal: boolean;
@@ -19,10 +29,26 @@ interface IProps {
     reloadTable: () => void;
 }
 
-interface ICompanyForm {
-    name: string;
-    address: string;
-}
+type ICompanyForm = Omit<ICompany, 'id' | 'logo'>;
+
+// Mirrors the server-side validation on Company so mistakes show up before the request.
+const WEBSITE_RULE = { pattern: /^(https?:\/\/\S+)?$/, message: 'Website phải bắt đầu bằng http:// hoặc https://' };
+const MAP_RULE = {
+    pattern:
+        /^(https:\/\/www\.google\.com\/maps\/embed(\/v1\/\w+)?\?[^\s"'<>]+|https:\/\/maps\.google\.com\/maps\?[^\s"'<>]*output=embed[^\s"'<>]*)?$/,
+    message: 'Hãy dán URL nhúng của Google Maps (Chia sẻ > Nhúng bản đồ)',
+};
+// Google's "Embed a map" gives an <iframe> snippet; keep only its src.
+const extractMapSrc = (value?: string) => (value?.match(/<iframe[^>]*\ssrc="([^"]+)"/i)?.[1] ?? value ?? '').trim();
+
+const SOCIAL_FIELDS = [
+    { name: 'facebookUrl', label: 'Facebook', host: 'facebook\\.com' },
+    { name: 'linkedinUrl', label: 'LinkedIn', host: 'linkedin\\.com' },
+    { name: 'twitterUrl', label: 'Twitter / X', host: '(twitter|x)\\.com' },
+    { name: 'pinterestUrl', label: 'Pinterest', host: 'pinterest\\.com' },
+    { name: 'instagramUrl', label: 'Instagram', host: 'instagram\\.com' },
+    { name: 'youtubeUrl', label: 'YouTube', host: '(youtube\\.com|youtu\\.be)' },
+];
 
 interface ICompanyLogo {
     name: string;
@@ -30,87 +56,120 @@ interface ICompanyLogo {
 }
 
 const ModalCompany = (props: IProps) => {
+    const isMobile = useIsMobile();
     const { openModal, setOpenModal, reloadTable, dataInit, setDataInit } = props;
+    const dispatch = useAppDispatch();
 
     //modal animation
     const [animation, setAnimation] = useState<string>('open');
 
     const [loadingUpload, setLoadingUpload] = useState<boolean>(false);
     const [dataLogo, setDataLogo] = useState<ICompanyLogo[]>([]);
+    const [banner, setBanner] = useState<string>(dataInit?.banner ?? '');
+    const [loadingBanner, setLoadingBanner] = useState<boolean>(false);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [previewTitle, setPreviewTitle] = useState('');
 
-    const [value, setValue] = useState<string>("");
+    const [value, setValue] = useState<string>('');
     const [form] = Form.useForm();
 
     useEffect(() => {
-        if (dataInit?.id && dataInit?.description) {
-            setValue(dataInit.description);
+        // a company without a description (e.g. a fresh employer) must still load its name, address and logo
+        if (dataInit?.id) {
+            setValue(dataInit.description ?? '');
             form.setFieldsValue({
                 name: dataInit.name,
                 address: dataInit.address,
-            })
-            setDataLogo([{
-                name: dataInit.logo,
-                uid: uuidv4(),
-            }])
-
+            });
+            setDataLogo(
+                dataInit.logo
+                    ? [
+                          {
+                              name: dataInit.logo,
+                              uid: uuidv4(),
+                          },
+                      ]
+                    : [],
+            );
         }
-    }, [dataInit])
+    }, [dataInit]);
+
+    // The modal stays mounted between companies, so follow dataInit instead of reading it once.
+    useEffect(() => setBanner(dataInit?.banner ?? ''), [dataInit]);
 
     const submitCompany = async (valuesForm: ICompanyForm) => {
-        const { name, address } = valuesForm;
+        const { name, address, ...profile } = valuesForm;
+        // The server stores blank links as null; trim here so a stray space is not rejected as an invalid URL.
+        const trimmed = Object.fromEntries(
+            Object.entries(profile).map(([key, val]) => [key, typeof val === 'string' ? val.trim() : val]),
+        );
 
         if (dataLogo.length === 0) {
-            message.error('Vui lòng upload ảnh Logo')
+            message.error('Vui lòng upload ảnh Logo');
             return;
         }
 
         if (dataInit?.id) {
             //update
-            const res = await callUpdateCompany(dataInit.id, name, address, value, dataLogo[0].name);
+            const res = await callUpdateCompany({
+                ...trimmed,
+                id: dataInit.id,
+                name,
+                address,
+                description: value,
+                logo: dataLogo[0].name,
+                banner,
+            });
             if (res.data) {
-                message.success("Cập nhật company thành công");
+                message.success('Cập nhật company thành công');
+                dispatch(fetchAccount()); // a rejected company goes back to review when its employer saves
                 handleReset();
                 reloadTable();
             } else {
                 notification.error({
                     message: 'Có lỗi xảy ra',
-                    description: res.message
+                    description: res.message,
                 });
             }
         } else {
             //create
-            const res = await callCreateCompany(name, address, value, dataLogo[0].name);
+            const res = await callCreateCompany({
+                ...trimmed,
+                name,
+                address,
+                description: value,
+                logo: dataLogo[0].name,
+                banner,
+            });
             if (res.data) {
-                message.success("Thêm mới company thành công");
+                message.success('Thêm mới company thành công');
                 handleReset();
                 reloadTable();
             } else {
                 notification.error({
                     message: 'Có lỗi xảy ra',
-                    description: res.message
+                    description: res.message,
                 });
             }
         }
-    }
+    };
 
     const handleReset = async () => {
         form.resetFields();
-        setValue("");
+        setValue('');
         setDataInit(null);
 
         //add animation when closing modal
-        setAnimation('close')
-        await new Promise(r => setTimeout(r, 400))
+        setAnimation('close');
+        await new Promise(r => setTimeout(r, 400));
         setOpenModal(false);
-        setAnimation('open')
-    }
+        setAnimation('open');
+    };
 
-    const handleRemoveFile = (file: any) => {
-        setDataLogo([])
-    }
+    const handleRemoveFile = () => {
+        setDataLogo([]);
+    };
 
     const handlePreview = async (file: any) => {
         if (!file.originFileObj) {
@@ -153,45 +212,60 @@ const ModalCompany = (props: IProps) => {
         }
         if (info.file.status === 'error') {
             setLoadingUpload(false);
-            message.error(info?.file?.error?.event?.message ?? "Đã có lỗi xảy ra khi upload file.")
+            message.error(info?.file?.error?.event?.message ?? 'Đã có lỗi xảy ra khi upload file.');
+        }
+    };
+
+    const handleUploadBanner = async ({ file, onSuccess, onError }: any) => {
+        setLoadingBanner(true);
+        const res = await callUploadSingleFile(file, 'company');
+        setLoadingBanner(false);
+        if (res && res.data) {
+            setBanner(res.data.fileName);
+            if (onSuccess) onSuccess('ok');
+        } else if (onError) {
+            onError({ event: new Error(res.message) });
         }
     };
 
     const handleUploadFileLogo = async ({ file, onSuccess, onError }: any) => {
-        const res = await callUploadSingleFile(file, "company");
+        const res = await callUploadSingleFile(file, 'company');
         if (res && res.data) {
-            setDataLogo([{
-                name: res.data.fileName,
-                uid: uuidv4()
-            }])
-            if (onSuccess) onSuccess('ok')
+            setDataLogo([
+                {
+                    name: res.data.fileName,
+                    uid: uuidv4(),
+                },
+            ]);
+            if (onSuccess) onSuccess('ok');
         } else {
             if (onError) {
-                setDataLogo([])
+                setDataLogo([]);
                 const error = new Error(res.message);
                 onError({ event: error });
             }
         }
     };
 
-
     return (
         <>
-            {openModal &&
+            {openModal && (
                 <>
                     <ModalForm
-                        title={<>{dataInit?.id ? "Cập nhật Company" : "Tạo mới Company"}</>}
+                        title={<>{dataInit?.id ? 'Cập nhật Company' : 'Tạo mới Company'}</>}
                         open={openModal}
                         modalProps={{
-                            onCancel: () => { handleReset() },
+                            onCancel: () => {
+                                handleReset();
+                            },
                             afterClose: () => handleReset(),
                             destroyOnClose: true,
-                            width: isMobile ? "100%" : 900,
+                            width: isMobile ? '100%' : 720,
                             footer: null,
                             keyboard: false,
                             maskClosable: false,
                             className: `modal-company ${animation}`,
-                            rootClassName: `modal-company-root ${animation}`
+                            rootClassName: `modal-company-root ${animation}`,
                         }}
                         scrollToFirstError={true}
                         preserve={false}
@@ -201,12 +275,12 @@ const ModalCompany = (props: IProps) => {
                         submitter={{
                             render: (_: any, dom: any) => <FooterToolbar>{dom}</FooterToolbar>,
                             submitButtonProps: {
-                                icon: <CheckSquareOutlined />
+                                icon: <CheckSquareOutlined />,
                             },
                             searchConfig: {
-                                resetText: "Hủy",
-                                submitText: <>{dataInit?.id ? "Cập nhật" : "Tạo mới"}</>,
-                            }
+                                resetText: 'Hủy',
+                                submitText: <>{dataInit?.id ? 'Cập nhật' : 'Tạo mới'}</>,
+                            },
                         }}
                     >
                         <Row gutter={16}>
@@ -223,16 +297,18 @@ const ModalCompany = (props: IProps) => {
                                     labelCol={{ span: 24 }}
                                     label="Ảnh Logo"
                                     name="logo"
-                                    rules={[{
-                                        required: true,
-                                        message: 'Vui lòng không bỏ trống',
-                                        validator: () => {
-                                            if (dataLogo.length > 0) return Promise.resolve();
-                                            else return Promise.reject(false);
-                                        }
-                                    }]}
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng không bỏ trống',
+                                            validator: () => {
+                                                if (dataLogo.length > 0) return Promise.resolve();
+                                                else return Promise.reject(false);
+                                            },
+                                        },
+                                    ]}
                                 >
-                                    <ConfigProvider locale={enUS}>
+                                    <ConfigProvider locale={viVN}>
                                         <Upload
                                             name="logo"
                                             listType="picture-card"
@@ -242,20 +318,20 @@ const ModalCompany = (props: IProps) => {
                                             customRequest={handleUploadFileLogo}
                                             beforeUpload={beforeUpload}
                                             onChange={handleChange}
-                                            onRemove={(file) => handleRemoveFile(file)}
+                                            onRemove={handleRemoveFile}
                                             onPreview={handlePreview}
                                             defaultFileList={
-                                                dataInit?.id ?
-                                                    [
-                                                        {
-                                                            uid: uuidv4(),
-                                                            name: dataInit?.logo ?? "",
-                                                            status: 'done',
-                                                            url: `${import.meta.env.VITE_BACKEND_URL}/storage/company/${dataInit?.logo}`,
-                                                        }
-                                                    ] : []
+                                                dataInit?.id
+                                                    ? [
+                                                          {
+                                                              uid: uuidv4(),
+                                                              name: dataInit?.logo ?? '',
+                                                              status: 'done',
+                                                              url: `${import.meta.env.VITE_BACKEND_URL}/storage/company/${dataInit?.logo}`,
+                                                          },
+                                                      ]
+                                                    : []
                                             }
-
                                         >
                                             <div>
                                                 {loadingUpload ? <LoadingOutlined /> : <PlusOutlined />}
@@ -264,7 +340,6 @@ const ModalCompany = (props: IProps) => {
                                         </Upload>
                                     </ConfigProvider>
                                 </Form.Item>
-
                             </Col>
 
                             <Col span={16}>
@@ -274,9 +349,86 @@ const ModalCompany = (props: IProps) => {
                                     rules={[{ required: true, message: 'Vui lòng không bỏ trống' }]}
                                     placeholder="Nhập địa chỉ công ty"
                                     fieldProps={{
-                                        autoSize: { minRows: 4 }
+                                        autoSize: { minRows: 4 },
                                     }}
                                 />
+                            </Col>
+
+                            <Col span={8}>
+                                <ProFormSelect
+                                    label="Loại hình công ty"
+                                    name="companyType"
+                                    options={COMPANY_TYPE_LIST}
+                                    allowClear
+                                    placeholder="Chọn loại hình"
+                                />
+                            </Col>
+                            <Col span={16}>
+                                <ProFormText
+                                    label="Website"
+                                    name="website"
+                                    rules={[WEBSITE_RULE]}
+                                    placeholder="https://congty.vn"
+                                />
+                            </Col>
+                            <Col span={24}>
+                                <ProFormTextArea
+                                    label="URL nhúng Google Maps"
+                                    name="mapEmbedUrl"
+                                    rules={[MAP_RULE]}
+                                    normalize={extractMapSrc}
+                                    tooltip="Google Maps > Chia sẻ > Nhúng bản đồ > sao chép HTML hoặc chỉ URL trong src"
+                                    placeholder="https://www.google.com/maps/embed?pb=…"
+                                    fieldProps={{ autoSize: { minRows: 2 } }}
+                                />
+                            </Col>
+                            {SOCIAL_FIELDS.map(field => (
+                                <Col span={12} key={field.name}>
+                                    <ProFormText
+                                        label={field.label}
+                                        name={field.name}
+                                        placeholder="https://…"
+                                        rules={[
+                                            {
+                                                pattern: new RegExp(`^(https://(www\\.)?${field.host}(/\\S*)?)?$`),
+                                                message: `Liên kết ${field.label} không hợp lệ (cần https://…)`,
+                                            },
+                                        ]}
+                                    />
+                                </Col>
+                            ))}
+                            <Col span={24}>
+                                <Form.Item labelCol={{ span: 24 }} label="Ảnh bìa (banner, không bắt buộc)">
+                                    <ConfigProvider locale={viVN}>
+                                        <Upload
+                                            name="banner"
+                                            listType="picture-card"
+                                            maxCount={1}
+                                            multiple={false}
+                                            customRequest={handleUploadBanner}
+                                            beforeUpload={beforeUpload}
+                                            onRemove={() => setBanner('')}
+                                            onPreview={handlePreview}
+                                            defaultFileList={
+                                                dataInit?.id && dataInit.banner
+                                                    ? [
+                                                          {
+                                                              uid: uuidv4(),
+                                                              name: dataInit.banner,
+                                                              status: 'done',
+                                                              url: `${import.meta.env.VITE_BACKEND_URL}/storage/company/${dataInit.banner}`,
+                                                          },
+                                                      ]
+                                                    : []
+                                            }
+                                        >
+                                            <div>
+                                                {loadingBanner ? <LoadingOutlined /> : <PlusOutlined />}
+                                                <div style={{ marginTop: 8 }}>Upload</div>
+                                            </div>
+                                        </Upload>
+                                    </ConfigProvider>
+                                </Form.Item>
                             </Col>
 
                             <ProCard
@@ -289,11 +441,7 @@ const ModalCompany = (props: IProps) => {
                                 bordered
                             >
                                 <Col span={24}>
-                                    <ReactQuill
-                                        theme="snow"
-                                        value={value}
-                                        onChange={setValue}
-                                    />
+                                    <ReactQuill theme="snow" value={value} onChange={setValue} />
                                 </Col>
                             </ProCard>
                         </Row>
@@ -308,9 +456,9 @@ const ModalCompany = (props: IProps) => {
                         <img alt="example" style={{ width: '100%' }} src={previewImage} />
                     </Modal>
                 </>
-            }
+            )}
         </>
-    )
-}
+    );
+};
 
 export default ModalCompany;

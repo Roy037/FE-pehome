@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import { Button, Result } from 'antd';
 
 const NotFound = () => {
@@ -8,13 +8,15 @@ const NotFound = () => {
             <Result
                 status="404"
                 title="404"
-                subTitle="Sorry, the page you visited does not exist."
-                extra={<Button type="primary"
-                    onClick={() => navigate('/')}
-                >Back Home</Button>}
+                subTitle="Trang này không còn tồn tại. Khám phá cơ hội mới trên itjobs."
+                extra={
+                    <Button type="primary" onClick={() => navigate('/')}>
+                        Về trang chủ
+                    </Button>
+                }
             />
         </>
-    )
-}
+    );
+};
 
 export default NotFound;

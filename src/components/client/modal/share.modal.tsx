@@ -1,6 +1,5 @@
 import { ReactNode, useEffect, useState } from 'react';
-import { Button, Input, Modal, message } from 'antd';
-import QRCode from 'qrcode';
+import { Button, Input, Modal, QRCode, message } from 'antd';
 import {
     EnvelopeSimple as PiEnvelopeSimple,
     FacebookLogo as PiFacebookLogo,
@@ -58,23 +57,11 @@ const ShareModal = ({ open, onClose, kind, id, title, company, facts = [], messa
     const mobile = useIsMobile();
     const url = shareAddress(kind, id);
     const [text, setText] = useState(template);
-    const [qr, setQr] = useState('');
     const canNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
 
     useEffect(() => {
         if (open) setText(template);
     }, [open, template]);
-
-    useEffect(() => {
-        if (!open) return;
-        let cancelled = false;
-        QRCode.toDataURL(url, { margin: 1, width: 240, color: { dark: '#1f1a16', light: '#ffffff' } })
-            .then(data => !cancelled && setQr(data))
-            .catch(() => !cancelled && setQr(''));
-        return () => {
-            cancelled = true;
-        };
-    }, [open, url]);
 
     const copyLink = async () => {
         if (await copy(url)) message.success('Đã sao chép liên kết.');
@@ -214,12 +201,10 @@ const ShareModal = ({ open, onClose, kind, id, title, company, facts = [], messa
                     Sao chép
                 </Button>
             </div>
-            {qr && (
-                <div className={s.qr}>
-                    <img src={qr} alt="Mã QR của liên kết" width={144} height={144} />
-                    <span>Quét bằng Zalo hoặc camera điện thoại</span>
-                </div>
-            )}
+            <div className={s.qr}>
+                <QRCode value={url} size={144} type="svg" errorLevel="M" color="#1f1a16" />
+                <span>Quét bằng Zalo hoặc camera điện thoại</span>
+            </div>
         </Modal>
     );
 };

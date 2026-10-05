@@ -33,7 +33,7 @@ import ProLocale from './pro-locale';
 import VerifyBanner from '@/components/client/verify-banner';
 import ChangePasswordModal from '@/components/client/modal/change-password';
 import { EmployerTermsContent } from '@/components/client/employer-terms';
-import { callAcceptTerms } from '@/config/api';
+import { callAcceptTerms, callFetchCompanyVerification } from '@/config/api';
 import ChangeAvatarModal from '@/components/client/modal/change-avatar';
 import { avatarUrl } from '@/components/client/avatar';
 
@@ -47,6 +47,8 @@ const LayoutAdmin = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [passwordOpen, setPasswordOpen] = useState(false);
     const [acceptingTerms, setAcceptingTerms] = useState(false);
+    // what an employer still has to provide before the company can be approved
+    const [todo, setTodo] = useState<string[]>([]);
     const [avatarOpen, setAvatarOpen] = useState(false);
     const [activeMenu, setActiveMenu] = useState('');
     const user = useAppSelector(state => state.account.user);
@@ -259,6 +261,20 @@ const LayoutAdmin = () => {
         setDrawerOpen(false);
     }, [location]);
 
+    const pendingCompanyId = user.company && !user.company.approved ? user.company.id : null;
+    useEffect(() => {
+        setTodo([]);
+        if (!pendingCompanyId) return;
+        (async () => {
+            try {
+                const res = await callFetchCompanyVerification(pendingCompanyId);
+                setTodo(res.data?.checks.filter(check => check.required && !check.ok).map(check => check.label) ?? []);
+            } catch {
+                setTodo([]);
+            }
+        })();
+    }, [pendingCompanyId]);
+
     const acceptTerms = async () => {
         setAcceptingTerms(true);
         try {
@@ -420,7 +436,18 @@ const LayoutAdmin = () => {
                                 showIcon
                                 style={{ marginBottom: 16 }}
                                 message="Công ty của bạn đang chờ quản trị viên duyệt"
-                                description="Bạn có thể cập nhật thông tin công ty ngay bây giờ. Chức năng đăng tin sẽ mở sau khi công ty được duyệt."
+                                description={
+                                    <>
+                                        Bạn có thể cập nhật thông tin công ty ngay bây giờ. Chức năng đăng tin sẽ mở sau
+                                        khi công ty được duyệt.
+                                        {todo.length > 0 && (
+                                            <>
+                                                <br />
+                                                Còn thiếu để được duyệt: {todo.join('; ')}.
+                                            </>
+                                        )}
+                                    </>
+                                }
                             />
                         )}
                         {company && companyStatus(company) === 'REJECTED' && (

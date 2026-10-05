@@ -1,4 +1,5 @@
 import ModalCompany from '@/components/admin/company/modal.company';
+import CompanyReviewDrawer from '@/components/admin/company/review.drawer';
 import DataTable from '@/components/client/data-table';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchCompany } from '@/redux/slice/companySlide';
@@ -14,7 +15,7 @@ import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Input, Modal, Popconfirm, Space, Tag, message, notification } from 'antd';
 import { useState, useRef } from 'react';
 import dayjs from 'dayjs';
-import { callApproveCompany, callDeleteCompany, callRejectCompany } from '@/config/api';
+import { callDeleteCompany, callRejectCompany } from '@/config/api';
 import { COMPANY_STATUS, companyStatus } from '@/config/utils';
 import queryString from 'query-string';
 import Access from '@/components/share/access';
@@ -25,6 +26,7 @@ const CompanyPage = () => {
     const [openModal, setOpenModal] = useState<boolean>(false);
     const [dataInit, setDataInit] = useState<ICompany | null>(null);
 
+    const [reviewing, setReviewing] = useState<ICompany | null>(null);
     const [rejecting, setRejecting] = useState<ICompany | null>(null);
     const [reason, setReason] = useState('');
     const [rejectBusy, setRejectBusy] = useState(false);
@@ -49,17 +51,6 @@ const CompanyPage = () => {
                     description: res.message,
                 });
             }
-        }
-    };
-
-    const handleApprove = async (id: string | undefined) => {
-        if (!id) return;
-        const res = await callApproveCompany(id);
-        if (res && res.data) {
-            message.success('Đã duyệt công ty');
-            reloadTable();
-        } else {
-            notification.error({ message: 'Có lỗi xảy ra', description: res.message });
         }
     };
 
@@ -164,19 +155,12 @@ const CompanyPage = () => {
                     )}
                     {entity.approved === false && (
                         <Access permission={ALL_PERMISSIONS.COMPANIES.APPROVE} hideChildren>
-                            <Popconfirm
-                                placement="leftTop"
-                                title="Duyệt công ty"
-                                description="Công ty sẽ được phép đăng tin tuyển dụng."
-                                onConfirm={() => handleApprove(entity.id)}
-                                okText="Duyệt"
-                                cancelText="Hủy"
-                            >
-                                <CheckCircleOutlined
-                                    aria-label="Duyệt công ty"
-                                    style={{ fontSize: 20, color: '#52c41a', cursor: 'pointer' }}
-                                />
-                            </Popconfirm>
+                            <CheckCircleOutlined
+                                aria-label="Xét duyệt công ty"
+                                title="Xét duyệt"
+                                style={{ fontSize: 20, color: '#52c41a', cursor: 'pointer' }}
+                                onClick={() => setReviewing(entity)}
+                            />
                         </Access>
                     )}
                     <Access permission={ALL_PERMISSIONS.COMPANIES.UPDATE} hideChildren>
@@ -304,6 +288,15 @@ const CompanyPage = () => {
                 reloadTable={reloadTable}
                 dataInit={dataInit}
                 setDataInit={setDataInit}
+            />
+            <CompanyReviewDrawer
+                company={reviewing}
+                onClose={() => setReviewing(null)}
+                onApproved={reloadTable}
+                onReject={company => {
+                    setReason('');
+                    setRejecting(company);
+                }}
             />
             <Modal
                 open={Boolean(rejecting)}

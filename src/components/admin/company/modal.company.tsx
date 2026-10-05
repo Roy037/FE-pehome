@@ -1,4 +1,4 @@
-import { CheckSquareOutlined, LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { CheckSquareOutlined, LoadingOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import {
     FooterToolbar,
     ModalForm,
@@ -7,13 +7,14 @@ import {
     ProFormText,
     ProFormTextArea,
 } from '@ant-design/pro-components';
-import { Col, ConfigProvider, Form, Modal, Row, Upload, message, notification } from 'antd';
+import { Button, Col, ConfigProvider, Form, Modal, Row, Upload, message, notification } from 'antd';
 import 'styles/reset.scss';
 import { useIsMobile } from '@/config/use-mobile';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useEffect, useState } from 'react';
-import { callCreateCompany, callUpdateCompany, callUploadSingleFile } from '@/config/api';
+import { callCreateCompany, callFetchCompanyVerification, callUpdateCompany, callUploadSingleFile } from '@/config/api';
+import CvViewerModal from '@/components/client/cv-viewer';
 import { useAppDispatch } from '@/redux/hooks';
 import { fetchAccount } from '@/redux/slice/accountSlide';
 import { ICompany } from '@/types/backend';
@@ -32,6 +33,8 @@ interface IProps {
 type ICompanyForm = Omit<ICompany, 'id' | 'logo'>;
 
 const WEBSITE_RULE = { pattern: /^(https?:\/\/\S+)?$/, message: 'Website phải bắt đầu bằng http:// hoặc https://' };
+const TAX_RULE = { pattern: /^(\d{10}(-\d{3})?)?$/, message: 'Gồm 10 chữ số, hoặc 13 chữ số dạng 0123456789-001' };
+const PHONE_RULE = { pattern: /^((\+84|0)\d{9,10})?$/, message: 'Số điện thoại chưa hợp lệ' };
 const MAP_RULE = {
     pattern:
         /^(https:\/\/www\.google\.com\/maps\/embed(\/v1\/\w+)?\?[^\s"'<>]+|https:\/\/maps\.google\.com\/maps\?[^\s"'<>]*output=embed[^\s"'<>]*)?$/,
@@ -72,6 +75,13 @@ const ModalCompany = (props: IProps) => {
     const [value, setValue] = useState<string>('');
     const [form] = Form.useForm();
 
+    // business licence: the stored name once a new file is uploaded, and whether a saved one exists on the server
+    const [license, setLicense] = useState('');
+    const [licenseName, setLicenseName] = useState('');
+    const [uploadingLicense, setUploadingLicense] = useState(false);
+    const [hasLicense, setHasLicense] = useState(false);
+    const [viewLicense, setViewLicense] = useState(false);
+
     useEffect(() => {
         if (dataInit?.id) {
             setValue(dataInit.description ?? '');
@@ -94,6 +104,50 @@ const ModalCompany = (props: IProps) => {
 
     useEffect(() => setBanner(dataInit?.banner ?? ''), [dataInit]);
 
+    // the phone and the licence are not part of the public company data: ask the verification endpoint
+    useEffect(() => {
+        setLicense('');
+        setLicenseName('');
+        setHasLicense(false);
+        if (!dataInit?.id) return;
+        form.setFieldsValue({ taxCode: dataInit.taxCode });
+        (async () => {
+            try {
+                const res = await callFetchCompanyVerification(dataInit.id!);
+                form.setFieldsValue({ phone: res.data?.phone ?? undefined });
+                setHasLicense(Boolean(res.data?.hasLicense));
+            } catch {
+                // the form still works without these two
+            }
+        })();
+    }, [dataInit, form]);
+
+    const uploadLicense = async (file: File) => {
+        if (!/\.(pdf|jpe?g|png|webp)$/i.test(file.name)) {
+            message.error('Giấy phép cần là PDF hoặc ảnh JPG, PNG, WEBP.');
+            return false;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            message.error('Giấy phép tối đa 5 MB.');
+            return false;
+        }
+        setUploadingLicense(true);
+        try {
+            const res = await callUploadSingleFile(file, 'company-doc');
+            if (res.data?.fileName) {
+                setLicense(res.data.fileName);
+                setLicenseName(file.name);
+            } else {
+                message.error(Array.isArray(res.message) ? res.message[0] : res.message || 'Chưa tải được giấy phép.');
+            }
+        } catch {
+            message.error('Chưa tải được giấy phép. Vui lòng thử lại.');
+        } finally {
+            setUploadingLicense(false);
+        }
+        return false;
+    };
+
     const submitCompany = async (valuesForm: ICompanyForm) => {
         const { name, address, ...profile } = valuesForm;
         const trimmed = Object.fromEntries(
@@ -115,6 +169,7 @@ const ModalCompany = (props: IProps) => {
                 description: value,
                 logo: dataLogo[0].name,
                 banner,
+                licenseFile: license || undefined,
             });
             if (res.data) {
                 message.success('Cập nhật company thành công');
@@ -136,6 +191,7 @@ const ModalCompany = (props: IProps) => {
                 description: value,
                 logo: dataLogo[0].name,
                 banner,
+                licenseFile: license || undefined,
             });
             if (res.data) {
                 message.success('Thêm mới company thành công');
@@ -366,6 +422,51 @@ const ModalCompany = (props: IProps) => {
                                     placeholder="https://congty.vn"
                                 />
                             </Col>
+                            <Col span={12}>
+                                <ProFormText
+                                    label="Mã số thuế"
+                                    name="taxCode"
+                                    rules={[TAX_RULE]}
+                                    placeholder="0123456789"
+                                    extra="Dùng để quản trị viên xác minh công ty."
+                                />
+                            </Col>
+                            <Col span={12}>
+                                <ProFormText
+                                    label="Số điện thoại công ty"
+                                    name="phone"
+                                    rules={[PHONE_RULE]}
+                                    placeholder="0901234567"
+                                    extra="Chỉ quản trị viên xem được."
+                                />
+                            </Col>
+                            <Col span={24}>
+                                <Form.Item
+                                    label="Giấy phép kinh doanh"
+                                    extra="PDF hoặc ảnh, tối đa 5 MB. Không công khai: chỉ quản trị viên và công ty bạn xem được."
+                                >
+                                    <Upload
+                                        accept=".pdf,.jpg,.jpeg,.png,.webp"
+                                        showUploadList={false}
+                                        maxCount={1}
+                                        beforeUpload={uploadLicense}
+                                    >
+                                        <Button icon={uploadingLicense ? <LoadingOutlined /> : <UploadOutlined />}>
+                                            {hasLicense || license ? 'Tải tệp khác' : 'Tải giấy phép'}
+                                        </Button>
+                                    </Upload>
+                                    {license && (
+                                        <span style={{ marginLeft: 12 }}>
+                                            Đã chọn: {licenseName}. Bấm Cập nhật để lưu.
+                                        </span>
+                                    )}
+                                    {!license && hasLicense && dataInit?.id && (
+                                        <Button type="link" onClick={() => setViewLicense(true)}>
+                                            Xem giấy phép đã lưu
+                                        </Button>
+                                    )}
+                                </Form.Item>
+                            </Col>
                             <Col span={24}>
                                 <ProFormTextArea
                                     label="URL nhúng Google Maps"
@@ -450,6 +551,14 @@ const ModalCompany = (props: IProps) => {
                     >
                         <img alt="example" style={{ width: '100%' }} src={previewImage} />
                     </Modal>
+                    {dataInit?.id && (
+                        <CvViewerModal
+                            open={viewLicense}
+                            endpoint={`/api/v1/companies/${dataInit.id}/license`}
+                            name="Giấy phép kinh doanh"
+                            onClose={() => setViewLicense(false)}
+                        />
+                    )}
                 </>
             )}
         </>

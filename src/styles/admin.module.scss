@@ -461,3 +461,53 @@
     color: var(--muted);
     font-size: 12px;
 }
+
+.checklist {
+    display: grid;
+    gap: 12px;
+    margin: 18px 0;
+    padding: 0;
+    list-style: none;
+    li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    li > div {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    small {
+        color: var(--muted);
+    }
+}
+.facts {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 6px 12px;
+    margin: 0 0 18px;
+    dt {
+        color: var(--muted);
+    }
+    dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+}
+.drawerHeading {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+.contact {
+    display: grid;
+    gap: 2px;
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    span:first-of-type {
+        color: var(--ink-soft);
+    }
+}

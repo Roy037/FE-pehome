@@ -126,6 +126,9 @@ const LoginForm = ({ onSwitch, onCandidate, onSuccess, onForgot }: FormProps) =>
 interface RegisterValues {
     companyName: string;
     companyAddress: string;
+    taxCode: string;
+    phone: string;
+    website: string;
     name: string;
     email: string;
     password: string;
@@ -144,6 +147,9 @@ const RegisterForm = ({ onSwitch }: Pick<FormProps, 'onSwitch'>) => {
             const res = await callRegisterEmployer({
                 companyName: values.companyName.trim(),
                 companyAddress: values.companyAddress.trim(),
+                taxCode: values.taxCode.trim(),
+                phone: values.phone.trim(),
+                website: values.website?.trim() || undefined,
                 name: values.name.trim(),
                 email: values.email.trim(),
                 password: values.password,
@@ -213,6 +219,40 @@ const RegisterForm = ({ onSwitch }: Pick<FormProps, 'onSwitch'>) => {
                     ]}
                 >
                     <Input placeholder="Quận, thành phố" autoComplete="street-address" />
+                </Form.Item>
+                <div className={a.fieldRow}>
+                    <Form.Item
+                        label="Mã số thuế"
+                        name="taxCode"
+                        rules={[
+                            { required: true, whitespace: true, message: 'Vui lòng nhập mã số thuế.' },
+                            {
+                                pattern: /^\d{10}(-\d{3})?$/,
+                                message: 'Gồm 10 chữ số, hoặc 13 chữ số dạng 0123456789-001.',
+                            },
+                        ]}
+                    >
+                        <Input placeholder="0123456789" inputMode="numeric" />
+                    </Form.Item>
+                    <Form.Item
+                        label="Số điện thoại công ty"
+                        name="phone"
+                        rules={[
+                            { required: true, whitespace: true, message: 'Vui lòng nhập số điện thoại.' },
+                            { pattern: /^(\+84|0)\d{9,10}$/, message: 'Số điện thoại chưa hợp lệ.' },
+                        ]}
+                    >
+                        <Input placeholder="0901234567" autoComplete="tel" inputMode="tel" />
+                    </Form.Item>
+                </div>
+                <Form.Item
+                    label="Website công ty (không bắt buộc)"
+                    name="website"
+                    rules={[
+                        { pattern: /^(https?:\/\/\S+)?$/, message: 'Website cần bắt đầu bằng http:// hoặc https://' },
+                    ]}
+                >
+                    <Input placeholder="https://congty.vn" autoComplete="url" />
                 </Form.Item>
                 <p className={a.groupTitle}>Tài khoản liên hệ</p>
                 <Form.Item

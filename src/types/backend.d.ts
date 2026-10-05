@@ -48,6 +48,9 @@ export interface ICompany {
     logo: string;
     banner?: string;
     website?: string;
+    taxCode?: string;
+    phone?: string;
+    licenseFile?: string;
     mapEmbedUrl?: string;
     companyType?: 'PRODUCT' | 'OUTSOURCE';
     facebookUrl?: string;
@@ -65,6 +68,16 @@ export interface ICompany {
     deletedAt?: boolean | null;
     createdAt?: string;
     updatedAt?: string;
+}
+
+export interface ICompanyVerification {
+    taxCode?: string | null;
+    phone?: string | null;
+    website?: string | null;
+    hasLicense: boolean;
+    contacts: { name: string; email: string; emailVerified: boolean; freeMail: boolean; domainMatch: boolean | null }[];
+    checks: { key: string; label: string; ok: boolean; required: boolean; note?: string | null }[];
+    score: number;
 }
 
 export interface ISkill {

@@ -13,6 +13,7 @@ import {
     IPlan,
     IBackendRes,
     ICompany,
+    ICompanyVerification,
     IAccount,
     IProfile,
     IUser,
@@ -44,6 +45,9 @@ export const callRegisterEmployer = (data: {
     name: string;
     email: string;
     password: string;
+    taxCode: string;
+    phone: string;
+    website?: string;
     acceptTerms: boolean;
 }) => {
     return axios.post<IBackendRes<IUser>>('/api/v1/auth/register-employer', data);
@@ -210,6 +214,9 @@ export const callDeleteSavedJob = (id: number) => axios.delete<IBackendRes<null>
  * 
 Module Company
  */
+export const callFetchCompanyVerification = (id: string | number) =>
+    axios.get<IBackendRes<ICompanyVerification>>(`/api/v1/companies/${id}/verification`);
+
 export const callRejectCompany = (id: string | number, reason: string) =>
     axios.put<IBackendRes<ICompany>>(`/api/v1/companies/${id}/reject`, { reason });
 export const callApproveCompany = (id: string | number) =>

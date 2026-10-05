@@ -35,5 +35,6 @@ Sửa trong `.env.development` (khi `npm run dev`) hoặc `.env.production` (khi
 | `PORT` | `3000` | Cổng của frontend |
 | `VITE_BACKEND_URL` | `http://localhost:8080` | Địa chỉ API của backend |
 | `VITE_ACL_ENABLE` | `true` | Ẩn nút và trang theo quyền của vai trò |
+| `VITE_FACEBOOK_APP_ID` | (trống) | Tùy chọn: ID app Facebook để bật nút Messenger khi chia sẻ trên máy tính |
 
 Trang trắng hoặc lỗi `504 Outdated Optimize Dep` sau khi cài lại thư viện: chạy `npm run dev -- --force`.

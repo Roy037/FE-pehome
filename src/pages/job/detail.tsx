@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { Skeleton, message } from 'antd';
+import { Skeleton } from 'antd';
 import {
     ApartmentOutlined,
     ArrowLeftOutlined,
@@ -41,6 +41,7 @@ import { AuthLink, useAuthModal } from '@/components/client/auth';
 import { IJob, ISkill } from '@/types/backend';
 import ApplyModal from '@/components/client/modal/apply.modal';
 import ReportJobModal from '@/components/client/modal/report.job.modal';
+import ShareModal from '@/components/client/modal/share.modal';
 import MapEmbed, { isMapEmbedUrl } from '@/components/client/map-embed';
 import SocialLinks from '@/components/client/company-social';
 import VerifiedBadge from '@/components/client/verified-badge';
@@ -53,21 +54,6 @@ import CompanyReviews from '@/components/client/reviews';
 import { RotatingBadge, StatePanel } from '@/components/client/decor';
 import ui from '@/styles/client.module.scss';
 import d from '@/styles/detail.module.scss';
-
-export const shareCurrentPage = async (title: string) => {
-    const url = window.location.href;
-    try {
-        if (navigator.share) {
-            await navigator.share({ title, url });
-            return;
-        }
-        await navigator.clipboard.writeText(url);
-        message.success('Đã sao chép liên kết.');
-    } catch (error) {
-        if ((error as DOMException)?.name !== 'AbortError')
-            message.error('Chưa thể chia sẻ. Hãy sao chép địa chỉ trên trình duyệt.');
-    }
-};
 
 const SkillMatch = ({ skills }: { skills: ISkill[] }) => {
     const openAccount = useAccountModal();
@@ -140,6 +126,7 @@ const ClientJobDetailPage = () => {
     const id = new URLSearchParams(location.search).get('id') || params.id;
     const [applyOpen, setApplyOpen] = useState(false);
     const [reportOpen, setReportOpen] = useState(false);
+    const [shareOpen, setShareOpen] = useState(false);
     const openAuth = useAuthModal();
     const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
     const isEmployer = useIsEmployer();
@@ -355,7 +342,7 @@ const ClientJobDetailPage = () => {
                         <button
                             type="button"
                             className={ui.btnIcon}
-                            onClick={() => shareCurrentPage(job.name)}
+                            onClick={() => setShareOpen(true)}
                             aria-label="Chia sẻ việc làm"
                         >
                             <ShareAltOutlined />
@@ -434,6 +421,7 @@ const ClientJobDetailPage = () => {
                 </aside>
             </div>
             <ReportJobModal open={reportOpen} onClose={() => setReportOpen(false)} jobId={job.id} jobName={job.name} />
+            <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} kind="job" id={job.id} title={job.name} />
             <ApplyModal
                 isModalOpen={applyOpen}
                 setIsModalOpen={setApplyOpen}

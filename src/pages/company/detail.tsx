@@ -24,7 +24,7 @@ import MapEmbed, { isMapEmbedUrl } from '@/components/client/map-embed';
 import SocialLinks from '@/components/client/company-social';
 import VerifiedBadge from '@/components/client/verified-badge';
 import { StatePanel } from '@/components/client/decor';
-import { shareCurrentPage } from '@/pages/job/detail';
+import ShareModal from '@/components/client/modal/share.modal';
 import ui from '@/styles/client.module.scss';
 import d from '@/styles/detail.module.scss';
 
@@ -34,6 +34,7 @@ const ClientCompanyDetailPage = () => {
     const id = new URLSearchParams(location.search).get('id') || params.id;
     const valid = Boolean(id && /^\d+$/.test(id));
     const [summary, setSummary] = useState<{ average: number; total: number } | null>(null);
+    const [shareOpen, setShareOpen] = useState(false);
     const request = useRequest(() => (valid ? callFetchCompanyById(id!) : null), [id]);
     const jobs = useRequest(
         () =>
@@ -156,7 +157,7 @@ const ClientCompanyDetailPage = () => {
                         <button
                             type="button"
                             className={ui.btnIcon}
-                            onClick={() => shareCurrentPage(company.name ?? 'itjobs')}
+                            onClick={() => setShareOpen(true)}
                             aria-label="Chia sẻ hồ sơ công ty"
                         >
                             <ShareAltOutlined />
@@ -268,6 +269,13 @@ const ClientCompanyDetailPage = () => {
                     </section>
                 </aside>
             </div>
+            <ShareModal
+                open={shareOpen}
+                onClose={() => setShareOpen(false)}
+                kind="company"
+                id={company.id}
+                title={company.name ?? 'itjobs'}
+            />
         </div>
     );
 };

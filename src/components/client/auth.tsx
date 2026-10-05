@@ -11,7 +11,7 @@ import {
 } from 'react';
 import { Button, Form, Input, InputNumber, Modal, Select, Skeleton, message, notification } from 'antd';
 import { ArrowLeftOutlined, CheckOutlined, FileDoneOutlined, MailOutlined, StarFilled } from '@ant-design/icons';
-import { BsBookmarkFill } from 'react-icons/bs';
+import { BookmarkSimple as PiBookmarkSimple } from '@phosphor-icons/react';
 import { Link, LinkProps, useLocation, useNavigate } from 'react-router-dom';
 import { callForgotPassword, callLogin, callRegister } from '@/config/api';
 import { ASSETS } from '@/config/assets';
@@ -45,7 +45,7 @@ const highlights = [
         text: 'Tải CV một lần và gửi tới nhà tuyển dụng trong vài giây.',
     },
     {
-        icon: <BsBookmarkFill />,
+        icon: <PiBookmarkSimple weight="fill" />,
         title: 'Lưu việc làm yêu thích',
         text: 'Đánh dấu vị trí bạn quan tâm và quay lại bất cứ lúc nào.',
     },

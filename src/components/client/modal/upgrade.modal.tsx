@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Modal, message } from 'antd';
 import { CheckOutlined, ClockCircleOutlined, CloseOutlined, LockFilled } from '@ant-design/icons';
-import { BsAwardFill, BsBullseye, BsStarFill } from 'react-icons/bs';
+import { Medal as PiMedal, Star as PiStar, Target as PiTarget } from '@phosphor-icons/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
     callCreateOrder,
@@ -24,9 +24,9 @@ import ui from '@/styles/client.module.scss';
 import p from '@/styles/plans.module.scss';
 
 const PLAN_TEXT: Record<PlanCode, { icon: ReactNode; intro: string }> = {
-    BASIC: { icon: <BsAwardFill />, intro: 'Bắt đầu theo dõi việc làm mới.' },
-    STANDARD: { icon: <BsBullseye />, intro: 'Cho người tìm việc thường xuyên.' },
-    PREMIUM: { icon: <BsStarFill />, intro: 'Cho ứng viên muốn nổi bật.' },
+    BASIC: { icon: <PiMedal weight="fill" />, intro: 'Bắt đầu theo dõi việc làm mới.' },
+    STANDARD: { icon: <PiTarget weight="bold" />, intro: 'Cho người tìm việc thường xuyên.' },
+    PREMIUM: { icon: <PiStar weight="fill" />, intro: 'Cho ứng viên muốn nổi bật.' },
 };
 
 export const planBenefits = (plan: IPlan) => [

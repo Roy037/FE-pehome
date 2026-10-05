@@ -2,7 +2,12 @@ import { CSSProperties, FormEvent, useEffect, useMemo, useRef, useState } from '
 import { Link, useNavigate } from 'react-router-dom';
 import { Select } from 'antd';
 import CountUp from '@/components/share/count-up';
-import { BsBriefcase, BsCodeSlash, BsDatabase, BsQuote } from 'react-icons/bs';
+import {
+    Briefcase as PiBriefcase,
+    Code as PiCode,
+    Database as PiDatabase,
+    Quotes as PiQuotes,
+} from '@phosphor-icons/react';
 import {
     ArrowRightOutlined,
     ArrowUpOutlined,
@@ -166,7 +171,7 @@ const guides = [
 const faqs = [
     {
         q: 'Làm thế nào để ứng tuyển một công việc?',
-        a: 'Mở trang chi tiết việc làm và chọn “Ứng tuyển ngay”. Tải CV lên (PDF, tối đa 5 MB) hoặc dán liên kết Google Drive, Dropbox, OneDrive, có thể kèm thư xin việc, rồi gửi hồ sơ. Bạn cần đăng nhập để ứng tuyển.',
+        a: 'Mở trang chi tiết việc làm và chọn “Ứng tuyển ngay”. Tải CV lên (PDF, Word hoặc ảnh, tối đa 5 MB) hoặc dán liên kết Google Drive, Dropbox, OneDrive, có thể kèm thư xin việc, rồi gửi hồ sơ. Bạn cần đăng nhập để ứng tuyển.',
     },
     {
         q: 'Tôi theo dõi hồ sơ đã gửi ở đâu?',
@@ -220,7 +225,7 @@ const steps = [
     { title: 'Tạo tài khoản', icon: <UserAddOutlined />, to: '/register' },
     { title: 'Tìm việc làm', icon: <FileSearchOutlined />, to: '/job' },
     { title: 'Ứng tuyển', icon: <FileDoneOutlined />, to: '/job' },
-    { title: 'Bắt đầu làm việc', icon: <BsBriefcase />, to: '/job' },
+    { title: 'Bắt đầu làm việc', icon: <PiBriefcase weight="bold" />, to: '/job' },
 ];
 
 const careerRoad =
@@ -639,8 +644,6 @@ const HomePage = () => {
             </section>
 
             <section ref={metricsRef} className={s.metrics} aria-labelledby="metrics-title">
-                <Sparkle className={s.metricsSparkleA} />
-                <Sparkle className={s.metricsSparkleB} />
                 <h2 id="metrics-title">Những con số biết nói</h2>
                 <dl>
                     {stats.map(stat => (
@@ -673,18 +676,35 @@ const HomePage = () => {
                         <span className={ui.eyebrow}>Tính năng</span>
                         <h2 id="features-title">Những tính năng giúp bạn tìm việc hiệu quả hơn</h2>
                     </div>
-                    <div className={s.strokes} aria-hidden="true">
-                        {Array.from({ length: 14 }, (_, index) => (
-                            <Sparkle key={index} />
-                        ))}
-                    </div>
+                    <svg className={s.flightPath} viewBox="0 0 260 100" aria-hidden="true">
+                        <path
+                            d="M4 90C60 96 110 24 198 37"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeDasharray="1 9"
+                        />
+                        <g transform="translate(214 38) rotate(82) scale(.62) translate(-26 -32)">
+                            <path d="M7 49 36 4 49 59 28 44Z" fill="#E3763C" />
+                            <path d="M7 49 28 40 36 4Z" fill="#FFA66D" />
+                            <path d="M28 40 26 53 35 46Z" fill="#AC4920" />
+                            <path
+                                d="M28 40 36 4"
+                                fill="none"
+                                stroke="#FFF2E8"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                            />
+                        </g>
+                    </svg>
                 </div>
                 <div className={s.bento}>
                     <article className={`${s.feature} reveal`}>
                         <div className={s.mock} aria-hidden="true">
                             <div className={s.mockJob}>
                                 <span className={s.mockLogo}>
-                                    <BsCodeSlash />
+                                    <PiCode weight="bold" />
                                 </span>
                                 <div>
                                     <strong>Frontend Developer</strong>
@@ -694,7 +714,7 @@ const HomePage = () => {
                             </div>
                             <div className={`${s.mockJob} ${s.mockJobBack}`}>
                                 <span className={s.mockLogo}>
-                                    <BsDatabase />
+                                    <PiDatabase weight="bold" />
                                 </span>
                                 <div>
                                     <strong>Data Engineer</strong>
@@ -927,7 +947,7 @@ const HomePage = () => {
                                         }
                                     }}
                                 >
-                                    <BsQuote className={s.guideQuote} aria-hidden="true" />
+                                    <PiQuotes weight="fill" className={s.guideQuote} aria-hidden="true" />
                                     <span>
                                         <strong>{item.title}</strong>
                                         <span>{item.short}</span>
@@ -943,7 +963,7 @@ const HomePage = () => {
                             id="guide-panel"
                             aria-labelledby={`guide-tab-${guide}`}
                         >
-                            <BsQuote className={s.guidePanelQuote} aria-hidden="true" />
+                            <PiQuotes weight="fill" className={s.guidePanelQuote} aria-hidden="true" />
                             <h3>{guides[guide].title}</h3>
                             <p>{guides[guide].body}</p>
                             <footer>

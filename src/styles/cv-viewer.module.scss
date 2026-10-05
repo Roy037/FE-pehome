@@ -11,6 +11,9 @@
     border-radius: 10px;
     background: #f6f1ea;
 }
+.image {
+    object-fit: contain;
+}
 .notice {
     display: grid;
     place-content: center;

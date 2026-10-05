@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import { Button, Form, Modal, Select, Table, Tabs, Tag, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { BsBookmark } from 'react-icons/bs';
+import { BookmarkSimple as PiBookmarkSimple } from '@phosphor-icons/react';
 import { BankOutlined, FileTextOutlined } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -155,7 +155,7 @@ const SavedJobs = () => {
         return (
             <StatePanel
                 compact
-                icon={<BsBookmark />}
+                icon={<PiBookmarkSimple weight="bold" />}
                 title="Chưa có việc làm nào được lưu"
                 text="Nhấn biểu tượng dấu trang trên thẻ việc làm để lưu lại và xem sau."
                 action={

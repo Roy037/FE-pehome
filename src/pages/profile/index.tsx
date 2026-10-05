@@ -16,7 +16,7 @@ import {
 import dayjs from 'dayjs';
 import { Navigate } from 'react-router-dom';
 import { callFetchMyProfile, callGetSubscriberSkills, callSaveMyProfile, callUploadSingleFile } from '@/config/api';
-import { EXPERIENCE_LIST, LEVEL_LIST, errorMessage } from '@/config/utils';
+import { EXPERIENCE_LIST, LEVEL_LIST, errorMessage, CV_ACCEPT, CV_HINT, isCvFile } from '@/config/utils';
 import { useAppDispatch, useAppSelector, useIsEmployer, useIsVip } from '@/redux/hooks';
 import { VipBadge, VipFrame } from '@/components/client/vip';
 import { fetchAccount } from '@/redux/slice/accountSlide';
@@ -149,13 +149,13 @@ const ProfilePage = () => {
         index === null ? [...list, item] : list.map((current, position) => (position === index ? item : current));
 
     const uploadProps: UploadProps = {
-        accept: '.pdf,application/pdf',
+        accept: CV_ACCEPT,
         maxCount: 1,
         showUploadList: false,
         disabled: cvPercent !== null,
         beforeUpload: file => {
-            if (!/\.pdf$/i.test(file.name)) {
-                message.error('Chỉ nhận CV định dạng PDF.');
+            if (!isCvFile(file.name)) {
+                message.error(`CV cần là ${CV_HINT}.`);
                 return Upload.LIST_IGNORE;
             }
             if (file.size > 5 * 1024 * 1024) {
@@ -624,7 +624,7 @@ const ProfilePage = () => {
                                 <p>
                                     <strong>Kéo thả CV vào đây hoặc bấm để chọn</strong>
                                 </p>
-                                <p className={p.placeholder}>Chỉ nhận PDF · tối đa 5 MB</p>
+                                <p className={p.placeholder}>{CV_HINT} · tối đa 5 MB</p>
                             </Upload.Dragger>
                         )}
                     </Card>

@@ -617,23 +617,6 @@
     }
 }
 
-.metricsSparkleA {
-    position: absolute;
-    top: 26px;
-    left: 9%;
-    width: 26px;
-    color: #fff;
-    animation: twinkle 3s ease-in-out infinite;
-}
-.metricsSparkleB {
-    position: absolute;
-    right: 10%;
-    bottom: 26px;
-    width: 18px;
-    color: var(--brand);
-    animation: twinkle 2.4s ease-in-out 0.7s infinite;
-}
-
 .featuresHead {
     display: flex;
     align-items: flex-end;
@@ -649,25 +632,12 @@
         line-height: 1.25;
     }
 }
-.strokes {
-    display: grid;
+.flightPath {
     flex: none;
-    grid-template-columns: repeat(7, 22px);
-    gap: 10px 12px;
+    width: 260px;
+    height: 100px;
     color: var(--brand);
-    svg {
-        width: 22px;
-        animation: twinkle 3s ease-in-out infinite;
-    }
-    svg:nth-child(3n) {
-        animation-delay: 0.6s;
-    }
-    svg:nth-child(3n + 1) {
-        animation-delay: 1.2s;
-    }
-    svg:nth-child(even) {
-        color: var(--tangerine);
-    }
+    opacity: 0.9;
 }
 .bento {
     display: grid;
@@ -1735,7 +1705,7 @@
     .featuresHead {
         align-items: flex-start;
     }
-    .strokes {
+    .flightPath {
         display: none;
     }
     .heroGrid {

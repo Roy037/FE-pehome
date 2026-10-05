@@ -259,9 +259,11 @@ const ClientJobDetailPage = () => {
                         <span>/</span>
                         <span aria-current="page">Chi tiết</span>
                     </nav>
-                    <span className={`${d.statusChip} ${closed ? d.statusClosed : ''}`}>
-                        {closed ? 'Đã đóng tuyển dụng' : upcoming ? 'Sắp mở tuyển dụng' : 'Đang tuyển dụng'}
-                    </span>
+                    {(closed || upcoming) && (
+                        <span className={`${d.statusChip} ${closed ? d.statusClosed : ''}`}>
+                            {closed ? 'Đã đóng tuyển dụng' : 'Sắp mở tuyển dụng'}
+                        </span>
+                    )}
                     <h1 id="job-title" className="enter">
                         {job.name}
                     </h1>

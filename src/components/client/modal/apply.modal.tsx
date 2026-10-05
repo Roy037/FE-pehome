@@ -5,7 +5,7 @@ import type { UploadProps } from 'antd';
 import { Link } from 'react-router-dom';
 import { callCheckApplied, callCreateResume, callFetchMyProfile, callUploadSingleFile } from '@/config/api';
 import { useAppSelector } from '@/redux/hooks';
-import { isCloudLink } from '@/config/utils';
+import { isCloudLink, CV_ACCEPT, CV_HINT, isCvFile } from '@/config/utils';
 import { IJob } from '@/types/backend';
 import { useAccountModal } from './manage.account';
 import { errorText, useAuthModal } from '../auth';
@@ -138,13 +138,13 @@ const ApplyModal = ({ isModalOpen, setIsModalOpen, jobDetail, onApplied }: IProp
     };
 
     const uploadProps: UploadProps = {
-        accept: '.pdf,application/pdf',
+        accept: CV_ACCEPT,
         multiple: false,
         showUploadList: false,
         disabled: busy,
         beforeUpload(picked) {
-            if (!/\.pdf$/i.test(picked.name) || (picked.type && picked.type !== 'application/pdf')) {
-                setError('Chỉ hỗ trợ CV định dạng PDF.');
+            if (!isCvFile(picked.name)) {
+                setError(`CV cần là ${CV_HINT}.`);
                 return Upload.LIST_IGNORE;
             }
             if (picked.size > 5 * 1024 * 1024) {
@@ -304,7 +304,7 @@ const ApplyModal = ({ isModalOpen, setIsModalOpen, jobDetail, onApplied }: IProp
                                         className={d.cvMode}
                                         value={mode}
                                         options={[
-                                            { label: 'Tải tệp PDF', value: 'file' },
+                                            { label: 'Tải tệp CV', value: 'file' },
                                             { label: 'Dán liên kết', value: 'link' },
                                         ]}
                                         onChange={value => {
@@ -321,7 +321,7 @@ const ApplyModal = ({ isModalOpen, setIsModalOpen, jobDetail, onApplied }: IProp
                                             <CloudUploadOutlined />
                                         </span>
                                         <p className={d.dropTitle}>Kéo thả hoặc chọn tệp để tải lên</p>
-                                        <p className={d.dropHint}>Chỉ nhận PDF · Tối đa 5 MB</p>
+                                        <p className={d.dropHint}>{CV_HINT} · Tối đa 5 MB</p>
                                     </Upload.Dragger>
                                 )}
                                 {!(savedCv && useSaved) && mode === 'link' && (

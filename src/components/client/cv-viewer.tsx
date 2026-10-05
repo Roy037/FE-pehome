@@ -12,7 +12,8 @@ interface IProps {
     onClose: () => void;
 }
 
-type ViewState = { status: 'loading' } | { status: 'ready' | 'unsupported'; url: string } | { status: 'error' };
+type ViewState =
+    { status: 'loading' } | { status: 'ready' | 'unsupported'; url: string; image?: boolean } | { status: 'error' };
 
 const CvViewerModal = ({ open, endpoint, file, name, onClose }: IProps) => {
     const [state, setState] = useState<ViewState>({ status: 'loading' });
@@ -29,8 +30,10 @@ const CvViewerModal = ({ open, endpoint, file, name, onClose }: IProps) => {
                 const data = await callFetchDocument(endpoint);
                 if (!(data instanceof Blob) || data.type.includes('json')) throw new Error();
                 const isPdf = data.type === 'application/pdf' || /\.pdf$/i.test(file ?? '');
+                const isImage = /^image\/(jpeg|png|webp)$/.test(data.type);
                 objectUrl = URL.createObjectURL(isPdf ? new Blob([data], { type: 'application/pdf' }) : data);
-                if (!cancelled) setState({ status: isPdf ? 'ready' : 'unsupported', url: objectUrl });
+                if (!cancelled)
+                    setState({ status: isPdf || isImage ? 'ready' : 'unsupported', url: objectUrl, image: isImage });
             } catch {
                 if (!cancelled) setState({ status: 'error' });
             }
@@ -73,14 +76,21 @@ const CvViewerModal = ({ open, endpoint, file, name, onClose }: IProps) => {
                     <Skeleton active paragraph={{ rows: 12 }} />
                 </div>
             )}
-            {state.status === 'ready' && (
-                <iframe className={s.frame} src={`${state.url}#toolbar=1&navpanes=0`} title={`Xem trước CV ${label}`} />
-            )}
+            {state.status === 'ready' &&
+                (state.image ? (
+                    <img className={`${s.frame} ${s.image}`} src={state.url} alt={`CV ${label}`} />
+                ) : (
+                    <iframe
+                        className={s.frame}
+                        src={`${state.url}#toolbar=1&navpanes=0`}
+                        title={`Xem trước CV ${label}`}
+                    />
+                ))}
             {state.status === 'unsupported' && (
                 <div className={`${s.frame} ${s.notice}`}>
                     <FileTextOutlined aria-hidden="true" />
                     <strong>Định dạng này chưa hỗ trợ xem trước</strong>
-                    <p>Hãy tải tệp về để xem CV (chỉ tệp PDF mới xem được ngay trên trang).</p>
+                    <p>Hãy tải tệp về để xem CV (tệp PDF và ảnh xem được ngay trên trang).</p>
                     <a className={s.download} href={state.url} download={label}>
                         <DownloadOutlined /> Tải CV về
                     </a>

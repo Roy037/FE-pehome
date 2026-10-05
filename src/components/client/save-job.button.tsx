@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import { BsBookmark, BsBookmarkFill } from 'react-icons/bs';
+import { BookmarkSimple as PiBookmarkSimple } from '@phosphor-icons/react';
 import { useAuthModal } from '@/components/client/auth';
 import { useAppDispatch, useAppSelector, useIsEmployer } from '@/redux/hooks';
 import { toggleSavedJob } from '@/redux/slice/savedJobSlide';
@@ -50,7 +50,11 @@ const SaveJobButton = ({ jobId, jobName, className, withLabel }: IProps) => {
             aria-label={saved ? `Bỏ lưu việc làm ${jobName}` : `Lưu việc làm ${jobName}`}
             className={`${styles.saveButton} ${withLabel ? styles.saveButtonLabel : ''} ${className ?? ''}`}
         >
-            {saved ? <BsBookmarkFill aria-hidden="true" /> : <BsBookmark aria-hidden="true" />}
+            {saved ? (
+                <PiBookmarkSimple weight="fill" aria-hidden="true" />
+            ) : (
+                <PiBookmarkSimple weight="bold" aria-hidden="true" />
+            )}
             {withLabel && <span>{saved ? 'Đã lưu' : 'Lưu tin'}</span>}
         </button>
     );

@@ -1,4 +1,4 @@
-import { BsShieldFillCheck } from 'react-icons/bs';
+import { SealCheck as PiSealCheck } from '@phosphor-icons/react';
 import d from '@/styles/detail.module.scss';
 
 const VerifiedBadge = ({ approved }: { approved?: boolean }) =>
@@ -9,7 +9,7 @@ const VerifiedBadge = ({ approved }: { approved?: boolean }) =>
             aria-label="Nhà tuyển dụng đã được xác minh"
             title="Nhà tuyển dụng đã được xác minh"
         >
-            <BsShieldFillCheck aria-hidden="true" />
+            <PiSealCheck weight="fill" aria-hidden="true" />
         </span>
     ) : null;
 

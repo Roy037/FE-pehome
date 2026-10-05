@@ -139,6 +139,12 @@ export const RESUME_NEXT: Record<string, string[]> = {
 
 export const SHORTLIST_STATUSES = ['SHORTLISTED', 'INTERVIEW', 'ACCEPTED'];
 
+/** File types a CV upload accepts (the server checks the file's real content as well). */
+export const CV_EXTENSIONS = ['pdf', 'doc', 'docx', 'odt', 'rtf', 'jpg', 'jpeg', 'png', 'webp'];
+export const CV_ACCEPT = CV_EXTENSIONS.map(extension => `.${extension}`).join(',');
+export const CV_HINT = 'PDF, Word hoặc ảnh (JPG, PNG, WEBP)';
+export const isCvFile = (name: string) => CV_EXTENSIONS.includes(name.split('.').pop()?.toLowerCase() ?? '');
+
 const CLOUD_HOSTS = [
     'drive.google.com',
     'docs.google.com',

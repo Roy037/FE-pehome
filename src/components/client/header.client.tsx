@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { Drawer, Dropdown, message } from 'antd';
 import type { MenuProps } from 'antd';
-import { BsBookmark, BsBriefcaseFill, BsPlusLg } from 'react-icons/bs';
+import { BookmarkSimple as PiBookmarkSimple, Briefcase as PiBriefcase, Plus as PiPlus } from '@phosphor-icons/react';
 import {
     DownOutlined,
     FileSearchOutlined,
@@ -217,7 +217,7 @@ const Header = () => {
     const employerItems = [
         {
             key: 'post',
-            icon: <BsPlusLg />,
+            icon: <PiPlus weight="bold" />,
             onClick: () => openAuth('employer-register'),
             label: (
                 <span className={styles.employerMenuItem}>
@@ -276,7 +276,7 @@ const Header = () => {
                                         onClick={() => openAccount('saved-jobs')}
                                         aria-label={`Việc làm đã lưu (${savedCount})`}
                                     >
-                                        <BsBookmark aria-hidden="true" />
+                                        <PiBookmarkSimple weight="bold" aria-hidden="true" />
                                         {savedCount > 0 && (
                                             <span className={styles.countBadge} aria-hidden="true">
                                                 {savedCount > 99 ? '99+' : savedCount}
@@ -286,7 +286,7 @@ const Header = () => {
                                 )}
                                 {user.company && (
                                     <Link to={postJobPath} className={styles.employerButton}>
-                                        <BsPlusLg aria-hidden="true" /> Đăng tin tuyển dụng
+                                        <PiPlus weight="bold" aria-hidden="true" /> Đăng tin tuyển dụng
                                     </Link>
                                 )}
                                 <Dropdown
@@ -337,7 +337,7 @@ const Header = () => {
                                     overlayClassName={styles.employerMenu}
                                 >
                                     <button type="button" className={styles.employerButton}>
-                                        <BsBriefcaseFill aria-hidden="true" /> Nhà tuyển dụng{' '}
+                                        <PiBriefcase weight="fill" aria-hidden="true" /> Nhà tuyển dụng{' '}
                                         <DownOutlined aria-hidden="true" />
                                     </button>
                                 </Dropdown>
@@ -395,7 +395,7 @@ const Header = () => {
                                     className={styles.mobileEmployerCta}
                                     onClick={() => setMobileOpen(false)}
                                 >
-                                    <BsPlusLg aria-hidden="true" /> Đăng tin tuyển dụng
+                                    <PiPlus weight="bold" aria-hidden="true" /> Đăng tin tuyển dụng
                                 </Link>
                             )}
                         </>
@@ -409,7 +409,7 @@ const Header = () => {
                             </AuthLink>
                             <div className={styles.mobileEmployer}>
                                 <span>
-                                    <BsBriefcaseFill aria-hidden="true" /> Dành cho nhà tuyển dụng
+                                    <PiBriefcase weight="fill" aria-hidden="true" /> Dành cho nhà tuyển dụng
                                 </span>
                                 <AuthLink mode="employer-register" onClick={() => setMobileOpen(false)}>
                                     Đăng tin tuyển dụng

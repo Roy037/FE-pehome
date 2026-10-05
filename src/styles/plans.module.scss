@@ -1,0 +1,500 @@
+@use 'keyframes' as *;
+
+.plansModal {
+    :global(.ant-modal-content) {
+        padding: 56px 64px 32px;
+        border-radius: 12px;
+    }
+}
+.plansHead {
+    text-align: center;
+    h2 {
+        font-size: 22px;
+        font-weight: 500;
+        letter-spacing: -0.3px;
+    }
+    p {
+        margin-top: 10px;
+        color: var(--ink);
+        font-size: 14px;
+    }
+}
+.planGrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+    align-items: stretch;
+    max-width: 832px;
+    margin: 56px auto 0;
+}
+.planCard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 360px;
+    padding: 24px 20px 0;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow);
+    }
+}
+.planCardHot {
+    transform: translateY(-16px);
+    background: #fdddbf;
+    border-color: #f0b987;
+    &:hover {
+        transform: translateY(-19px);
+    }
+}
+.planPrice {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+    white-space: nowrap;
+    small {
+        color: var(--ink);
+        font-size: 12.5px;
+        font-weight: 400;
+        letter-spacing: 0;
+    }
+}
+.planName {
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 500;
+}
+.planDesc {
+    margin-top: 8px;
+    color: var(--ink);
+    font-size: 12px;
+    line-height: 1.5;
+}
+.planList {
+    display: grid;
+    gap: 12px;
+    margin: 18px 0 64px;
+    list-style: none;
+    font-size: 12px;
+    line-height: 1.4;
+    li {
+        display: grid;
+        grid-template-columns: 16px 1fr;
+        gap: 8px;
+        align-items: start;
+    }
+    svg {
+        box-sizing: content-box;
+        width: 9px;
+        height: 9px;
+        margin-top: 0;
+        padding: 3px;
+        border-radius: 50%;
+        background: var(--brand);
+        color: #fff;
+        font-size: 9px;
+    }
+}
+.planBadge {
+    position: absolute;
+    right: 20px;
+    bottom: 60px;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--brand);
+    color: #fff;
+    font-size: 18px;
+}
+.planCurrent {
+    margin-bottom: 12px;
+    padding-right: 44px;
+    color: #2b8a3e;
+    font-size: 12px;
+    font-weight: 600;
+}
+.planSelect {
+    margin: auto -20px 0;
+    padding: 12px 0;
+    border: 0;
+    background: var(--brand);
+    color: #fff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    &:hover {
+        background: #cb622b;
+    }
+}
+.planFoot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 48px;
+}
+.planFree {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12.5px;
+}
+.planSkip {
+    flex: none;
+    padding: 4px;
+    border: 0;
+    background: none;
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    &:hover {
+        color: var(--brand-text);
+    }
+}
+
+.payModal {
+    :global(.ant-modal-content) {
+        padding: 32px 24px 24px;
+        border-radius: 10px;
+    }
+}
+.payHead {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    text-align: center;
+    h2 {
+        margin-top: 12px;
+        font-size: 18px;
+        font-weight: 500;
+    }
+    p {
+        color: var(--ink-soft);
+        font-size: 13px;
+    }
+}
+.payLock {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border: 1.5px solid var(--brand);
+    border-radius: 50%;
+    color: var(--brand);
+    font-size: 18px;
+}
+.payMethods {
+    display: grid;
+    gap: 10px;
+    margin-top: 28px;
+}
+.payMethod {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr) 16px;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 44px;
+    padding: 7px 12px;
+    border: 1px solid #e3ddd8;
+    border-radius: 6px;
+    background: #fff;
+    color: var(--muted);
+    font: inherit;
+    font-size: 13.5px;
+    text-align: left;
+    cursor: pointer;
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s,
+        color 0.2s;
+    &:hover:not(:has(input:disabled)) {
+        border-color: #d3bfa9;
+    }
+    &:has(input:checked) {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 3px var(--brand-soft);
+        color: var(--ink);
+    }
+    &:has(input:disabled) {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    &:has(input:focus-visible) {
+        outline: 2px solid var(--brand);
+        outline-offset: 2px;
+    }
+}
+.payName {
+    min-width: 0;
+    small {
+        margin-left: 6px;
+        font-size: 11px;
+    }
+}
+.payChip {
+    display: grid;
+    place-items: center;
+    justify-self: stretch;
+    height: 28px;
+    img {
+        width: auto;
+        max-width: 100%;
+        height: 20px;
+        object-fit: contain;
+    }
+}
+.payRadio {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--brand);
+    cursor: inherit;
+}
+.payTotal {
+    margin-top: 24px;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+}
+.payProceed {
+    width: 100%;
+    margin-top: 14px;
+    padding: 10px 0;
+    border: 0;
+    border-radius: 6px;
+    background: var(--brand);
+    color: #fff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    &:hover:not(:disabled) {
+        background: #cb622b;
+    }
+    &:disabled {
+        opacity: 0.6;
+        cursor: progress;
+    }
+}
+.payNote {
+    margin-top: 12px;
+    color: var(--ink-soft);
+    font-size: 11.5px;
+    text-align: center;
+    line-height: 1.5;
+}
+.payFooter {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 28px;
+    button {
+        padding: 4px;
+        border: 0;
+        background: none;
+        color: var(--ink);
+        font: inherit;
+        font-size: 13px;
+        cursor: pointer;
+        &:hover {
+            color: var(--brand-text);
+        }
+    }
+}
+
+.mySummary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 18px 20px;
+    border-radius: 14px;
+    background: var(--brand-soft);
+    span {
+        display: block;
+        color: var(--ink-soft);
+        font-size: 12.5px;
+    }
+    strong {
+        font-size: 22px;
+        font-weight: 600;
+    }
+    small {
+        display: block;
+        margin-top: 2px;
+        color: var(--ink-soft);
+        font-size: 12.5px;
+    }
+}
+.myUsage {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin: 20px 0 22px;
+    p {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 4px;
+        font-size: 13px;
+    }
+}
+.myTitle {
+    margin: 4px 0 10px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.resultModal {
+    :global(.ant-modal-content) {
+        padding: 30px 28px 24px;
+        border-radius: 20px;
+        text-align: center;
+    }
+}
+.resultBody {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    h2 {
+        margin-top: 14px;
+        font-size: 20px;
+        font-weight: 600;
+    }
+    h3 {
+        color: var(--ink-soft);
+        font-size: 14px;
+        font-weight: 500;
+    }
+    p {
+        margin-top: 10px;
+        color: var(--ink-soft);
+        font-size: 13px;
+        line-height: 1.6;
+    }
+}
+.resultActions {
+    display: grid;
+    gap: 8px;
+    width: 100%;
+    margin-top: 20px;
+}
+.failIcon {
+    display: inline-grid;
+    place-items: center;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: #fdecea;
+    border: 1px solid #f5c6c0;
+    color: #c0392b;
+    font-size: 34px;
+    animation: pop 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.mockModal {
+    :global(.ant-modal-content) {
+        padding: 0;
+        border-radius: 14px;
+        overflow: hidden;
+    }
+    :global(.ant-modal-close) {
+        color: #fff;
+    }
+}
+.mockHead {
+    padding: 14px 20px;
+    background: #0a4d9c;
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    small {
+        display: block;
+        margin-top: 2px;
+        color: #bcd6f5;
+        font-weight: 400;
+        letter-spacing: 0;
+    }
+}
+.mockBody {
+    padding: 18px 20px 20px;
+    dl {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 6px 16px;
+        margin-bottom: 16px;
+        font-size: 14px;
+        dt {
+            color: var(--muted);
+        }
+        dd {
+            font-weight: 600;
+            text-align: right;
+        }
+    }
+    p {
+        margin-bottom: 14px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: #fff4d6;
+        color: #7a5a00;
+        font-size: 12.5px;
+    }
+}
+.mockActions {
+    display: grid;
+    gap: 8px;
+}
+
+@media (min-width: 861px) and (max-width: 1024px) {
+    .plansModal :global(.ant-modal-content) {
+        padding-inline: 40px;
+    }
+    .planGrid {
+        gap: 24px;
+    }
+    .planPrice {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 860px) {
+    .planGrid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        margin-top: 36px;
+    }
+    .planCardHot {
+        order: -1;
+        transform: none;
+        &:hover {
+            transform: translateY(-3px);
+        }
+    }
+    .planFoot {
+        flex-direction: column-reverse;
+        align-items: flex-end;
+        margin-top: 24px;
+    }
+    .plansModal :global(.ant-modal-content) {
+        padding: 40px 24px 24px;
+    }
+    .myUsage {
+        grid-template-columns: 1fr;
+    }
+}

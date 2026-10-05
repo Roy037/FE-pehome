@@ -9,18 +9,14 @@ interface IState {
         pageSize: number;
         pages: number;
         total: number;
-    },
-    result: IUser[]
+    };
+    result: IUser[];
 }
 // First, create the thunk
-export const fetchUser = createAsyncThunk(
-    'user/fetchUser',
-    async ({ query }: { query: string }) => {
-        const response = await callFetchUser(query);
-        return response;
-    }
-)
-
+export const fetchUser = createAsyncThunk('user/fetchUser', async ({ query }: { query: string }) => {
+    const response = await callFetchUser(query);
+    return response;
+});
 
 const initialState: IState = {
     isFetching: true,
@@ -28,11 +24,10 @@ const initialState: IState = {
         page: 1,
         pageSize: 10,
         pages: 0,
-        total: 0
+        total: 0,
     },
-    result: []
+    result: [],
 };
-
 
 export const userSlide = createSlice({
     name: 'user',
@@ -40,25 +35,23 @@ export const userSlide = createSlice({
     // The `reducers` field lets us define reducers and generate associated actions
     reducers: {
         // Use the PayloadAction type to declare the contents of `action.payload`
-        setActiveMenu: (state, action) => {
+        setActiveMenu: () => {
             // state.activeMenu = action.payload;
         },
-
-
     },
-    extraReducers: (builder) => {
+    extraReducers: builder => {
         // Add reducers for additional action types here, and handle loading state as needed
-        builder.addCase(fetchUser.pending, (state, action) => {
+        builder.addCase(fetchUser.pending, state => {
             state.isFetching = true;
             // Add user to the state array
             // state.courseOrder = action.payload;
-        })
+        });
 
-        builder.addCase(fetchUser.rejected, (state, action) => {
+        builder.addCase(fetchUser.rejected, state => {
             state.isFetching = false;
             // Add user to the state array
             // state.courseOrder = action.payload;
-        })
+        });
 
         builder.addCase(fetchUser.fulfilled, (state, action) => {
             if (action.payload && action.payload.data) {
@@ -69,13 +62,10 @@ export const userSlide = createSlice({
             // Add user to the state array
 
             // state.courseOrder = action.payload;
-        })
+        });
     },
-
 });
 
-export const {
-    setActiveMenu,
-} = userSlide.actions;
+export const { setActiveMenu } = userSlide.actions;
 
 export default userSlide.reducer;

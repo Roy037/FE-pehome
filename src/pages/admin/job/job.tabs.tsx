@@ -6,36 +6,25 @@ import Access from '@/components/share/access';
 import { ALL_PERMISSIONS } from '@/config/permissions';
 
 const JobTabs = () => {
-    const onChange = (key: string) => {
-        // console.log(key);
-    };
-
     const items: TabsProps['items'] = [
         {
             key: '1',
-            label: 'Manage Car',
+            label: 'Việc làm',
             children: <JobPage />,
         },
         {
             key: '2',
-            label: 'Manage Type',
+            label: 'Kỹ năng',
             children: <SkillPage />,
         },
-
     ];
     return (
         <div>
-            <Access
-                permission={ALL_PERMISSIONS.JOBS.GET_PAGINATE}
-            >
-                <Tabs
-                    defaultActiveKey="1"
-                    items={items}
-                    onChange={onChange}
-                />
+            <Access permission={ALL_PERMISSIONS.JOBS.GET_PAGINATE}>
+                <Tabs defaultActiveKey="1" items={items} />
             </Access>
         </div>
     );
-}
+};
 
 export default JobTabs;

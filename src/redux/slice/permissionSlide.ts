@@ -9,18 +9,14 @@ interface IState {
         pageSize: number;
         pages: number;
         total: number;
-    },
-    result: IPermission[]
+    };
+    result: IPermission[];
 }
 // First, create the thunk
-export const fetchPermission = createAsyncThunk(
-    'permission/fetchPermission',
-    async ({ query }: { query: string }) => {
-        const response = await callFetchPermission(query);
-        return response;
-    }
-)
-
+export const fetchPermission = createAsyncThunk('permission/fetchPermission', async ({ query }: { query: string }) => {
+    const response = await callFetchPermission(query);
+    return response;
+});
 
 const initialState: IState = {
     isFetching: true,
@@ -28,33 +24,29 @@ const initialState: IState = {
         page: 1,
         pageSize: 10,
         pages: 0,
-        total: 0
+        total: 0,
     },
-    result: []
+    result: [],
 };
-
 
 export const permissionSlide = createSlice({
     name: 'permission',
     initialState,
     // The `reducers` field lets us define reducers and generate associated actions
-    reducers: {
-
-
-    },
-    extraReducers: (builder) => {
+    reducers: {},
+    extraReducers: builder => {
         // Add reducers for additional action types here, and handle loading state as needed
-        builder.addCase(fetchPermission.pending, (state, action) => {
+        builder.addCase(fetchPermission.pending, state => {
             state.isFetching = true;
             // Add user to the state array
             // state.courseOrder = action.payload;
-        })
+        });
 
-        builder.addCase(fetchPermission.rejected, (state, action) => {
+        builder.addCase(fetchPermission.rejected, state => {
             state.isFetching = false;
             // Add user to the state array
             // state.courseOrder = action.payload;
-        })
+        });
 
         builder.addCase(fetchPermission.fulfilled, (state, action) => {
             if (action.payload && action.payload.data) {
@@ -65,13 +57,8 @@ export const permissionSlide = createSlice({
             // Add user to the state array
 
             // state.courseOrder = action.payload;
-        })
+        });
     },
-
 });
-
-export const {
-
-} = permissionSlide.actions;
 
 export default permissionSlide.reducer;

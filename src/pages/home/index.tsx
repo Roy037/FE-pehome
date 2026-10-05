@@ -353,12 +353,13 @@ const HomePage = () => {
     const jobs = useRequest(
         () =>
             callFetchJob(
-                new URLSearchParams({
-                    page: '1',
-                    size: '100',
-                    sort: 'createdAt,desc',
-                    filter: openJobsFilter(),
-                }).toString(),
+                new URLSearchParams([
+                    ['page', '1'],
+                    ['size', '100'],
+                    ['sort', 'pinnedUntil,desc'],
+                    ['sort', 'createdAt,desc'],
+                    ['filter', openJobsFilter()],
+                ]).toString(),
             ),
         [],
     );

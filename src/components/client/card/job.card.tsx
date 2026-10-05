@@ -12,6 +12,7 @@ import {
     jobPath,
     labelOf,
 } from '@/config/utils';
+import { PushPin as PiPushPin } from '@phosphor-icons/react';
 import CompanyLogo from './company-logo';
 import SaveJobButton from '../save-job.button';
 import styles from '@/styles/client.module.scss';
@@ -90,6 +91,8 @@ export const MiniJob = ({ job, showCompany = true }: { job: IJob; showCompany?: 
     </li>
 );
 
+export const isPinned = (job: IJob) => Boolean(job.pinnedUntil && new Date(job.pinnedUntil).getTime() > Date.now());
+
 export const JobRow = memo(({ job, index }: { job: IJob; index?: number }) => {
     const tags = jobTags(job);
     const posted = formatDate(job.createdAt);
@@ -107,6 +110,11 @@ export const JobRow = memo(({ job, index }: { job: IJob; index?: number }) => {
                             {job.name}
                         </Link>
                     </h3>
+                    {isPinned(job) && (
+                        <span className={styles.pinTag}>
+                            <PiPushPin weight="fill" aria-hidden="true" /> Tin ghim
+                        </span>
+                    )}
                     {tags.map(tag => (
                         <span key={tag} className={styles.tagSquare}>
                             {tag}

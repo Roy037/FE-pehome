@@ -10,7 +10,7 @@ import ui from '@/styles/client.module.scss';
 
 const columns: ColumnsType<IOrder> = [
     { title: 'Ngày', dataIndex: 'createdAt', render: (value: string) => formatDate(value) },
-    { title: 'Gói', dataIndex: 'plan', render: (value: string) => value.charAt(0) + value.slice(1).toLowerCase() },
+    { title: 'Gói', dataIndex: 'label' },
     { title: 'Số tiền', dataIndex: 'amount', render: (value: number) => formatVnd(value) },
     {
         title: 'Hiệu lực đến',

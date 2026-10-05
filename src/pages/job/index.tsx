@@ -83,14 +83,12 @@ const ClientJobPage = () => {
         if (selected.mode.length) filter.push(sfIn('workMode', selected.mode).toString());
         if (selected.company.length) filter.push(sfIn('company.companyType', selected.company).toString());
         if (salaryNarrowed) filter.push(salaryRangeFilter(salaryLo, salaryHi, withDeal));
-        return callFetchJob(
-            new URLSearchParams({
-                page: String(page),
-                size: String(PAGE_SIZE),
-                sort: sort.sort,
-                filter: filter.join(' and '),
-            }).toString(),
-        );
+        const query = new URLSearchParams({ page: String(page), size: String(PAGE_SIZE) });
+        // jobs a company paid to pin come first, then the order the person chose
+        query.append('sort', 'pinnedUntil,desc');
+        query.append('sort', sort.sort);
+        query.append('filter', filter.join(' and '));
+        return callFetchJob(query.toString());
     }, [search]);
 
     const update = (key: string, value: string | string[] | null) => {

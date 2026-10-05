@@ -45,6 +45,7 @@ const ReviewPage = lazy(() => import('./pages/admin/review'));
 const SavedJobPage = lazy(() => import('./pages/admin/saved-job'));
 const JobReportPage = lazy(() => import('./pages/admin/job-report'));
 const TalentPage = lazy(() => import('./pages/admin/talent'));
+const ServicePage = lazy(() => import('./pages/admin/service'));
 const SubscriberPage = lazy(() => import('./pages/admin/subscriber'));
 const ViewUpsertJob = lazy(() => import('./components/admin/job/upsert.job'));
 const JobTabs = lazy(() => import('./pages/admin/job/job.tabs'));
@@ -187,6 +188,14 @@ const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute>
                         <TalentPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: 'dich-vu',
+                element: (
+                    <ProtectedRoute>
+                        <ServicePage />
                     </ProtectedRoute>
                 ),
             },

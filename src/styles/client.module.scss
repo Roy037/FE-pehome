@@ -1755,3 +1755,15 @@
         line-height: 1.45;
     }
 }
+
+.pinTag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--brand-soft);
+    color: var(--brand-text);
+    font-size: 12px;
+    font-weight: 600;
+}

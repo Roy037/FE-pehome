@@ -11,7 +11,15 @@ import { ALL_PERMISSIONS } from '@/config/permissions';
 import { escapeFilter, formatVnd, ORDER_STATUS } from '@/config/utils';
 import { IAdminOrder } from '@/types/backend';
 
-const PLAN_NAME: Record<string, string> = { BASIC: 'Basic', STANDARD: 'Standard', PREMIUM: 'Premium' };
+const PLAN_NAME: Record<string, string> = {
+    BASIC: 'Basic',
+    STANDARD: 'Standard',
+    PREMIUM: 'Premium',
+    JOB_PIN_7: 'Ghim tin 7 ngày',
+    JOB_PIN_30: 'Ghim tin 30 ngày',
+    JOB_SLOTS_5: 'Thêm 5 tin đang mở',
+    TALENT_30: 'Mở khóa kho ứng viên',
+};
 const day = (value?: string | null) => (value ? dayjs(value).format('DD-MM-YYYY') : '—');
 
 const OrderPage = () => {
@@ -59,7 +67,7 @@ const OrderPage = () => {
             width: 110,
             valueType: 'select',
             valueEnum: Object.fromEntries(Object.entries(PLAN_NAME).map(([code, name]) => [code, { text: name }])),
-            render: (_, row) => PLAN_NAME[row.order.plan] ?? row.order.plan,
+            render: (_, row) => row.order.label,
         },
         {
             title: 'Số tiền',
@@ -132,7 +140,15 @@ const OrderPage = () => {
                     if (params.userEmail)
                         filters.push(sfLike('user.email', escapeFilter(String(params.userEmail)), true).toString());
                     for (const key of ['plan', 'method', 'status'] as const) {
-                        if (params[key]) filters.push(sfEqual(key, String(params[key])).toString());
+                        if (!params[key]) continue;
+                        const value = String(params[key]);
+                        // the same column filters candidate plans and employer products, which are separate fields
+                        filters.push(
+                            sfEqual(
+                                key === 'plan' && /^(JOB_|TALENT_)/.test(value) ? 'product' : key,
+                                value,
+                            ).toString(),
+                        );
                     }
                     const query = new URLSearchParams({
                         page: String(params.current ?? 1),

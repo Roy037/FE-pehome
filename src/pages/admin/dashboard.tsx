@@ -354,7 +354,11 @@ const DashboardPage = () => {
                                 {overview.revenue.byPlan.map(plan => (
                                     <li key={plan.plan}>
                                         <div>
-                                            <strong>Gói {plan.label}</strong>
+                                            <strong>
+                                                {plan.plan.startsWith('JOB_') || plan.plan === 'TALENT_30'
+                                                    ? plan.label
+                                                    : `Gói ${plan.label}`}
+                                            </strong>
                                             <span>{plan.orders} lượt mua</span>
                                         </div>
                                         <strong>{formatVnd(plan.amount)}</strong>
@@ -421,8 +425,7 @@ const DashboardPage = () => {
                                         <div>
                                             <strong>{userName}</strong>
                                             <span>
-                                                Gói {order.plan.charAt(0) + order.plan.slice(1).toLowerCase()} ·{' '}
-                                                {formatVnd(order.amount)}
+                                                {order.label} · {formatVnd(order.amount)}
                                             </span>
                                         </div>
                                         <div className={s.rowMeta}>

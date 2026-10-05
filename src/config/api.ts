@@ -13,6 +13,8 @@ import {
     IPlan,
     IBackendRes,
     ICompany,
+    IEmployerServices,
+    EmployerProductCode,
     ICompanyVerification,
     IAccount,
     IProfile,
@@ -162,6 +164,12 @@ export const callFetchTalents = (query: string) =>
     axios.get<IBackendRes<IModelPaginate<ITalent>>>(`/api/v1/talents?${query}`);
 export const callFetchTalent = (id: number) => axios.get<IBackendRes<ITalentDetail>>(`/api/v1/talents/${id}`);
 export const callFetchMyOrders = () => axios.get<IBackendRes<IOrder[]>>('/api/v1/me/orders');
+export const callFetchEmployerServices = () =>
+    axios.get<IBackendRes<IEmployerServices>>('/api/v1/me/employer/services');
+
+export const callCreateEmployerOrder = (product: EmployerProductCode, method: string, jobId?: string | number) =>
+    axios.post<IBackendRes<ICreateOrder>>('/api/v1/me/employer/orders', { product, method, jobId });
+
 export const callCreateOrder = (plan: string, method?: string) =>
     axios.post<IBackendRes<ICreateOrder>>('/api/v1/me/orders', { plan, method });
 export const callFetchPaymentMethods = () => axios.get<IBackendRes<IPaymentMethod[]>>('/api/v1/payments/methods');

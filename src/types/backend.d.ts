@@ -118,6 +118,7 @@ export interface IUser {
 export interface IJob {
     id?: string;
     name: string;
+    pinnedUntil?: string | null;
     skills: ISkill[];
     company?: { id: string; name: string } & Partial<Omit<ICompany, 'id' | 'name'>>;
     location: string;
@@ -270,9 +271,30 @@ export interface IMyPlan {
     savedJobCap: number;
     savedJobsUsed: number;
 }
+export type EmployerProductCode = 'JOB_PIN_7' | 'JOB_PIN_30' | 'JOB_SLOTS_5' | 'TALENT_30';
+
+export interface IEmployerServices {
+    openJobs: number;
+    freeJobs: number;
+    jobLimit: number;
+    talentUntil?: string | null;
+    pins: { jobId: number; jobName: string; until: string }[];
+    products: {
+        code: EmployerProductCode;
+        label: string;
+        priceVnd: number;
+        days: number;
+        slots: number;
+        pin: boolean;
+    }[];
+    orders: IOrder[];
+}
+
 export interface IOrder {
     id: number;
-    plan: PlanCode;
+    plan?: PlanCode | null;
+    product?: EmployerProductCode | null;
+    label: string;
     amount: number;
     status: 'PENDING' | 'PAID' | 'FAILED' | 'EXPIRED';
     createdAt: string;
@@ -305,7 +327,7 @@ export interface IAdminStats {
         last30Days: number;
         paidOrders: number;
         payingUsers: number;
-        byPlan: { plan: PlanCode; label: string; orders: number; amount: number }[];
+        byPlan: { plan: PlanCode | EmployerProductCode; label: string; orders: number; amount: number }[];
     };
     months: { month: string; signups: number; applications: number; revenue: number }[];
 }

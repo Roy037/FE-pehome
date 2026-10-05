@@ -4,6 +4,7 @@ import { FileTextOutlined, MailOutlined } from '@ant-design/icons';
 import { avatarUrl } from '@/components/client/avatar';
 import CvViewerModal from '@/components/client/cv-viewer';
 import { VipBadge } from '@/components/client/vip';
+import { Link } from 'react-router-dom';
 import { callFetchTalent } from '@/config/api';
 import { EXPERIENCE_LIST, LEVEL_LIST, labelOf } from '@/config/utils';
 import { ITalentDetail } from '@/types/backend';
@@ -19,6 +20,7 @@ const month = (value?: string) => (value ? value.split('-').reverse().join('/') 
 const ViewTalent = ({ id, onClose }: IProps) => {
     const [detail, setDetail] = useState<ITalentDetail | null>(null);
     const [failed, setFailed] = useState(false);
+    const [locked, setLocked] = useState(false);
     const [viewingCv, setViewingCv] = useState(false);
 
     useEffect(() => {
@@ -26,11 +28,13 @@ const ViewTalent = ({ id, onClose }: IProps) => {
         let ignore = false;
         setDetail(null);
         setFailed(false);
+        setLocked(false);
         (async () => {
             try {
                 const res = await callFetchTalent(id);
                 if (ignore) return;
                 if (res.data) setDetail(res.data);
+                else if (+res.statusCode === 403) setLocked(true);
                 else setFailed(true);
             } catch {
                 if (!ignore) setFailed(true);
@@ -54,7 +58,17 @@ const ViewTalent = ({ id, onClose }: IProps) => {
     return (
         <Drawer open={id !== null} onClose={onClose} width="min(560px, 100vw)" title="Hồ sơ ứng viên" destroyOnClose>
             {failed && <Empty description="Ứng viên đã tắt chia sẻ hồ sơ hoặc không còn tồn tại." />}
-            {!failed && !detail && <Skeleton active avatar paragraph={{ rows: 8 }} />}
+            {locked && (
+                <Empty
+                    description="Kho ứng viên chưa được mở khóa. Hãy mở khóa để xem chi tiết hồ sơ và CV."
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                >
+                    <Link to="/admin/dich-vu">
+                        <Button type="primary">Mở khóa kho ứng viên</Button>
+                    </Link>
+                </Empty>
+            )}
+            {!failed && !locked && !detail && <Skeleton active avatar paragraph={{ rows: 8 }} />}
             {detail && talent && (
                 <div className={s.talentView}>
                     <div className={s.talentHead}>

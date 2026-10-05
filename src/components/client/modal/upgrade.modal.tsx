@@ -427,11 +427,7 @@ export const UpgradeModalProvider = ({ children }: { children: ReactNode }) => {
                             <h2>Tuyệt vời!</h2>
                             <h3>Thanh toán thành công</h3>
                             <p>
-                                Gói{' '}
-                                <strong>
-                                    {result.order.plan.charAt(0) + result.order.plan.slice(1).toLowerCase()}
-                                </strong>{' '}
-                                đã được kích hoạt
+                                <strong>{result.order.label}</strong> đã được kích hoạt
                                 {result.order.endsAt ? (
                                     <>
                                         , có hiệu lực đến <strong>{formatDate(result.order.endsAt)}</strong>

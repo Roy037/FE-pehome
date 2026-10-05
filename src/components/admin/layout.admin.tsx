@@ -14,6 +14,7 @@ import {
     HeartOutlined,
     MailOutlined,
     ContactsOutlined,
+    ShoppingOutlined,
     WalletOutlined,
     HomeOutlined,
     CameraOutlined,
@@ -203,6 +204,15 @@ const LayoutAdmin = () => {
                               label: <Link to="/admin/talent">Kho ứng viên</Link>,
                               key: '/admin/talent',
                               icon: <ContactsOutlined />,
+                          },
+                      ]
+                    : []),
+                ...(company && company.approved
+                    ? [
+                          {
+                              label: <Link to="/admin/dich-vu">Dịch vụ</Link>,
+                              key: '/admin/dich-vu',
+                              icon: <ShoppingOutlined />,
                           },
                       ]
                     : []),

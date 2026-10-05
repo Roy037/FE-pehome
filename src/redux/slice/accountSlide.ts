@@ -30,6 +30,7 @@ interface IState {
         company: { id: number; name: string; approved: boolean; rejectionReason?: string | null } | null;
         avatar: string | null;
         emailVerified: boolean;
+        termsRequired: boolean;
     };
     activeMenu: string;
 }
@@ -51,6 +52,7 @@ const initialState: IState = {
         company: null,
         avatar: null,
         emailVerified: true,
+        termsRequired: false,
     },
 
     activeMenu: 'home',
@@ -75,6 +77,7 @@ export const accountSlide = createSlice({
             state.user.company = action?.payload?.company ?? null;
             state.user.avatar = action?.payload?.avatar ?? null;
             state.user.emailVerified = action?.payload?.emailVerified ?? true;
+            state.user.termsRequired = action?.payload?.termsRequired ?? false;
 
             if (!action?.payload?.role) state.user.role = {};
             state.user.role.permissions = action?.payload?.role?.permissions ?? [];
@@ -95,6 +98,7 @@ export const accountSlide = createSlice({
                 company: null,
                 avatar: null,
                 emailVerified: true,
+                termsRequired: false,
             };
         },
         setRefreshTokenAction: (state, action) => {
@@ -121,6 +125,7 @@ export const accountSlide = createSlice({
                 state.user.company = action?.payload?.user?.company ?? null;
                 state.user.avatar = action?.payload?.user?.avatar ?? null;
                 state.user.emailVerified = action?.payload?.user?.emailVerified ?? true;
+                state.user.termsRequired = action?.payload?.user?.termsRequired ?? false;
                 if (!action?.payload?.user?.role) state.user.role = {};
                 state.user.role.permissions = action?.payload?.user?.role?.permissions ?? [];
             }

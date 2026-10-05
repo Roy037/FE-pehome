@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Form, Input, message, notification } from 'antd';
+import { Button, Checkbox, Form, Input, message, notification } from 'antd';
 import {
     ArrowLeftOutlined,
     BankOutlined,
@@ -12,6 +12,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { callRegisterEmployer } from '@/config/api';
 import { useAppSelector } from '@/redux/hooks';
 import { AssetImage, Brand } from './decor';
+import { TermsModal } from './employer-terms';
 import { Highlights, errorText, notifyOffline, useSignIn } from './auth';
 import a from '@/styles/auth.module.scss';
 
@@ -129,11 +130,13 @@ interface RegisterValues {
     email: string;
     password: string;
     confirm: string;
+    acceptTerms: boolean;
 }
 
 const RegisterForm = ({ onSwitch }: Pick<FormProps, 'onSwitch'>) => {
     const [busy, setBusy] = useState(false);
     const [sentFor, setSentFor] = useState<string | null>(null);
+    const [termsOpen, setTermsOpen] = useState(false);
 
     const onFinish = async (values: RegisterValues) => {
         setBusy(true);
@@ -144,6 +147,7 @@ const RegisterForm = ({ onSwitch }: Pick<FormProps, 'onSwitch'>) => {
                 name: values.name.trim(),
                 email: values.email.trim(),
                 password: values.password,
+                acceptTerms: values.acceptTerms,
             });
             if (res?.data?.id) setSentFor(values.companyName.trim());
             else
@@ -259,10 +263,30 @@ const RegisterForm = ({ onSwitch }: Pick<FormProps, 'onSwitch'>) => {
                         <Input.Password placeholder="Nhập lại" autoComplete="new-password" />
                     </Form.Item>
                 </div>
+                <Form.Item
+                    name="acceptTerms"
+                    valuePropName="checked"
+                    rules={[
+                        {
+                            validator: (_, value) =>
+                                value
+                                    ? Promise.resolve()
+                                    : Promise.reject(new Error('Vui lòng đồng ý Điều khoản để tiếp tục.')),
+                        },
+                    ]}
+                >
+                    <Checkbox>
+                        Tôi đã đọc và đồng ý với{' '}
+                        <button type="button" className={a.termsLink} onClick={() => setTermsOpen(true)}>
+                            Điều khoản sử dụng dành cho nhà tuyển dụng
+                        </button>
+                    </Checkbox>
+                </Form.Item>
                 <Button type="primary" htmlType="submit" block loading={busy} className={a.submit}>
                     Gửi đăng ký
                 </Button>
             </Form>
+            <TermsModal open={termsOpen} onClose={() => setTermsOpen(false)} />
             <p className={a.switch}>
                 Đã có tài khoản?{' '}
                 <button type="button" onClick={onSwitch}>

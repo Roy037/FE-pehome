@@ -44,8 +44,13 @@ export const callRegisterEmployer = (data: {
     name: string;
     email: string;
     password: string;
+    acceptTerms: boolean;
 }) => {
     return axios.post<IBackendRes<IUser>>('/api/v1/auth/register-employer', data);
+};
+
+export const callAcceptTerms = () => {
+    return axios.post<IBackendRes<unknown>>('/api/v1/me/terms');
 };
 
 export const callForgotPassword = (email: string) => {

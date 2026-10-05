@@ -484,3 +484,14 @@
     color: var(--brand-text);
     font-size: 26px;
 }
+
+.termsLink {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--brand-text);
+    font: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+}

@@ -20,6 +20,7 @@ import LayoutApp from './components/share/layout.app';
 const LoginPage = lazy(() => import('pages/auth/login'));
 const RegisterPage = lazy(() => import('pages/auth/register'));
 const ForgotPasswordPage = lazy(() => import('pages/auth/forgot-password'));
+const EmployerTermsPage = lazy(() => import('pages/legal/employer-terms'));
 const ResetPasswordPage = lazy(() => import('pages/auth/reset-password'));
 const OAuthCompletePage = lazy(() => import('pages/auth/oauth-complete'));
 const OrderPage = lazy(() => import('pages/admin/order'));
@@ -97,6 +98,7 @@ const router = createBrowserRouter([
             { path: 'company', element: <ClientCompanyPage /> },
             { path: 'company/:id', element: <ClientCompanyDetailPage /> },
             { path: 'ho-so', element: <ProfilePage /> },
+            { path: 'dieu-khoan-nha-tuyen-dung', element: <EmployerTermsPage /> },
         ],
     },
 

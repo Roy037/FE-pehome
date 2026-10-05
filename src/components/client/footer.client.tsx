@@ -121,6 +121,9 @@ const Footer = () => {
                                 <li>
                                     <Link to="/admin/resume">Quản lý hồ sơ</Link>
                                 </li>
+                                <li>
+                                    <Link to="/dieu-khoan-nha-tuyen-dung">Điều khoản nhà tuyển dụng</Link>
+                                </li>
                             </ul>
                         ) : (
                             <ul>
@@ -129,6 +132,9 @@ const Footer = () => {
                                 </li>
                                 <li>
                                     <AuthLink mode="employer-register">Đăng ký nhà tuyển dụng</AuthLink>
+                                </li>
+                                <li>
+                                    <Link to="/dieu-khoan-nha-tuyen-dung">Điều khoản nhà tuyển dụng</Link>
                                 </li>
                             </ul>
                         )}

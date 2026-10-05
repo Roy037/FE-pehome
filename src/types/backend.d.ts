@@ -35,6 +35,7 @@ export interface IAccount {
         company?: { id: number; name: string; approved: boolean; rejectionReason?: string | null } | null;
         avatar?: string | null;
         emailVerified?: boolean;
+        termsRequired?: boolean;
     };
 }
 

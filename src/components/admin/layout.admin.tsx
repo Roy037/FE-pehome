@@ -20,18 +20,20 @@ import {
     LockOutlined,
     LogoutOutlined,
 } from '@ant-design/icons';
-import { Layout, Menu, Dropdown, Space, message, Avatar, Button, Alert, Tag, Drawer, Grid } from 'antd';
+import { Layout, Menu, Dropdown, Space, message, Avatar, Button, Alert, Tag, Drawer, Grid, Modal } from 'antd';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { callLogout } from 'config/api';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import type { MenuProps } from 'antd';
-import { setLogoutAction } from '@/redux/slice/accountSlide';
+import { fetchAccount, setLogoutAction } from '@/redux/slice/accountSlide';
 import { ALL_PERMISSIONS } from '@/config/permissions';
 import { COMPANY_STATUS, companyStatus } from '@/config/utils';
 import ProLocale from './pro-locale';
 import VerifyBanner from '@/components/client/verify-banner';
 import ChangePasswordModal from '@/components/client/modal/change-password';
+import { EmployerTermsContent } from '@/components/client/employer-terms';
+import { callAcceptTerms } from '@/config/api';
 import ChangeAvatarModal from '@/components/client/modal/change-avatar';
 import { avatarUrl } from '@/components/client/avatar';
 
@@ -44,6 +46,7 @@ const LayoutAdmin = () => {
     const narrow = Grid.useBreakpoint().md === false;
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [passwordOpen, setPasswordOpen] = useState(false);
+    const [acceptingTerms, setAcceptingTerms] = useState(false);
     const [avatarOpen, setAvatarOpen] = useState(false);
     const [activeMenu, setActiveMenu] = useState('');
     const user = useAppSelector(state => state.account.user);
@@ -256,6 +259,18 @@ const LayoutAdmin = () => {
         setDrawerOpen(false);
     }, [location]);
 
+    const acceptTerms = async () => {
+        setAcceptingTerms(true);
+        try {
+            await callAcceptTerms();
+            await dispatch(fetchAccount());
+        } catch {
+            message.error('Chưa thể lưu lựa chọn của bạn. Vui lòng thử lại.');
+        } finally {
+            setAcceptingTerms(false);
+        }
+    };
+
     const handleLogout = async () => {
         try {
             await callLogout();
@@ -431,6 +446,28 @@ const LayoutAdmin = () => {
                 </Layout>
             </Layout>
             <ChangePasswordModal open={passwordOpen} onClose={() => setPasswordOpen(false)} />
+            <Modal
+                open={Boolean(user.company) && user.termsRequired}
+                centered
+                closable={false}
+                maskClosable={false}
+                keyboard={false}
+                width={640}
+                title="Điều khoản sử dụng dành cho nhà tuyển dụng"
+                footer={[
+                    <Button key="logout" onClick={handleLogout}>
+                        Đăng xuất
+                    </Button>,
+                    <Button key="accept" type="primary" loading={acceptingTerms} onClick={acceptTerms}>
+                        Tôi đã đọc và đồng ý
+                    </Button>,
+                ]}
+            >
+                <p>Để tiếp tục dùng tài khoản nhà tuyển dụng, vui lòng đọc và đồng ý với điều khoản dưới đây.</p>
+                <div style={{ maxHeight: 'min(50vh, 440px)', overflowY: 'auto', paddingRight: 6 }}>
+                    <EmployerTermsContent />
+                </div>
+            </Modal>
             <ChangeAvatarModal open={avatarOpen} onClose={() => setAvatarOpen(false)} />
         </ProLocale>
     );

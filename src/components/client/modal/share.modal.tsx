@@ -10,6 +10,7 @@ import {
     XLogo as PiXLogo,
 } from '@phosphor-icons/react';
 import { SiZalo } from 'react-icons/si';
+import CompanyLogo from '@/components/client/card/company-logo';
 import { useIsMobile } from '@/config/use-mobile';
 import s from '@/styles/share.module.scss';
 
@@ -19,6 +20,12 @@ interface IProps {
     kind: 'job' | 'company';
     id?: string | number;
     title: string;
+    /** the company behind the post, shown on the preview card */
+    company?: { name?: string; logo?: string };
+    /** short facts under the title on the preview card, e.g. salary and city */
+    facts?: string[];
+    /** the ready-made post text; the person can edit it before sharing */
+    message: string;
 }
 
 const FACEBOOK_APP_ID = import.meta.env.VITE_FACEBOOK_APP_ID as string | undefined;
@@ -47,12 +54,16 @@ interface Channel {
     onClick?: () => void;
 }
 
-const ShareModal = ({ open, onClose, kind, id, title }: IProps) => {
+const ShareModal = ({ open, onClose, kind, id, title, company, facts = [], message: template }: IProps) => {
     const mobile = useIsMobile();
     const url = shareAddress(kind, id);
-    const text = kind === 'job' ? `${title} đang tuyển trên itjobs` : `${title} trên itjobs`;
+    const [text, setText] = useState(template);
     const [qr, setQr] = useState('');
     const canNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+
+    useEffect(() => {
+        if (open) setText(template);
+    }, [open, template]);
 
     useEffect(() => {
         if (!open) return;
@@ -68,6 +79,11 @@ const ShareModal = ({ open, onClose, kind, id, title }: IProps) => {
     const copyLink = async () => {
         if (await copy(url)) message.success('Đã sao chép liên kết.');
         else message.error('Chưa thể sao chép. Hãy chọn và sao chép liên kết trong ô.');
+    };
+
+    const copyMessage = async () => {
+        if (await copy(`${text}\n${url}`)) message.success('Đã sao chép nội dung kèm liên kết.');
+        else message.error('Chưa thể sao chép. Hãy chọn và sao chép nội dung trong ô.');
     };
 
     const nativeShare = async () => {
@@ -135,7 +151,38 @@ const ShareModal = ({ open, onClose, kind, id, title }: IProps) => {
 
     return (
         <Modal open={open} onCancel={onClose} footer={null} centered destroyOnClose width={420} title="Chia sẻ">
-            <p className={s.subject}>{title}</p>
+            <div className={s.card}>
+                <CompanyLogo name={company?.name} logo={company?.logo} size={52} />
+                <div className={s.cardText}>
+                    <strong>{title}</strong>
+                    {kind === 'job' && company?.name && <span>{company.name}</span>}
+                    {facts.length > 0 && (
+                        <span className={s.facts}>
+                            {facts.map(fact => (
+                                <em key={fact}>{fact}</em>
+                            ))}
+                        </span>
+                    )}
+                </div>
+            </div>
+            <label className={s.messageLabel} htmlFor="share-message">
+                Nội dung chia sẻ
+            </label>
+            <Input.TextArea
+                id="share-message"
+                value={text}
+                onChange={event => setText(event.target.value)}
+                autoSize={{ minRows: 3, maxRows: 6 }}
+                maxLength={500}
+            />
+            <div className={s.messageTools}>
+                <span>
+                    Facebook và LinkedIn lấy tiêu đề, ảnh từ liên kết nên không nhận sẵn nội dung. Dán vào khi đăng.
+                </span>
+                <button type="button" onClick={copyMessage}>
+                    Sao chép nội dung
+                </button>
+            </div>
             <div className={s.grid}>
                 {channels.map(channel => {
                     const content = (

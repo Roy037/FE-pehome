@@ -1,9 +1,69 @@
-.subject {
-    margin: 0 0 18px;
+.card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--cream);
+}
+.cardText {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    strong {
+        display: -webkit-box;
+        overflow: hidden;
+        font-size: 15px;
+        line-height: 1.35;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+    span {
+        color: var(--ink-soft);
+        font-size: 13px;
+    }
+}
+.facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    em {
+        color: var(--muted);
+        font-size: 12px;
+        font-style: normal;
+    }
+}
+.messageLabel {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.messageTools {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 6px 0 18px;
     color: var(--muted);
-    font-size: 14px;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
+    font-size: 12px;
+    line-height: 1.45;
+    button {
+        flex: none;
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--brand-text);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
 }
 .grid {
     display: grid;

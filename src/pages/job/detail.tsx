@@ -421,7 +421,16 @@ const ClientJobDetailPage = () => {
                 </aside>
             </div>
             <ReportJobModal open={reportOpen} onClose={() => setReportOpen(false)} jobId={job.id} jobName={job.name} />
-            <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} kind="job" id={job.id} title={job.name} />
+            <ShareModal
+                open={shareOpen}
+                onClose={() => setShareOpen(false)}
+                kind="job"
+                id={job.id}
+                title={job.name}
+                company={job.company}
+                facts={[formatSalary(job.salary, job.salaryMax), getCityName(job.location)]}
+                message={`Cơ hội việc làm: ${job.name}${job.company?.name ? ` tại ${job.company.name}` : ''}.\nMức lương: ${formatSalary(job.salary, job.salaryMax)}. Địa điểm: ${getCityName(job.location)}.\nXem chi tiết và ứng tuyển trên itjobs:`}
+            />
             <ApplyModal
                 isModalOpen={applyOpen}
                 setIsModalOpen={setApplyOpen}

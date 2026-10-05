@@ -275,6 +275,9 @@ const ClientCompanyDetailPage = () => {
                 kind="company"
                 id={company.id}
                 title={company.name ?? 'itjobs'}
+                company={company}
+                facts={company.address ? [company.address] : []}
+                message={`Xem hồ sơ công ty ${company.name ?? ''} và các vị trí đang tuyển trên itjobs:`}
             />
         </div>
     );

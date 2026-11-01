@@ -9,18 +9,14 @@ interface IState {
         pageSize: number;
         pages: number;
         total: number;
-    },
-    result: ISkill[]
+    };
+    result: ISkill[];
 }
 // First, create the thunk
-export const fetchSkill = createAsyncThunk(
-    'skill/fetchSkill',
-    async ({ query }: { query: string }) => {
-        const response = await callFetchAllSkill(query);
-        return response;
-    }
-)
-
+export const fetchSkill = createAsyncThunk('skill/fetchSkill', async ({ query }: { query: string }) => {
+    const response = await callFetchAllSkill(query);
+    return response;
+});
 
 const initialState: IState = {
     isFetching: true,
@@ -28,11 +24,10 @@ const initialState: IState = {
         page: 1,
         pageSize: 10,
         pages: 0,
-        total: 0
+        total: 0,
     },
-    result: []
+    result: [],
 };
-
 
 export const skillSlide = createSlice({
     name: 'skill',
@@ -40,25 +35,23 @@ export const skillSlide = createSlice({
     // The `reducers` field lets us define reducers and generate associated actions
     reducers: {
         // Use the PayloadAction type to declare the contents of `action.payload`
-        setActiveMenu: (state, action) => {
+        setActiveMenu: () => {
             // state.activeMenu = action.payload;
         },
-
-
     },
-    extraReducers: (builder) => {
+    extraReducers: builder => {
         // Add reducers for additional action types here, and handle loading state as needed
-        builder.addCase(fetchSkill.pending, (state, action) => {
+        builder.addCase(fetchSkill.pending, state => {
             state.isFetching = true;
             // Add user to the state array
             // state.courseOrder = action.payload;
-        })
+        });
 
-        builder.addCase(fetchSkill.rejected, (state, action) => {
+        builder.addCase(fetchSkill.rejected, state => {
             state.isFetching = false;
             // Add user to the state array
             // state.courseOrder = action.payload;
-        })
+        });
 
         builder.addCase(fetchSkill.fulfilled, (state, action) => {
             if (action.payload && action.payload.data) {
@@ -69,13 +62,10 @@ export const skillSlide = createSlice({
             // Add user to the state array
 
             // state.courseOrder = action.payload;
-        })
+        });
     },
-
 });
 
-export const {
-    setActiveMenu,
-} = skillSlide.actions;
+export const { setActiveMenu } = skillSlide.actions;
 
 export default skillSlide.reducer;

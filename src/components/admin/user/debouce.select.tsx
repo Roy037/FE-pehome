@@ -3,8 +3,10 @@ import { Select, Spin } from 'antd';
 import type { SelectProps } from 'antd/es/select';
 import debounce from 'lodash/debounce';
 
-export interface DebounceSelectProps<ValueType = any>
-    extends Omit<SelectProps<ValueType | ValueType[]>, 'options' | 'children'> {
+export interface DebounceSelectProps<ValueType = any> extends Omit<
+    SelectProps<ValueType | ValueType[]>,
+    'options' | 'children'
+> {
     fetchOptions: (search: string) => Promise<ValueType[]>;
     debounceTimeout?: number;
 }
@@ -22,7 +24,7 @@ export function DebounceSelect<
             setOptions([]);
             setFetching(true);
 
-            fetchOptions(value).then((newOptions) => {
+            fetchOptions(value).then(newOptions => {
                 if (fetchId !== fetchRef.current) {
                     // for fetch callback order
                     return;
@@ -41,14 +43,14 @@ export function DebounceSelect<
         if (options && options.length > 0) {
             return;
         }
-        fetchOptions("").then((newOptions) => {
+        fetchOptions('').then(newOptions => {
             setOptions([...options, ...newOptions]);
         });
-    }
+    };
 
     const handleOnBlur = () => {
         setOptions([]);
-    }
+    };
 
     return (
         <Select
@@ -63,4 +65,3 @@ export function DebounceSelect<
         />
     );
 }
-

@@ -1,9 +1,9 @@
-import { IBackendRes } from "@/types/backend";
-import { Mutex } from "async-mutex";
-import axiosClient from "axios";
-import { store } from "@/redux/store";
-import { setRefreshTokenAction } from "@/redux/slice/accountSlide";
-import { notification } from "antd";
+import { IBackendRes } from '@/types/backend';
+import { Mutex } from 'async-mutex';
+import axiosClient from 'axios';
+import { store } from '@/redux/store';
+import { setLogoutAction, setRefreshTokenAction } from '@/redux/slice/accountSlide';
+import { notification } from 'antd';
 interface AccessTokenResponse {
     access_token: string;
 }
@@ -14,11 +14,12 @@ interface AccessTokenResponse {
 
 const instance = axiosClient.create({
     baseURL: import.meta.env.VITE_BACKEND_URL as string,
-    withCredentials: true
+    withCredentials: true,
 });
 
 const mutex = new Mutex();
 const NO_RETRY_HEADER = 'x-no-retry';
+const publicAuthPaths = ['/api/v1/auth/login', '/api/v1/auth/register', '/api/v1/auth/refresh'];
 
 const handleRefreshToken = async (): Promise<string | null> => {
     return await mutex.runExclusive(async () => {
@@ -29,12 +30,16 @@ const handleRefreshToken = async (): Promise<string | null> => {
 };
 
 instance.interceptors.request.use(function (config) {
-    if (typeof window !== "undefined" && window && window.localStorage && window.localStorage.getItem('access_token')) {
+    if (
+        !publicAuthPaths.includes(config.url || '') &&
+        typeof window !== 'undefined' &&
+        window.localStorage.getItem('access_token')
+    ) {
         config.headers.Authorization = 'Bearer ' + window.localStorage.getItem('access_token');
     }
-    if (!config.headers.Accept && config.headers["Content-Type"]) {
-        config.headers.Accept = "application/json";
-        config.headers["Content-Type"] = "application/json; charset=utf-8";
+    if (!config.headers.Accept && config.headers['Content-Type']) {
+        config.headers.Accept = 'application/json';
+        config.headers['Content-Type'] = 'application/json; charset=utf-8';
     }
     return config;
 });
@@ -44,42 +49,53 @@ instance.interceptors.request.use(function (config) {
  * for requests, but it is omitted here for brevity.
  */
 instance.interceptors.response.use(
-    (res) => res.data,
-    async (error) => {
-        if (error.config && error.response
-            && +error.response.status === 401
-            && error.config.url !== '/api/v1/auth/login'
-            && !error.config.headers[NO_RETRY_HEADER]
+    res => res.data,
+    async error => {
+        if (
+            error.config &&
+            error.response &&
+            +error.response.status === 401 &&
+            !publicAuthPaths.includes(error.config.url) &&
+            !error.config.headers[NO_RETRY_HEADER]
         ) {
-            const access_token = await handleRefreshToken();
-            error.config.headers[NO_RETRY_HEADER] = 'true'
+            error.config.headers[NO_RETRY_HEADER] = 'true';
+            let access_token: string | null = null;
+            try {
+                access_token = await handleRefreshToken();
+            } catch {}
             if (access_token) {
                 error.config.headers['Authorization'] = `Bearer ${access_token}`;
-                localStorage.setItem('access_token', access_token)
+                localStorage.setItem('access_token', access_token);
                 return instance.request(error.config);
             }
+            store.dispatch(setLogoutAction({}));
         }
 
         if (
-            error.config && error.response
-            && +error.response.status === 400
-            && error.config.url === '/api/v1/auth/refresh'
-            && location.pathname.startsWith("/admin")
+            error.config &&
+            error.response &&
+            +error.response.status === 400 &&
+            error.config.url === '/api/v1/auth/refresh' &&
+            location.pathname.startsWith('/admin')
         ) {
-            const message = error?.response?.data?.error ?? "Có lỗi xảy ra, vui lòng login.";
+            const message = error?.response?.data?.error ?? 'Có lỗi xảy ra, vui lòng login.';
             //dispatch redux action
             store.dispatch(setRefreshTokenAction({ status: true, message }));
         }
 
-        if (+error.response.status === 403) {
+        if (
+            error.response?.status === 403 &&
+            !(error.response.data instanceof Blob) &&
+            !publicAuthPaths.includes(error.config?.url)
+        ) {
             notification.error({
-                message: error?.response?.data?.message ?? "",
-                description: error?.response?.data?.error ?? ""
-            })
+                message: error?.response?.data?.message ?? '',
+                description: error?.response?.data?.error ?? '',
+            });
         }
 
         return error?.response?.data ?? Promise.reject(error);
-    }
+    },
 );
 
 /**

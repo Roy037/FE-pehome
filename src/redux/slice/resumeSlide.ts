@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { callFetchJob, callFetchResume } from '@/config/api';
+import { callFetchResume } from '@/config/api';
 import { IResume } from '@/types/backend';
 
 interface IState {
@@ -9,18 +9,14 @@ interface IState {
         pageSize: number;
         pages: number;
         total: number;
-    },
-    result: IResume[]
+    };
+    result: IResume[];
 }
 // First, create the thunk
-export const fetchResume = createAsyncThunk(
-    'resume/fetchResume',
-    async ({ query }: { query: string }) => {
-        const response = await callFetchResume(query);
-        return response;
-    }
-)
-
+export const fetchResume = createAsyncThunk('resume/fetchResume', async ({ query }: { query: string }) => {
+    const response = await callFetchResume(query);
+    return response;
+});
 
 const initialState: IState = {
     isFetching: true,
@@ -28,11 +24,10 @@ const initialState: IState = {
         page: 1,
         pageSize: 10,
         pages: 0,
-        total: 0
+        total: 0,
     },
-    result: []
+    result: [],
 };
-
 
 export const resumeSlide = createSlice({
     name: 'resume',
@@ -40,25 +35,23 @@ export const resumeSlide = createSlice({
     // The `reducers` field lets us define reducers and generate associated actions
     reducers: {
         // Use the PayloadAction type to declare the contents of `action.payload`
-        setActiveMenu: (state, action) => {
+        setActiveMenu: () => {
             // state.activeMenu = action.payload;
         },
-
-
     },
-    extraReducers: (builder) => {
+    extraReducers: builder => {
         // Add reducers for additional action types here, and handle loading state as needed
-        builder.addCase(fetchResume.pending, (state, action) => {
+        builder.addCase(fetchResume.pending, state => {
             state.isFetching = true;
             // Add user to the state array
             // state.courseOrder = action.payload;
-        })
+        });
 
-        builder.addCase(fetchResume.rejected, (state, action) => {
+        builder.addCase(fetchResume.rejected, state => {
             state.isFetching = false;
             // Add user to the state array
             // state.courseOrder = action.payload;
-        })
+        });
 
         builder.addCase(fetchResume.fulfilled, (state, action) => {
             if (action.payload && action.payload.data) {
@@ -69,13 +62,10 @@ export const resumeSlide = createSlice({
             // Add user to the state array
 
             // state.courseOrder = action.payload;
-        })
+        });
     },
-
 });
 
-export const {
-    setActiveMenu,
-} = resumeSlide.actions;
+export const { setActiveMenu } = resumeSlide.actions;
 
 export default resumeSlide.reducer;

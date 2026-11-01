@@ -1,53 +1,40 @@
-# 🚀 Java Spring RESTful APIs - Xây Dựng Backend với Spring Boot
+# itjobs - Frontend
 
-This is the **final project (Frontend - Project JobHunter)** for the **Java Spring RESTful APIs - Xây Dựng Backend với Spring Boot** course by **Hỏi Dân IT**.
+Giao diện web của itjobs (React, TypeScript, Vite, Ant Design). Gọi API của backend `DATT`.
 
----
+## Yêu cầu
 
-## 📢 IMPORTANT NOTICE  
-This source code is provided **exclusively for enrolled students** in this course.  
-❌ **DO NOT UPLOAD this code to GitHub (Public), GitLab, or any other public repository.**  
-❌ **DO NOT SHARE this project on forums, Telegram, Discord, or social media.**  
-✅ You **can use Git** for personal learning, but **your repository must be PRIVATE**.
+- Node.js `^20.19.0` hoặc `>=22.12.0`
+- Backend đang chạy ở `http://localhost:8080`
 
-💡 **Violators may face:**  
-- DMCA takedown requests.  
-- Account suspension on learning platforms.  
-- Legal action in serious cases.  
+## Chạy frontend (development)
 
-📩 For inquiries, contact: **admin@hoidanit.vn**
+```bash
+npm ci
+npm run dev
+```
 
----
+Mở http://localhost:3000.
 
-### Môi trường chạy dự án: Node.js v16.20.0
-https://nodejs.org/download/release/v16.20.0/
+## Chạy bản production
 
-## Về tác giả
-Mọi thông tin về Tác giả Hỏi Dân IT, các bạn có thể tìm kiếm tại đây:
+```bash
+npm ci
+npm run build
+npm run preview
+```
 
-Website chính thức: https://hoidanit.vn/
+Thư mục `dist/` sau khi build là toàn bộ trang web để đưa lên hosting.
 
-Youtube “Hỏi Dân IT” : https://www.youtube.com/@hoidanit
+## Cấu hình
 
-Tiktok “Hỏi Dân IT” :  https://www.tiktok.com/@hoidanit
+Sửa trong `.env.development` (khi `npm run dev`) hoặc `.env.production` (khi `npm run build`):
 
-Fanpage “Hỏi Dân IT” : https://www.facebook.com/askITwithERIC/
+| Biến | Mặc định | Ý nghĩa |
+|---|---|---|
+| `PORT` | `3000` | Cổng của frontend |
+| `VITE_BACKEND_URL` | `http://localhost:8080` | Địa chỉ API của backend |
+| `VITE_ACL_ENABLE` | `true` | Ẩn nút và trang theo quyền của vai trò |
+| `VITE_FACEBOOK_APP_ID` | (trống) | Tùy chọn: ID app Facebook để bật nút Messenger khi chia sẻ trên máy tính |
 
-Udemy Hỏi Dân IT: https://www.udemy.com/user/eric-7039/
-
-===
-
-Các bước cài đặt: (chế độ development)
-1. clone code
-2. cài đặt thư viện: npm i
-3. Update file .env.development (nếu cần thiết)
-4. Chạy dự án: npm run dev
-
-===
-
-Cách chạy tại chế độ production:
-1. clone code
-2. cài đặt thư viện: npm i
-3. Update file .env.production (nếu cần thiết)
-4. Build dự án: npm run build
-5. Chạy dự án: npm run preview
+Trang trắng hoặc lỗi `504 Outdated Optimize Dep` sau khi cài lại thư viện: chạy `npm run dev -- --force`.

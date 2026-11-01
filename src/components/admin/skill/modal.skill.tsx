@@ -1,8 +1,8 @@
-import { ModalForm, ProFormDigit, ProFormSelect, ProFormText } from "@ant-design/pro-components";
-import { Col, Form, Row, message, notification } from "antd";
-import { isMobile } from 'react-device-detect';
-import { callCreateSkill, callUpdateSkill } from "@/config/api";
-import { ISkill } from "@/types/backend";
+import { ModalForm, ProFormText } from '@ant-design/pro-components';
+import { Col, Form, Row, message, notification } from 'antd';
+import { useIsMobile } from '@/config/use-mobile';
+import { callCreateSkill, callUpdateSkill } from '@/config/api';
+import { ISkill } from '@/types/backend';
 
 interface IProps {
     openModal: boolean;
@@ -12,12 +12,10 @@ interface IProps {
     reloadTable: () => void;
 }
 
-
-
 const ModalSkill = (props: IProps) => {
+    const isMobile = useIsMobile();
     const { openModal, setOpenModal, reloadTable, dataInit, setDataInit } = props;
     const [form] = Form.useForm();
-
 
     const submitSkill = async (valuesForm: any) => {
         const { name } = valuesForm;
@@ -25,51 +23,53 @@ const ModalSkill = (props: IProps) => {
             //update
             const res = await callUpdateSkill(dataInit.id, name);
             if (res.data) {
-                message.success("Cập nhật loại xe thành công");
+                message.success('Cập nhật kỹ năng thành công');
                 handleReset();
                 reloadTable();
             } else {
                 notification.error({
                     message: 'Có lỗi xảy ra',
-                    description: res.message
+                    description: res.message,
                 });
             }
         } else {
             //create
             const res = await callCreateSkill(name);
             if (res.data) {
-                message.success("Thêm mới loại xe thành công");
+                message.success('Thêm mới kỹ năng thành công');
                 handleReset();
                 reloadTable();
             } else {
                 notification.error({
                     message: 'Có lỗi xảy ra',
-                    description: res.message
+                    description: res.message,
                 });
             }
         }
-    }
+    };
 
     const handleReset = async () => {
         form.resetFields();
         setDataInit(null);
         setOpenModal(false);
-    }
+    };
 
     return (
         <>
             <ModalForm
-                title={<>{dataInit?.id ? "Cập nhật loại xe" : "Tạo mới loại xe"}</>}
+                title={<>{dataInit?.id ? 'Cập nhật kỹ năng' : 'Thêm kỹ năng'}</>}
                 open={openModal}
                 modalProps={{
-                    onCancel: () => { handleReset() },
+                    onCancel: () => {
+                        handleReset();
+                    },
                     afterClose: () => handleReset(),
                     destroyOnClose: true,
-                    width: isMobile ? "100%" : 600,
+                    width: isMobile ? '100%' : 520,
                     keyboard: false,
                     maskClosable: false,
-                    okText: <>{dataInit?.id ? "Cập nhật" : "Tạo mới"}</>,
-                    cancelText: "Hủy"
+                    okText: <>{dataInit?.id ? 'Cập nhật' : 'Tạo mới'}</>,
+                    cancelText: 'Hủy',
                 }}
                 scrollToFirstError={true}
                 preserve={false}
@@ -80,16 +80,16 @@ const ModalSkill = (props: IProps) => {
                 <Row gutter={16}>
                     <Col span={24}>
                         <ProFormText
-                            label="Tên loại xe"
+                            label="Tên kỹ năng"
                             name="name"
                             rules={[{ required: true, message: 'Vui lòng không bỏ trống' }]}
-                            placeholder="Nhập tên loại xe"
+                            placeholder="Nhập tên kỹ năng"
                         />
                     </Col>
                 </Row>
             </ModalForm>
         </>
-    )
-}
+    );
+};
 
 export default ModalSkill;

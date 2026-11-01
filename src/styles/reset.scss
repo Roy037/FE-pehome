@@ -1,6 +1,6 @@
 .ant-pro-footer-bar {
     z-index: 1000;
-    background-color: white;
+    background-color: var(--surface);
 }
 
 .ant-menu-horizontal {
@@ -16,9 +16,9 @@
     &.close {
         transform: scale(0);
         opacity: 0;
-        -webkit-transition: all .1s linear;
-        -o-transition: all .25s linear;
-        transition: all .25s linear;
+        -webkit-transition: all 0.1s linear;
+        -o-transition: all 0.25s linear;
+        transition: all 0.25s linear;
     }
 }
 

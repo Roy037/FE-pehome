@@ -1,14 +1,17 @@
-import { FooterToolbar, ModalForm, ProCard, ProFormSwitch, ProFormText, ProFormTextArea } from "@ant-design/pro-components";
-import { Col, Form, Row, message, notification } from "antd";
-import { isMobile } from 'react-device-detect';
-import { callCreateRole, callFetchPermission, callUpdateRole } from "@/config/api";
-import { IPermission, IRole } from "@/types/backend";
-import { CheckSquareOutlined } from "@ant-design/icons";
-import ModuleApi from "./module.api";
-import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { resetSingleRole } from "@/redux/slice/roleSlide";
-import { groupByPermission } from "@/config/utils";
+import {
+    FooterToolbar,
+    ModalForm,
+    ProCard,
+    ProFormSwitch,
+    ProFormText,
+    ProFormTextArea,
+} from '@ant-design/pro-components';
+import { Col, Form, Row, message, notification } from 'antd';
+import { useIsMobile } from '@/config/use-mobile';
+import { callCreateRole, callUpdateRole } from '@/config/api';
+import { IPermission, IRole } from '@/types/backend';
+import { CheckSquareOutlined } from '@ant-design/icons';
+import ModuleApi from './module.api';
 
 interface IProps {
     openModal: boolean;
@@ -16,15 +19,15 @@ interface IProps {
     reloadTable: () => void;
     listPermissions: {
         module: string;
-        permissions: IPermission[]
+        permissions: IPermission[];
     }[];
     singleRole: IRole | null;
     setSingleRole: (v: any) => void;
 }
 
 const ModalRole = (props: IProps) => {
+    const isMobile = useIsMobile();
     const { openModal, setOpenModal, reloadTable, listPermissions, singleRole, setSingleRole } = props;
-    const dispatch = useAppDispatch();
     const [form] = Form.useForm();
 
     const submitRole = async (valuesForm: any) => {
@@ -42,57 +45,64 @@ const ModalRole = (props: IProps) => {
         if (singleRole?.id) {
             //update
             const role = {
-                name, description, active, permissions: checkedPermissions
-            }
+                name,
+                description,
+                active,
+                permissions: checkedPermissions,
+            };
             const res = await callUpdateRole(role, singleRole.id);
             if (res.data) {
-                message.success("Cập nhật role thành công");
+                message.success('Cập nhật vai trò thành công');
                 handleReset();
                 reloadTable();
             } else {
                 notification.error({
                     message: 'Có lỗi xảy ra',
-                    description: res.message
+                    description: res.message,
                 });
             }
         } else {
             //create
             const role = {
-                name, description, active, permissions: checkedPermissions
-            }
+                name,
+                description,
+                active,
+                permissions: checkedPermissions,
+            };
             const res = await callCreateRole(role);
             if (res.data) {
-                message.success("Thêm mới role thành công");
+                message.success('Thêm vai trò thành công');
                 handleReset();
                 reloadTable();
             } else {
                 notification.error({
                     message: 'Có lỗi xảy ra',
-                    description: res.message
+                    description: res.message,
                 });
             }
         }
-    }
+    };
 
     const handleReset = async () => {
         form.resetFields();
         setOpenModal(false);
         setSingleRole(null);
-    }
+    };
 
     return (
         <>
             <ModalForm
-                title={<>{singleRole?.id ? "Cập nhật Role" : "Tạo mới Role"}</>}
+                title={<>{singleRole?.id ? 'Cập nhật Role' : 'Tạo mới Role'}</>}
                 open={openModal}
                 modalProps={{
-                    onCancel: () => { handleReset() },
+                    onCancel: () => {
+                        handleReset();
+                    },
                     afterClose: () => handleReset(),
                     destroyOnClose: true,
-                    width: isMobile ? "100%" : 900,
+                    width: isMobile ? '100%' : 720,
                     keyboard: false,
                     maskClosable: false,
-
                 }}
                 scrollToFirstError={true}
                 preserve={false}
@@ -101,31 +111,29 @@ const ModalRole = (props: IProps) => {
                 submitter={{
                     render: (_: any, dom: any) => <FooterToolbar>{dom}</FooterToolbar>,
                     submitButtonProps: {
-                        icon: <CheckSquareOutlined />
+                        icon: <CheckSquareOutlined />,
                     },
                     searchConfig: {
-                        resetText: "Hủy",
-                        submitText: <>{singleRole?.id ? "Cập nhật" : "Tạo mới"}</>,
-                    }
+                        resetText: 'Hủy',
+                        submitText: <>{singleRole?.id ? 'Cập nhật' : 'Tạo mới'}</>,
+                    },
                 }}
             >
                 <Row gutter={16}>
                     <Col lg={12} md={12} sm={24} xs={24}>
                         <ProFormText
-                            label="Tên Role"
+                            label="Tên vai trò"
                             name="name"
-                            rules={[
-                                { required: true, message: 'Vui lòng không bỏ trống' },
-                            ]}
-                            placeholder="Nhập name"
+                            rules={[{ required: true, message: 'Vui lòng không bỏ trống' }]}
+                            placeholder="Nhập tên"
                         />
                     </Col>
                     <Col lg={12} md={12} sm={24} xs={24}>
                         <ProFormSwitch
                             label="Trạng thái"
                             name="active"
-                            checkedChildren="ACTIVE"
-                            unCheckedChildren="INACTIVE"
+                            checkedChildren="Hoạt động"
+                            unCheckedChildren="Tạm khóa"
                             initialValue={true}
                             fieldProps={{
                                 defaultChecked: true,
@@ -135,12 +143,12 @@ const ModalRole = (props: IProps) => {
 
                     <Col span={24}>
                         <ProFormTextArea
-                            label="Miêu tả"
+                            label="Mô tả"
                             name="description"
                             rules={[{ required: true, message: 'Vui lòng không bỏ trống' }]}
-                            placeholder="Nhập miêu tả role"
+                            placeholder="Nhập mô tả vai trò"
                             fieldProps={{
-                                autoSize: { minRows: 2 }
+                                autoSize: { minRows: 2 },
                             }}
                         />
                     </Col>
@@ -160,14 +168,12 @@ const ModalRole = (props: IProps) => {
                                 singleRole={singleRole}
                                 openModal={openModal}
                             />
-
                         </ProCard>
-
                     </Col>
                 </Row>
             </ModalForm>
         </>
-    )
-}
+    );
+};
 
 export default ModalRole;

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Result } from "antd";
+import { Result } from 'antd';
 import { useAppSelector } from '@/redux/hooks';
 interface IProps {
     hideChildren?: boolean;
     children: React.ReactNode;
-    permission: { method: string, apiPath: string, module: string };
+    permission: { method: string; apiPath: string; module: string };
 }
 
 const Access = (props: IProps) => {
@@ -17,40 +17,37 @@ const Access = (props: IProps) => {
 
     useEffect(() => {
         if (permissions?.length) {
-            const check = permissions.find(item =>
-                item.apiPath === permission.apiPath
-                && item.method === permission.method
-                && item.module === permission.module
-            )
+            const check = permissions.find(
+                item =>
+                    item.apiPath === permission.apiPath &&
+                    item.method === permission.method &&
+                    item.module === permission.module,
+            );
             if (check) {
-                setAllow(true)
-            } else
-                setAllow(false);
+                setAllow(true);
+            } else setAllow(false);
         }
-    }, [permissions])
+    }, [permissions]);
 
     return (
         <>
-            {allow === true || import.meta.env.VITE_ACL_ENABLE === 'false' ?
+            {allow === true || import.meta.env.VITE_ACL_ENABLE === 'false' ? (
                 <>{props.children}</>
-                :
+            ) : (
                 <>
-                    {hideChildren === false ?
+                    {hideChildren === false ? (
                         <Result
                             status="403"
                             title="Truy cập bị từ chối"
                             subTitle="Xin lỗi, bạn không có quyền hạn (permission) truy cập thông tin này"
                         />
-                        :
-                        <>
-                            {/* render nothing */}
-                        </>
-                    }
+                    ) : (
+                        <>{/* render nothing */}</>
+                    )}
                 </>
-            }
+            )}
         </>
-
-    )
-}
+    );
+};
 
 export default Access;

@@ -1,10 +1,10 @@
-import { ModalForm, ProFormSelect, ProFormText } from "@ant-design/pro-components";
-import { Col, Form, Row, message, notification } from "antd";
-import { isMobile } from 'react-device-detect';
-import { callCreatePermission, callUpdatePermission } from "@/config/api";
-import { IPermission } from "@/types/backend";
-import { ALL_MODULES } from "@/config/permissions";
-import { useEffect } from "react";
+import { ModalForm, ProFormSelect, ProFormText } from '@ant-design/pro-components';
+import { Col, Form, Row, message, notification } from 'antd';
+import { useIsMobile } from '@/config/use-mobile';
+import { callCreatePermission, callUpdatePermission } from '@/config/api';
+import { IPermission } from '@/types/backend';
+import { ALL_MODULES } from '@/config/permissions';
+import { useEffect } from 'react';
 
 interface IProps {
     openModal: boolean;
@@ -14,18 +14,16 @@ interface IProps {
     reloadTable: () => void;
 }
 
-
-
 const ModalPermission = (props: IProps) => {
+    const isMobile = useIsMobile();
     const { openModal, setOpenModal, reloadTable, dataInit, setDataInit } = props;
     const [form] = Form.useForm();
 
     useEffect(() => {
         if (dataInit?.id) {
-            form.setFieldsValue(dataInit)
+            form.setFieldsValue(dataInit);
         }
-    }, [dataInit])
-
+    }, [dataInit]);
 
     const submitPermission = async (valuesForm: any) => {
         const { name, apiPath, method, module } = valuesForm;
@@ -33,60 +31,66 @@ const ModalPermission = (props: IProps) => {
             //update
             const permission = {
                 name,
-                apiPath, method, module
-            }
+                apiPath,
+                method,
+                module,
+            };
 
             const res = await callUpdatePermission(permission, dataInit.id);
             if (res.data) {
-                message.success("Cập nhật permission thành công");
+                message.success('Cập nhật permission thành công');
                 handleReset();
                 reloadTable();
             } else {
                 notification.error({
                     message: 'Có lỗi xảy ra',
-                    description: res.error
+                    description: res.error,
                 });
             }
         } else {
             //create
             const permission = {
                 name,
-                apiPath, method, module
-            }
+                apiPath,
+                method,
+                module,
+            };
             const res = await callCreatePermission(permission);
             if (res.data) {
-                message.success("Thêm mới permission thành công");
+                message.success('Thêm mới permission thành công');
                 handleReset();
                 reloadTable();
             } else {
                 notification.error({
                     message: 'Có lỗi xảy ra',
-                    description: res.message
+                    description: res.message,
                 });
             }
         }
-    }
+    };
 
     const handleReset = async () => {
         form.resetFields();
         setDataInit(null);
         setOpenModal(false);
-    }
+    };
 
     return (
         <>
             <ModalForm
-                title={<>{dataInit?.id ? "Cập nhật Permission" : "Tạo mới Permission"}</>}
+                title={<>{dataInit?.id ? 'Cập nhật Permission' : 'Tạo mới Permission'}</>}
                 open={openModal}
                 modalProps={{
-                    onCancel: () => { handleReset() },
+                    onCancel: () => {
+                        handleReset();
+                    },
                     afterClose: () => handleReset(),
                     destroyOnClose: true,
-                    width: isMobile ? "100%" : 900,
+                    width: isMobile ? '100%' : 720,
                     keyboard: false,
                     maskClosable: false,
-                    okText: <>{dataInit?.id ? "Cập nhật" : "Tạo mới"}</>,
-                    cancelText: "Hủy"
+                    okText: <>{dataInit?.id ? 'Cập nhật' : 'Tạo mới'}</>,
+                    cancelText: 'Hủy',
                 }}
                 scrollToFirstError={true}
                 preserve={false}
@@ -99,19 +103,15 @@ const ModalPermission = (props: IProps) => {
                         <ProFormText
                             label="Tên Permission"
                             name="name"
-                            rules={[
-                                { required: true, message: 'Vui lòng không bỏ trống' },
-                            ]}
-                            placeholder="Nhập name"
+                            rules={[{ required: true, message: 'Vui lòng không bỏ trống' }]}
+                            placeholder="Nhập tên"
                         />
                     </Col>
                     <Col lg={12} md={12} sm={24} xs={24}>
                         <ProFormText
                             label="API Path"
                             name="apiPath"
-                            rules={[
-                                { required: true, message: 'Vui lòng không bỏ trống' },
-                            ]}
+                            rules={[{ required: true, message: 'Vui lòng không bỏ trống' }]}
                             placeholder="Nhập path"
                         />
                     </Col>
@@ -127,7 +127,7 @@ const ModalPermission = (props: IProps) => {
                                 PATCH: 'PATCH',
                                 DELETE: 'DELETE',
                             }}
-                            placeholder="Please select a method"
+                            placeholder="Chọn method"
                             rules={[{ required: true, message: 'Vui lòng chọn method!' }]}
                         />
                     </Col>
@@ -136,15 +136,14 @@ const ModalPermission = (props: IProps) => {
                             name="module"
                             label="Thuộc Module"
                             valueEnum={ALL_MODULES}
-                            placeholder="Please select a module"
+                            placeholder="Chọn module"
                             rules={[{ required: true, message: 'Vui lòng chọn module!' }]}
                         />
                     </Col>
-
                 </Row>
             </ModalForm>
         </>
-    )
-}
+    );
+};
 
 export default ModalPermission;

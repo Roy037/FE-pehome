@@ -1,0 +1,116 @@
+@mixin reduced-motion {
+    @media (prefers-reduced-motion: reduce) {
+        :root:not([data-motion='on']) & {
+            @content;
+        }
+    }
+}
+
+@keyframes rise {
+    from {
+        opacity: 0;
+        transform: translateY(26px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+@keyframes pop {
+    0% {
+        opacity: 0;
+        transform: scale(0.6);
+    }
+    70% {
+        opacity: 1;
+        transform: scale(1.06);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+@keyframes float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+@keyframes twinkle {
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(0.7) rotate(45deg);
+    }
+}
+@keyframes breathe {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.04);
+    }
+}
+@keyframes growX {
+    from {
+        transform: scaleX(0);
+    }
+}
+@keyframes drift {
+    from {
+        transform: translate(0, 0) scale(1);
+    }
+    to {
+        transform: translate(60px, 40px) scale(1.12);
+    }
+}
+@keyframes dash {
+    to {
+        stroke-dashoffset: -360;
+    }
+}
+@keyframes sheen {
+    from {
+        transform: translateX(-130%) skewX(-18deg);
+    }
+    to {
+        transform: translateX(230%) skewX(-18deg);
+    }
+}
+@keyframes checkDraw {
+    from {
+        stroke-dashoffset: 40;
+    }
+}
+@keyframes confettiBurst {
+    0% {
+        opacity: 0;
+        transform: translate(0, 0) rotate(0) scale(0.5);
+    }
+    6% {
+        opacity: 1;
+    }
+    38% {
+        transform: translate(calc(var(--x) * 0.75), var(--up)) rotate(calc(var(--spin) * 0.4)) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--x), var(--fall)) rotate(var(--spin)) scale(1);
+    }
+}
+@keyframes ripple {
+    from {
+        box-shadow: 0 0 0 0 rgba(227, 118, 60, 0.45);
+    }
+    to {
+        box-shadow: 0 0 0 18px rgba(227, 118, 60, 0);
+    }
+}

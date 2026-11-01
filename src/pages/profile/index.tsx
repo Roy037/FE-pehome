@@ -43,7 +43,6 @@ const month = (value?: string) =>
 const labelOf = (list: { label: string; value: string }[], value?: string | null) =>
     list.find(item => item.value === value)?.label;
 const LEVEL_TIPS = ['Cơ bản', 'Khá', 'Tốt', 'Rất tốt', 'Chuyên gia'];
-// the server refuses a fourth file too
 const MAX_CVS = 3;
 
 const Card = ({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) => (

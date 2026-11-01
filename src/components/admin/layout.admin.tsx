@@ -48,7 +48,6 @@ const LayoutAdmin = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [passwordOpen, setPasswordOpen] = useState(false);
     const [acceptingTerms, setAcceptingTerms] = useState(false);
-    // what an employer still has to provide before the company can be approved
     const [todo, setTodo] = useState<string[]>([]);
     const [avatarOpen, setAvatarOpen] = useState(false);
     const [activeMenu, setActiveMenu] = useState('');

@@ -20,7 +20,6 @@ import { useAppSelector } from '@/redux/hooks';
 import { EmployerProductCode, IEmployerServices, IJob, IOrder, IPaymentResult } from '@/types/backend';
 
 type Product = IEmployerServices['products'][number];
-// what is being paid for: a product, and the job for a pin
 interface Purchase {
     product: Product;
     job?: { id: string | number; name: string };
@@ -44,7 +43,7 @@ const ServicePage = () => {
     const [method, setMethod] = useState<PaymentMethodCode>('VNPAY');
     const [available, setAvailable] = useState<Record<string, boolean>>(DEFAULT_AVAILABLE);
     const [paying, setPaying] = useState(false);
-    const [mock, setMock] = useState<string | null>(null); // txnRef of the fake-gateway order
+    const [mock, setMock] = useState<string | null>(null);
     const [result, setResult] = useState<IPaymentResult | { error: string } | null>(null);
     const [checking, setChecking] = useState(false);
     const handled = useRef('');
@@ -80,14 +79,10 @@ const ServicePage = () => {
                     setAvailable(next);
                     setMethod(PAYMENT_METHODS.find(item => next[item.code])?.code ?? 'VNPAY');
                 }
-            } catch {
-                // the methods stay unavailable
-            }
+            } catch {}
         })();
     }, [load]);
 
-    // The gateway sends the browser back here with the answer in the address; confirm it with the server, show the
-    // outcome and clean the address.
     useEffect(() => {
         if (handled.current === location.search) return;
         const params = new URLSearchParams(location.search);

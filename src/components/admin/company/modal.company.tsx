@@ -75,7 +75,6 @@ const ModalCompany = (props: IProps) => {
     const [value, setValue] = useState<string>('');
     const [form] = Form.useForm();
 
-    // business licence: the stored name once a new file is uploaded, and whether a saved one exists on the server
     const [license, setLicense] = useState('');
     const [licenseName, setLicenseName] = useState('');
     const [uploadingLicense, setUploadingLicense] = useState(false);
@@ -104,7 +103,6 @@ const ModalCompany = (props: IProps) => {
 
     useEffect(() => setBanner(dataInit?.banner ?? ''), [dataInit]);
 
-    // the phone and the licence are not part of the public company data: ask the verification endpoint
     useEffect(() => {
         setLicense('');
         setLicenseName('');
@@ -116,9 +114,7 @@ const ModalCompany = (props: IProps) => {
                 const res = await callFetchCompanyVerification(dataInit.id!);
                 form.setFieldsValue({ phone: res.data?.phone ?? undefined });
                 setHasLicense(Boolean(res.data?.hasLicense));
-            } catch {
-                // the form still works without these two
-            }
+            } catch {}
         })();
     }, [dataInit, form]);
 

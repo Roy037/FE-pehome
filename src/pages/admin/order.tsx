@@ -142,7 +142,6 @@ const OrderPage = () => {
                     for (const key of ['plan', 'method', 'status'] as const) {
                         if (!params[key]) continue;
                         const value = String(params[key]);
-                        // the same column filters candidate plans and employer products, which are separate fields
                         filters.push(
                             sfEqual(
                                 key === 'plan' && /^(JOB_|TALENT_)/.test(value) ? 'product' : key,

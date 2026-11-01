@@ -84,7 +84,6 @@ const ClientJobPage = () => {
         if (selected.company.length) filter.push(sfIn('company.companyType', selected.company).toString());
         if (salaryNarrowed) filter.push(salaryRangeFilter(salaryLo, salaryHi, withDeal));
         const query = new URLSearchParams({ page: String(page), size: String(PAGE_SIZE) });
-        // jobs a company paid to pin come first, then the order the person chose
         query.append('sort', 'pinnedUntil,desc');
         query.append('sort', sort.sort);
         query.append('filter', filter.join(' and '));

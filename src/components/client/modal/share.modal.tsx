@@ -19,18 +19,14 @@ interface IProps {
     kind: 'job' | 'company';
     id?: string | number;
     title: string;
-    /** the company behind the post, shown on the preview card */
     company?: { name?: string; logo?: string };
-    /** short facts under the title on the preview card, e.g. salary and city */
     facts?: string[];
-    /** the ready-made post text; the person can edit it before sharing */
     message: string;
 }
 
 const FACEBOOK_APP_ID = import.meta.env.VITE_FACEBOOK_APP_ID as string | undefined;
 const enc = encodeURIComponent;
 
-// The address the backend answers with the page's own preview card, then sends people on to the site.
 const shareAddress = (kind: IProps['kind'], id?: string | number) => {
     const backend = (import.meta.env.VITE_BACKEND_URL as string | undefined)?.replace(/\/$/, '');
     return backend && id !== undefined ? `${backend}/share/${kind}/${id}` : window.location.href;
@@ -81,8 +77,6 @@ const ShareModal = ({ open, onClose, kind, id, title, company, facts = [], messa
         }
     };
 
-    // Zalo has no web share address without an official account: phones hand the link to the share sheet (pick Zalo
-    // there), computers copy it and point at the QR code.
     const zalo = async () => {
         if (mobile && canNativeShare) return nativeShare();
         if (await copy(url)) message.success('Đã sao chép liên kết. Dán vào Zalo hoặc quét mã QR bên dưới.');
@@ -116,7 +110,6 @@ const ShareModal = ({ open, onClose, kind, id, title, company, facts = [], messa
             href: `mailto:?subject=${enc(title)}&body=${enc(`${text}\n${url}`)}`,
         },
     ];
-    // the Messenger share dialog on a computer needs the Facebook app id; phones open the app directly
     if (mobile) {
         channels.splice(2, 0, {
             key: 'messenger',

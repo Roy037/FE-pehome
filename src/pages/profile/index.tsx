@@ -43,6 +43,8 @@ const month = (value?: string) =>
 const labelOf = (list: { label: string; value: string }[], value?: string | null) =>
     list.find(item => item.value === value)?.label;
 const LEVEL_TIPS = ['Cơ bản', 'Khá', 'Tốt', 'Rất tốt', 'Chuyên gia'];
+// the server refuses a fourth file too
+const MAX_CVS = 3;
 
 const Card = ({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) => (
     <section className={p.card}>
@@ -79,7 +81,7 @@ const ProfilePage = () => {
     const [status, setStatus] = useState<'loading' | 'error' | 'ready'>('loading');
     const [editing, setEditing] = useState<Editing>(null);
     const [cvPercent, setCvPercent] = useState<number | null>(null);
-    const [viewingCv, setViewingCv] = useState(false);
+    const [viewingCv, setViewingCv] = useState<number | null>(null);
     const [avatarBusy, setAvatarBusy] = useState(false);
 
     const load = useCallback(async () => {
@@ -99,7 +101,7 @@ const ProfilePage = () => {
 
     const save = async (patch: Partial<IProfile>) => {
         if (!profile) return false;
-        const { email: _email, updatedAt: _updatedAt, cvUpdatedAt: _cvUpdatedAt, ...body } = { ...profile, ...patch };
+        const { email: _email, updatedAt: _updatedAt, ...body } = { ...profile, ...patch };
         try {
             const res = await callSaveMyProfile(body);
             if (!res.data) throw new Error(errorMessage(res.message, 'Chưa thể lưu hồ sơ. Vui lòng thử lại.'));
@@ -154,12 +156,16 @@ const ProfilePage = () => {
         showUploadList: false,
         disabled: cvPercent !== null,
         beforeUpload: file => {
+            if ((profile?.cvs.length ?? 0) >= MAX_CVS) {
+                message.error(`Hồ sơ giữ tối đa ${MAX_CVS} tệp. Hãy xóa bớt một tệp trước.`);
+                return Upload.LIST_IGNORE;
+            }
             if (!isCvFile(file.name)) {
-                message.error(`CV cần là ${CV_HINT}.`);
+                message.error(`Tệp cần là ${CV_HINT}.`);
                 return Upload.LIST_IGNORE;
             }
             if (file.size > 5 * 1024 * 1024) {
-                message.error('CV tối đa 5 MB.');
+                message.error('Mỗi tệp tối đa 5 MB.');
                 return Upload.LIST_IGNORE;
             }
             return true;
@@ -169,11 +175,11 @@ const ProfilePage = () => {
             setCvPercent(0);
             try {
                 const res = await callUploadSingleFile(picked, 'resume', setCvPercent);
-                if (!res.data) throw new Error(errorMessage(res.message, 'Tải CV chưa thành công.'));
-                await save({ cvUrl: res.data.fileName, cvName: picked.name });
+                if (!res.data) throw new Error(errorMessage(res.message, 'Tải tệp chưa thành công.'));
+                await save({ cvs: [...(profile?.cvs ?? []), { url: res.data.fileName, name: picked.name }] });
             } catch (error) {
                 notification.error({
-                    message: 'Tải CV chưa thành công',
+                    message: 'Tải tệp chưa thành công',
                     description: (error instanceof Error && error.message) || 'Vui lòng thử lại.',
                 });
             } finally {
@@ -213,7 +219,7 @@ const ProfilePage = () => {
                           done: profile.references.length > 0,
                           open: () => setEditing({ kind: 'reference', index: null }),
                       },
-                      { label: 'CV của bạn', done: Boolean(profile.cvUrl), open: undefined },
+                      { label: 'CV của bạn', done: profile.cvs.length > 0, open: undefined },
                   ]
                 : [],
         [profile],
@@ -577,55 +583,84 @@ const ProfilePage = () => {
                         )}
                     </Card>
 
-                    <Card title="CV của bạn">
+                    <Card title={`CV và chứng chỉ (${profile.cvs.length}/${MAX_CVS})`}>
+                        {profile.cvs.length > 0 && (
+                            <ul className={p.cvList}>
+                                {profile.cvs.map((cv, index) => (
+                                    <li key={cv.url} className={p.cvFile}>
+                                        <span className={p.cvIcon} aria-hidden="true">
+                                            <FileTextOutlined />
+                                        </span>
+                                        <div>
+                                            <strong>{cv.name || cv.url}</strong>
+                                            <small>
+                                                {cv.updatedAt
+                                                    ? `Cập nhật ${dayjs(cv.updatedAt).format('DD/MM/YYYY')}`
+                                                    : 'Đã tải lên'}
+                                            </small>
+                                        </div>
+                                        <div className={p.rowActions}>
+                                            <button
+                                                type="button"
+                                                className={ui.btnOutline}
+                                                onClick={() => setViewingCv(index)}
+                                            >
+                                                Xem
+                                            </button>
+                                            <Popconfirm
+                                                title="Xóa tệp này khỏi hồ sơ?"
+                                                okText="Xóa"
+                                                cancelText="Hủy"
+                                                onConfirm={() =>
+                                                    save({
+                                                        cvs: profile.cvs.filter((_, position) => position !== index),
+                                                    })
+                                                }
+                                            >
+                                                <Button
+                                                    danger
+                                                    type="text"
+                                                    icon={<DeleteOutlined />}
+                                                    aria-label={`Xóa ${cv.name || 'tệp'}`}
+                                                />
+                                            </Popconfirm>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                         {cvPercent !== null ? (
                             <div className={p.cvBusy}>
                                 <FileTextOutlined aria-hidden="true" />
                                 <div>
-                                    <strong>Đang tải CV…</strong>
+                                    <strong>Đang tải tệp…</strong>
                                     <Progress percent={cvPercent} strokeColor="#E3763C" size="small" />
                                 </div>
                             </div>
-                        ) : profile.cvUrl ? (
-                            <div className={p.cvFile}>
-                                <span className={p.cvIcon} aria-hidden="true">
-                                    <FileTextOutlined />
-                                </span>
-                                <div>
-                                    <strong>{profile.cvName || profile.cvUrl}</strong>
-                                    <small>
-                                        {profile.cvUpdatedAt
-                                            ? `Cập nhật ${dayjs(profile.cvUpdatedAt).format('DD/MM/YYYY')}`
-                                            : 'Đã tải lên'}
-                                    </small>
-                                </div>
-                                <div className={p.rowActions}>
-                                    <button type="button" className={ui.btnOutline} onClick={() => setViewingCv(true)}>
-                                        Xem CV
-                                    </button>
-                                    <Upload {...uploadProps}>
-                                        <Button icon={<CloudUploadOutlined />}>Thay CV</Button>
-                                    </Upload>
-                                    <Popconfirm
-                                        title="Xóa CV khỏi hồ sơ?"
-                                        okText="Xóa"
-                                        cancelText="Hủy"
-                                        onConfirm={() => save({ cvUrl: null, cvName: null })}
-                                    >
-                                        <Button danger type="text" icon={<DeleteOutlined />} aria-label="Xóa CV" />
-                                    </Popconfirm>
-                                </div>
-                            </div>
-                        ) : (
+                        ) : profile.cvs.length === 0 ? (
                             <Upload.Dragger {...uploadProps} className={p.dragger}>
                                 <p className={p.draggerIcon}>
                                     <CloudUploadOutlined />
                                 </p>
                                 <p>
-                                    <strong>Kéo thả CV vào đây hoặc bấm để chọn</strong>
+                                    <strong>Kéo thả tệp vào đây hoặc bấm để chọn</strong>
                                 </p>
-                                <p className={p.placeholder}>{CV_HINT} · tối đa 5 MB</p>
+                                <p className={p.placeholder}>
+                                    {CV_HINT} · tối đa {MAX_CVS} tệp, mỗi tệp 5 MB
+                                </p>
+                                <p className={p.placeholder}>Ví dụ: CV tiếng Anh, CV tiếng Việt, chứng chỉ IELTS</p>
                             </Upload.Dragger>
+                        ) : profile.cvs.length < MAX_CVS ? (
+                            <div className={p.cvAdd}>
+                                <Upload {...uploadProps}>
+                                    <Button icon={<CloudUploadOutlined />}>Thêm tệp</Button>
+                                </Upload>
+                                <small className={p.placeholder}>{CV_HINT} · mỗi tệp tối đa 5 MB</small>
+                            </div>
+                        ) : (
+                            <small className={p.placeholder}>
+                                Hồ sơ đã đủ {MAX_CVS} tệp. Xóa bớt một tệp để thêm tệp khác.
+                            </small>
                         )}
                     </Card>
                 </div>
@@ -677,11 +712,11 @@ const ProfilePage = () => {
             </div>
 
             <CvViewerModal
-                open={viewingCv}
-                endpoint="/api/v1/me/profile/cv"
-                file={profile.cvUrl}
-                name={profile.cvName}
-                onClose={() => setViewingCv(false)}
+                open={viewingCv !== null}
+                endpoint={`/api/v1/me/profile/cv?index=${viewingCv ?? 0}`}
+                file={profile.cvs[viewingCv ?? 0]?.url}
+                name={profile.cvs[viewingCv ?? 0]?.name}
+                onClose={() => setViewingCv(null)}
             />
             <BasicModal open={editing === 'basic'} onClose={() => setEditing(null)} profile={profile} onSave={save} />
             <GoalsModal open={editing === 'goals'} onClose={() => setEditing(null)} profile={profile} onSave={save} />

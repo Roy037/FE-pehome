@@ -351,7 +351,7 @@ export interface ITalentDetail {
     shortGoals: string[];
     longGoals: string[];
     experiences: IProfileExperience[];
-    cvName?: string | null;
+    cvNames: string[];
 }
 export interface IAdminOrder {
     order: IOrder;
@@ -395,6 +395,11 @@ export interface IProfileReference {
     phone?: string;
     email?: string;
 }
+export interface IProfileCv {
+    url: string;
+    name?: string | null;
+    updatedAt?: string | null;
+}
 export type Gender = 'MALE' | 'FEMALE' | 'OTHER';
 export interface IProfile {
     name: string;
@@ -415,8 +420,6 @@ export interface IProfile {
     experiences: IProfileExperience[];
     skills: IProfileSkill[];
     references: IProfileReference[];
-    cvUrl?: string | null;
-    cvName?: string | null;
-    cvUpdatedAt?: string | null;
+    cvs: IProfileCv[];
     updatedAt?: string | null;
 }

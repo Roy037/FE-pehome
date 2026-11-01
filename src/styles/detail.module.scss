@@ -1101,6 +1101,21 @@
         white-space: nowrap;
     }
 }
+.savedSelect {
+    width: 100%;
+    min-width: 0;
+}
+@media (max-width: 600px) {
+    .savedCv {
+        flex-wrap: wrap;
+        > div {
+            flex-basis: calc(100% - 40px);
+        }
+        .linkButton {
+            min-height: 44px;
+        }
+    }
+}
 .linkButton {
     align-self: flex-start;
     padding: 0;

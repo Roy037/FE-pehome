@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CloudUploadOutlined, DeleteOutlined, FileTextOutlined, LinkOutlined } from '@ant-design/icons';
-import { Alert, Input, Modal, Progress, Segmented, Upload } from 'antd';
+import { Alert, Input, Modal, Progress, Segmented, Select, Upload } from 'antd';
 import type { UploadProps } from 'antd';
 import { Link } from 'react-router-dom';
 import { callCheckApplied, callCreateResume, callFetchMyProfile, callUploadSingleFile } from '@/config/api';
@@ -39,6 +39,7 @@ const ApplyModal = ({ isModalOpen, setIsModalOpen, jobDetail, onApplied }: IProp
     const openAuth = useAuthModal();
     const [urlCV, setUrlCV] = useState('');
     const [savedCv, setSavedCv] = useState<{ url: string; name: string } | null>(null);
+    const [savedCvs, setSavedCvs] = useState<{ url: string; name: string }[]>([]);
     const [useSaved, setUseSaved] = useState(false);
     const [viewing, setViewing] = useState(false);
     const [file, setFile] = useState<PickedFile | null>(null);
@@ -49,6 +50,10 @@ const ApplyModal = ({ isModalOpen, setIsModalOpen, jobDetail, onApplied }: IProp
     const [link, setLink] = useState('');
     const [coverLetter, setCoverLetter] = useState('');
     const [error, setError] = useState('');
+    const savedIndex = Math.max(
+        0,
+        savedCvs.findIndex(cv => cv.url === savedCv?.url),
+    );
     const uploading = file?.status === 'uploading';
     const busy = uploading || isSubmitting;
 
@@ -60,6 +65,7 @@ const ApplyModal = ({ isModalOpen, setIsModalOpen, jobDetail, onApplied }: IProp
             setDone(false);
             setAlreadyApplied(false);
             setSavedCv(null);
+            setSavedCvs([]);
             setUseSaved(false);
             setMode('file');
             setLink('');
@@ -89,10 +95,12 @@ const ApplyModal = ({ isModalOpen, setIsModalOpen, jobDetail, onApplied }: IProp
         (async () => {
             try {
                 const res = await callFetchMyProfile();
-                if (ignore || !res.data?.cvUrl) return;
-                setSavedCv({ url: res.data.cvUrl, name: res.data.cvName || res.data.cvUrl });
+                const files = (res.data?.cvs ?? []).map(cv => ({ url: cv.url, name: cv.name || cv.url }));
+                if (ignore || files.length === 0) return;
+                setSavedCvs(files);
+                setSavedCv(files[0]);
                 setUseSaved(true);
-                setUrlCV(res.data.cvUrl);
+                setUrlCV(files[0].url);
             } catch {}
         })();
         return () => {
@@ -264,8 +272,29 @@ const ApplyModal = ({ isModalOpen, setIsModalOpen, jobDetail, onApplied }: IProp
                                     <div className={d.savedCv}>
                                         <FileTextOutlined className={d.fileIcon} aria-hidden="true" />
                                         <div>
-                                            <strong>CV trong hồ sơ của bạn</strong>
-                                            <span>{savedCv.name}</span>
+                                            <strong>
+                                                {savedCvs.length > 1
+                                                    ? 'Chọn tệp trong hồ sơ của bạn'
+                                                    : 'CV trong hồ sơ của bạn'}
+                                            </strong>
+                                            {savedCvs.length > 1 ? (
+                                                <Select
+                                                    className={d.savedSelect}
+                                                    aria-label="Chọn tệp để nộp"
+                                                    value={savedCv.url}
+                                                    disabled={isSubmitting}
+                                                    options={savedCvs.map(cv => ({ value: cv.url, label: cv.name }))}
+                                                    onChange={url => {
+                                                        const next = savedCvs.find(cv => cv.url === url);
+                                                        if (!next) return;
+                                                        setSavedCv(next);
+                                                        setUrlCV(next.url);
+                                                        setError('');
+                                                    }}
+                                                />
+                                            ) : (
+                                                <span>{savedCv.name}</span>
+                                            )}
                                         </div>
                                         <button type="button" className={d.linkButton} onClick={() => setViewing(true)}>
                                             Xem
@@ -443,7 +472,7 @@ const ApplyModal = ({ isModalOpen, setIsModalOpen, jobDetail, onApplied }: IProp
             </Modal>
             <CvViewerModal
                 open={viewing}
-                endpoint="/api/v1/me/profile/cv"
+                endpoint={`/api/v1/me/profile/cv?index=${savedIndex}`}
                 file={savedCv?.url}
                 name={savedCv?.name}
                 onClose={() => setViewing(false)}

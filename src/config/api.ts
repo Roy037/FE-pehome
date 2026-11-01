@@ -142,7 +142,7 @@ export const callUploadSingleFile = (file: any, folderType: string, onProgress?:
  * Saved jobs & reviews (current user)
  */
 export const callFetchMyProfile = () => axios.get<IBackendRes<IProfile>>('/api/v1/me/profile');
-export const callSaveMyProfile = (profile: Omit<IProfile, 'email' | 'updatedAt' | 'cvUpdatedAt'>) =>
+export const callSaveMyProfile = (profile: Omit<IProfile, 'email' | 'updatedAt'>) =>
     axios.put<IBackendRes<IProfile>>('/api/v1/me/profile', profile);
 export const callFetchSavedJobs = () => axios.get<IBackendRes<IJob[]>>('/api/v1/me/saved-jobs');
 export const callSaveJob = (jobId: string) => axios.put<IBackendRes<null>>(`/api/v1/me/saved-jobs/${jobId}`);

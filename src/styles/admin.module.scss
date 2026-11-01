@@ -418,6 +418,17 @@
     flex-wrap: wrap;
     gap: 8px;
     margin: 4px 0 8px;
+    :global(.ant-btn) {
+        display: inline-flex;
+        align-items: center;
+        max-width: 280px;
+        min-height: 44px;
+    }
+    :global(.ant-btn > span:last-child) {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
 .talentTimeline {
     list-style: none;

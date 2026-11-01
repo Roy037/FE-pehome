@@ -21,7 +21,7 @@ const ViewTalent = ({ id, onClose }: IProps) => {
     const [detail, setDetail] = useState<ITalentDetail | null>(null);
     const [failed, setFailed] = useState(false);
     const [locked, setLocked] = useState(false);
-    const [viewingCv, setViewingCv] = useState(false);
+    const [viewingCv, setViewingCv] = useState<number | null>(null);
 
     useEffect(() => {
         if (id === null) return;
@@ -99,14 +99,23 @@ const ViewTalent = ({ id, onClose }: IProps) => {
                         <Button icon={<MailOutlined />} href={`mailto:${detail.email}`}>
                             {detail.email}
                         </Button>
-                        <Button
-                            type="primary"
-                            icon={<FileTextOutlined />}
-                            disabled={!talent.hasCv}
-                            onClick={() => setViewingCv(true)}
-                        >
-                            {talent.hasCv ? 'Xem CV' : 'Chưa có CV'}
-                        </Button>
+                        {talent.hasCv ? (
+                            detail.cvNames.map((name, index) => (
+                                <Button
+                                    key={index}
+                                    type="primary"
+                                    icon={<FileTextOutlined />}
+                                    title={name || undefined}
+                                    onClick={() => setViewingCv(index)}
+                                >
+                                    {detail.cvNames.length > 1 ? name || `Tệp ${index + 1}` : 'Xem CV'}
+                                </Button>
+                            ))
+                        ) : (
+                            <Button type="primary" icon={<FileTextOutlined />} disabled>
+                                Chưa có CV
+                            </Button>
+                        )}
                     </div>
 
                     {(detail.shortGoals.length > 0 || detail.longGoals.length > 0) && (
@@ -171,11 +180,11 @@ const ViewTalent = ({ id, onClose }: IProps) => {
                         nào.
                     </small>
                     <CvViewerModal
-                        open={viewingCv}
-                        endpoint={`/api/v1/talents/${talent.id}/cv`}
-                        file={detail.cvName}
-                        name={detail.cvName}
-                        onClose={() => setViewingCv(false)}
+                        open={viewingCv !== null}
+                        endpoint={`/api/v1/talents/${talent.id}/cv?index=${viewingCv ?? 0}`}
+                        file={detail.cvNames[viewingCv ?? 0]}
+                        name={detail.cvNames[viewingCv ?? 0]}
+                        onClose={() => setViewingCv(null)}
                     />
                 </div>
             )}

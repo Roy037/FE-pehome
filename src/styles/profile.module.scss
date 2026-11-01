@@ -412,6 +412,23 @@
     color: var(--brand);
     font-size: 32px;
 }
+.cvList {
+    display: grid;
+    gap: 14px;
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+    > li + li {
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+    }
+}
+.cvAdd {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+}
 
 .percent {
     display: grid;
@@ -606,5 +623,10 @@
     }
     .timeline li {
         flex-direction: column;
+    }
+    .cvList button,
+    .cvAdd :global(.ant-btn) {
+        min-width: 44px;
+        min-height: 44px;
     }
 }
